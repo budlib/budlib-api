@@ -16,10 +16,11 @@ public class Book {
     private String publishedDate;
     private int pageCount;
     private String ISBN;
+    private Boolean loanedOut;
 
     public Book(Long id, String title, String authors, String language, String categories, double averageRating,
             String maturityRating,
-            String publisher, String publishedDate, int pageCount, String ISBN) {
+            String publisher, String publishedDate, int pageCount, String ISBN, Boolean loanedOut) {
         super();
 
         this.id = id;
@@ -34,6 +35,15 @@ public class Book {
         this.publishedDate = publishedDate;
         this.pageCount = pageCount;
         this.ISBN = ISBN;
+        this.loanedOut = loanedOut;
+    }
+
+    public Boolean getBoolean() {
+        return this.loanedOut;
+    }
+
+    public void setBoolean(Boolean loanedOut) {
+        this.loanedOut = loanedOut;
     }
 
     public Long getId() {
