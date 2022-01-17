@@ -66,15 +66,14 @@ public class BookDbGenerator {
         Book temp;
         try {
             BufferedReader br = new BufferedReader(
-                    new FileReader("C:\\Downloads\\google_books_dataset.csv"));
+                    new FileReader("C:\\Downloads\\library_test.csv"));
 
             while ((line = br.readLine()) != null) // returns a boolean value
             {
                 String[] read_line = line.split(splitBy); // use comma as separator
                 if (Integer.parseInt(read_line[0]) != -1) {
                     temp = new Book(Long.parseLong(read_line[0]), read_line[1], read_line[2], read_line[3],
-                            read_line[4], Double.parseDouble(read_line[5]), read_line[6], read_line[7], read_line[8],
-                            Integer.parseInt(read_line[9]), "000", false);
+                            read_line[4], read_line[5], read_line[6]);
                     this.books.add(temp);
                 }
 

@@ -4,7 +4,7 @@ import javax.persistence.Id;
 
 public class Transaction {
     @Id
-    private String id = "";
+    private Long id = (long) -1;
 
     private Long bookId;
     private Long studentLId;
@@ -23,14 +23,14 @@ public class Transaction {
     /**
      * @return String return the id
      */
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -8,126 +8,123 @@ public class Book {
 
     private String title;
     private String authors;
-    private String language;
-    private String categories;
-    private double averageRating;
-    private String maturityRating;
     private String publisher;
-    private String publishedDate;
-    private int pageCount;
+    private String year;
     private String ISBN;
-    private Boolean loanedOut;
 
-    public Book(Long id, String title, String authors, String language, String categories, double averageRating,
-            String maturityRating,
-            String publisher, String publishedDate, int pageCount, String ISBN, Boolean loanedOut) {
+    private String edition;
+
+    public Book(Long id, String ISBN, String title, String authors, String publisher, String year,
+            String edition) {
         super();
-
+        this.ISBN = ISBN;
         this.id = id;
 
         this.title = title;
         this.authors = authors;
-        this.language = language;
-        this.categories = categories;
-        this.averageRating = averageRating;
-        this.maturityRating = maturityRating;
+
         this.publisher = publisher;
-        this.publishedDate = publishedDate;
-        this.pageCount = pageCount;
-        this.ISBN = ISBN;
-        this.loanedOut = loanedOut;
+        this.year = year;
+        this.edition = edition;
+
     }
 
-    public Boolean getBoolean() {
-        return this.loanedOut;
-    }
-
-    public void setBoolean(Boolean loanedOut) {
-        this.loanedOut = loanedOut;
-    }
-
+    /**
+     * @return Long return the id
+     */
     public Long getId() {
         return id;
     }
 
-    public String getTitle() {
-        return this.title;
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
+    /**
+     * @return String return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * @return String return the authors
+     */
     public String getAuthors() {
         return authors;
     }
 
+    /**
+     * @param authors the authors to set
+     */
     public void setAuthors(String authors) {
         this.authors = authors;
     }
 
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getCategories() {
-        return categories;
-    }
-
-    public void setCategories(String categories) {
-        this.categories = categories;
-    }
-
-    public double getAverageRating() {
-        return averageRating;
-    }
-
-    public void setAverageRating(double averageRating) {
-        this.averageRating = averageRating;
-    }
-
-    public String getMaturityRating() {
-        return maturityRating;
-    }
-
-    public void setMaturityRating(String maturityRating) {
-        this.maturityRating = maturityRating;
-    }
-
+    /**
+     * @return String return the publisher
+     */
     public String getPublisher() {
         return publisher;
     }
 
+    /**
+     * @param publisher the publisher to set
+     */
     public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
 
-    public String getPublishedDate() {
-        return publishedDate;
+    /**
+     * @return String return the year
+     */
+    public String getYear() {
+        return year;
     }
 
-    public void setPublishedDate(String publishedDate) {
-        this.publishedDate = publishedDate;
+    /**
+     * @param year the year to set
+     */
+    public void setYear(String year) {
+        this.year = year;
     }
 
-    public int getPageCount() {
-        return pageCount;
-    }
-
-    public void setPageCount(int pageCount) {
-        this.pageCount = pageCount;
-    }
-
+    /**
+     * @return String return the ISBN
+     */
     public String getISBN() {
         return ISBN;
     }
 
+    /**
+     * @param ISBN the ISBN to set
+     */
     public void setISBN(String ISBN) {
         this.ISBN = ISBN;
+    }
+
+    /**
+     * @return String return the edition
+     */
+    public String getEdition() {
+        return edition;
+    }
+
+    /**
+     * @param edition the edition to set
+     */
+    public void setEdition(String edition) {
+        this.edition = edition;
     }
 
 }
