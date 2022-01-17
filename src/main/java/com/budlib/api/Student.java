@@ -6,16 +6,14 @@ public class Student {
     @Id
     private Long id = (long) -1;
 
-    private int studentId;
-
     private String firstName;
     private String lastName;
     private String teacherName;
     private String classCode;
 
-    public Student(Long id, int studentId, String firstName, String lastName, String teacherName, String classCode) {
+    public Student(Long id, String firstName, String lastName, String teacherName, String classCode) {
         this.id = id;
-        this.studentId = studentId;
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.teacherName = teacherName;
@@ -35,20 +33,6 @@ public class Student {
      */
     public void setId(Long id) {
         this.id = id;
-    }
-
-    /**
-     * @return int return the studentId
-     */
-    public int getStudentId() {
-        return studentId;
-    }
-
-    /**
-     * @param studentId the studentId to set
-     */
-    public void setStudentId(int studentId) {
-        this.studentId = studentId;
     }
 
     /**

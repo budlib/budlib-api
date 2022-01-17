@@ -11,6 +11,7 @@ public class Book {
     private String publisher;
     private String year;
     private String ISBN;
+    private Boolean loaned_out;
 
     private String edition;
 
@@ -26,6 +27,7 @@ public class Book {
         this.publisher = publisher;
         this.year = year;
         this.edition = edition;
+        this.loaned_out = false;
 
     }
 
@@ -125,6 +127,20 @@ public class Book {
      */
     public void setEdition(String edition) {
         this.edition = edition;
+    }
+
+    /**
+     * @return Boolean return the loaned_out
+     */
+    public Boolean isLoaned_out() {
+        return loaned_out;
+    }
+
+    /**
+     * @param loaned_out the loaned_out to set
+     */
+    public void setLoaned_out(Boolean loaned_out) {
+        this.loaned_out = loaned_out;
     }
 
 }

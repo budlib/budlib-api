@@ -40,17 +40,20 @@ public class StudentController {
         return ResponseEntity.ok().body(students);
     }
 
-    @PostMapping(value = "/students", consumes = { "application/json", "application/xml" }, produces = {
+    @PostMapping(value = "/addstudents", consumes = { "application/json", "application/xml" }, produces = {
             "application/json", "application/xml" })
-    public ResponseEntity<Student> insertProduct(@RequestBody Student student) {
-        studentRepository.insert(student);
+    public ResponseEntity<?> insertProduct(@RequestBody Student student) {
+        if (studentRepository.existsById(student.getId()) == true) {
+            return (ResponseEntity<?>) ResponseEntity.status(409);
+        }
+        studentRepository.save(student);
         URI uri = URI.create("/studentrepo/students/" + student.getId());
         return ResponseEntity.created(uri).body(student);
     }
 
-    @PutMapping(value = "/students/{id}", consumes = { "application/json", "application/xml" })
+    @PutMapping(value = "/updatestudents/{id}", consumes = { "application/json", "application/xml" })
     public ResponseEntity<Void> updateProduct(@PathVariable long id, @RequestBody Student student) {
-        if (!studentRepository.existsById(student.getId()))
+        if (!studentRepository.existsById(id))
             return ResponseEntity.notFound().build();
         else
             studentRepository.save(student);

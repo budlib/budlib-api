@@ -42,15 +42,21 @@ public class BookController {
         return ResponseEntity.ok().body(books);
     }
 
-    @PostMapping(value = "/books", consumes = { "application/json", "application/xml" }, produces = {
+    @PostMapping(value = "/addbooks", consumes = { "application/json", "application/xml" }, produces = {
             "application/json", "application/xml" })
-    public ResponseEntity<Book> insertProduct(@RequestBody Book book) {
-        bookRepository.insert(book);
-        URI uri = URI.create("/bookrepo/books/" + book.getId());
-        return ResponseEntity.created(uri).body(book);
+    public ResponseEntity<?> insertProduct(@RequestBody Book book) {
+        if (!bookRepository.existsById(book.getId())) {
+            bookRepository.save(book);
+            URI uri = URI.create("/bookrepo/books/" + book.getId());
+            return ResponseEntity.created(uri).body(book);
+
+        } else {
+            return (ResponseEntity<?>) ResponseEntity.status(409);
+        }
+
     }
 
-    @PutMapping(value = "/books/{id}", consumes = { "application/json", "application/xml" })
+    @PutMapping(value = "/updatebooks/{id}", consumes = { "application/json", "application/xml" })
     public ResponseEntity<Void> updateProduct(@PathVariable long id, @RequestBody Book book) {
         if (!bookRepository.existsById(book.getId()))
             return ResponseEntity.notFound().build();

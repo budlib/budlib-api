@@ -2,6 +2,7 @@ package com.budlib.api;
 
 import java.net.URI;
 import java.util.Collection;
+
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,12 @@ public class TransactionController {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
     @GetMapping(value = "/transactions/{id}", produces = { "application/json", "application/xml" })
     public ResponseEntity<Transaction> getTransactionById(@PathVariable long id) {
         Transaction p = transactionRepository.findById(id).get();
@@ -43,9 +50,35 @@ public class TransactionController {
     @PostMapping(value = "/transactions", consumes = { "application/json", "application/xml" }, produces = {
             "application/json", "application/xml" })
     public ResponseEntity<Transaction> insertProduct(@RequestBody Transaction transaction) {
-        transactionRepository.insert(transaction);
-        URI uri = URI.create("/transactionrepo/transactions/" + transaction.getId());
-        return ResponseEntity.created(uri).body(transaction);
+        if (studentRepository.existsById(transaction.getStudentLId()) == true
+                && bookRepository.existsById(transaction.getBookId()) == true) {
+            transaction.setId(transactionRepository.count() + 1);
+
+            Book book = bookRepository.findById(transaction.getBookId()).get();
+            if (transaction.getTransactionType().startsWith("B")) {
+                if (book.isLoaned_out() == false) {
+                    book.setLoaned_out(true);
+                    bookRepository.save(book);
+                } else {
+                    return ResponseEntity.notFound().build();
+                }
+            } else {
+                if (book.isLoaned_out() == true) {
+                    book.setLoaned_out(false);
+                    bookRepository.save(book);
+                } else {
+                    return ResponseEntity.notFound().build();
+                }
+
+            }
+
+            transactionRepository.save(transaction);
+            URI uri = URI.create("/transactionrepo/transactions/" + transaction.getId());
+            return ResponseEntity.created(uri).body(transaction);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     @PutMapping(value = "/transactions/{id}", consumes = { "application/json", "application/xml" })

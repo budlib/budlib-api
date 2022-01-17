@@ -9,14 +9,16 @@ public class Transaction {
     private Long bookId;
     private Long studentLId;
 
-    private String borrowedDate;
-    private String returnedDate;
+    private String transactionDate;
+    private String transactionType;
 
-    public Transaction(Long studentLid, Long bookId, String borrowedDate) {
-        this.studentLId = studentLid;
+    public Transaction(Long id, Long studentLId, Long bookId, String transactionDate, String transactionType) {
+        super();
+        this.id = id;
+        this.studentLId = studentLId;
         this.bookId = bookId;
-        this.borrowedDate = borrowedDate;
-        this.returnedDate = null;
+        this.transactionDate = transactionDate;
+        this.transactionType = transactionType;
 
     }
 
@@ -63,31 +65,31 @@ public class Transaction {
     }
 
     /**
-     * @return String return the borrowedDate
+     * @return String return the transactionDate
      */
-    public String getBorrowedDate() {
-        return borrowedDate;
+    public String getTransactionDate() {
+        return transactionDate;
     }
 
     /**
-     * @param borrowedDate the borrowedDate to set
+     * @param transactionDate the transactionDate to set
      */
-    public void setBorrowedDate(String borrowedDate) {
-        this.borrowedDate = borrowedDate;
+    public void setTransactionDate(String transactionDate) {
+        this.transactionDate = transactionDate;
     }
 
     /**
-     * @return String return the returnedDate
+     * @return String return the transactionType
      */
-    public String getReturnedDate() {
-        return returnedDate;
+    public String getTransactionType() {
+        return transactionType;
     }
 
     /**
-     * @param returnedDate the returnedDate to set
+     * @param transactionType the transactionType to set
      */
-    public void setReturnedDate(String returnedDate) {
-        this.returnedDate = returnedDate;
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 
 }

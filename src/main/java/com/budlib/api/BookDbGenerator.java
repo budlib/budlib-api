@@ -25,6 +25,9 @@ public class BookDbGenerator {
     @Autowired
     StudentRepository srepository;
 
+    @Autowired
+    TransactionRepository tRepository;
+
     public void genStudents(int studentpop) {
         Random rand = new Random();
 
@@ -49,7 +52,7 @@ public class BookDbGenerator {
         for (int i = 0; i < studentpop; i++) {
 
             students.add(
-                    new Student((long) i, rand.nextInt(99999), fakegen.name().firstName(), fakegen.name().lastName(),
+                    new Student((long) i, fakegen.name().firstName(), fakegen.name().lastName(),
                             fakegen.name().fullName(), classecodeArr.get(rand.nextInt(classecodeArr.size()))));
 
         }
@@ -84,7 +87,7 @@ public class BookDbGenerator {
             System.out.println("Number of books added: " + this.books.size());
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
@@ -101,6 +104,10 @@ public class BookDbGenerator {
         for (Student student : this.students) {
             srepository.save(student);
         }
+
+        Transaction transaction = new Transaction(Long.valueOf(1), Long.valueOf(1), Long.valueOf(1), "2022-01-01",
+                "Return");
+        tRepository.save(transaction);
 
     }
 

@@ -1,0 +1,377 @@
+{
+	"info": {
+		"_postman_id": "c0cd1138-a392-4e0d-a859-e801355b65e9",
+		"name": "BudLib Testing Endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Get Books",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/bookrepo/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"bookrepo",
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/bookrepo/books/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"bookrepo",
+								"books",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 999,\r\n        \"title\": \"Romeo and Juliet 2\",\r\n        \"authors\": \"Rudel- Joan and Siegfried\",\r\n        \"publisher\": \"Lanthorn Press- Peredur- East Grinstead- England\",\r\n        \"year\": \"1986\",\r\n        \"loaned_out\": false,\r\n        \"edition\": \"4\",\r\n        \"isbn\": \"n/a\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/bookrepo/addbooks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"bookrepo",
+								"addbooks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/bookrepo/books/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"bookrepo",
+								"books",
+								"999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"title\": \"Programming 101\",\r\n    \"authors\": \"Voors- William\",\r\n    \"publisher\": \"Hazelden\",\r\n    \"year\": \"2000\",\r\n    \"loaned_out\": false,\r\n    \"edition\": \"n/a\",\r\n    \"isbn\": \"1-56838-517-X\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/bookrepo/updatebooks/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"bookrepo",
+								"updatebooks",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Students",
+			"item": [
+				{
+					"name": "Get Students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/studentrepo/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"studentrepo",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/studentrepo/students/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"studentrepo",
+								"students",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 999,\r\n    \"studentId\": 12345,\r\n    \"firstName\": \"Mike\",\r\n    \"lastName\": \"Lee\",\r\n    \"teacherName\": \"Edwin Stracke\",\r\n    \"classCode\": \"G2b\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/studentrepo/addstudents",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"studentrepo",
+								"addstudents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Student",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/studentrepo/students/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"studentrepo",
+								"students",
+								"999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Students",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"studentId\": 12345,\r\n    \"firstName\": \"Mike\",\r\n    \"lastName\": \"Lee\",\r\n    \"teacherName\": \"Edwin Stracke\",\r\n    \"classCode\": \"G2b\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/studentrepo/updatestudents/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"studentrepo",
+								"updatestudents",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": []
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Return Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 1,\r\n        \"bookId\": 2,\r\n        \"studentLId\": 1,\r\n        \"transactionDate\": \"2022-01-01\",\r\n        \"transactionType\": \"Return\"\r\n        \r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/transactionrepo/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"transactionrepo",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/transactionrepo/transactions/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"transactionrepo",
+								"transactions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/transactionrepo/transactions/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"transactionrepo",
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Borrow Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 1,\r\n        \"bookId\": 2,\r\n        \"studentLId\": 1,\r\n        \"transactionDate\": \"2022-01-01\",\r\n        \"transactionType\": \"Borrow\"\r\n        \r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/transactionrepo/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"transactionrepo",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
