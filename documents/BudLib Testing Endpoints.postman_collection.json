@@ -372,6 +372,165 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Librarian",
+			"item": [
+				{
+					"name": "Get Librarians",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/librarianrepo/librarians/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"librarianrepo",
+								"librarians",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Librarian by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/librarianrepo/librarians/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"librarianrepo",
+								"librarians",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Librarian",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 2,\r\n    \"userName\": \"thanos2\",\r\n    \"firstName\": \"Leo\",\r\n    \"lastName\": \"Da Vinci\",\r\n    \"password\": \"admin123\",\r\n    \"role\": \"ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/librarianrepo/addlibrarians",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"librarianrepo",
+								"addlibrarians"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateLibrarian",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"userName\": \"thanos2\",\r\n    \"firstName\": \"Leonardo\",\r\n    \"lastName\": \"Da Vinci 1\",\r\n    \"password\": \"admin123\",\r\n    \"role\": \"ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/librarianrepo/updatelibrarians/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"librarianrepo",
+								"updatelibrarians",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Librarian",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/librarianrepo/librarians/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"librarianrepo",
+								"librarians",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Authentication Get Librarians Test",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Authenticate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/authenticate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

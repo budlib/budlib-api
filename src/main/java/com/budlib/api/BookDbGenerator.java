@@ -28,6 +28,9 @@ public class BookDbGenerator {
     @Autowired
     TransactionRepository tRepository;
 
+    @Autowired
+    LibrarianRepository lRepository;
+
     public void genStudents(int studentpop) {
         Random rand = new Random();
 
@@ -109,12 +112,17 @@ public class BookDbGenerator {
                 "Return");
         tRepository.save(transaction);
 
+        Librarian librarian = new Librarian(Long.valueOf(1), "thanos", "Leo", "Da Vinci", "admin123", "ADMIN");
+        lRepository.save(librarian);
+
     }
 
     @PreDestroy
     public void cleanup() {
         brepository.deleteAll();
         srepository.deleteAll();
+        tRepository.deleteAll();
+        lRepository.deleteAll();
     }
 
 }
