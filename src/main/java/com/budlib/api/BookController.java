@@ -34,6 +34,48 @@ public class BookController {
             return ResponseEntity.ok().body(p);
     }
 
+    @GetMapping(value = "/books/title/{title}", produces = { "application/json", "application/xml" })
+    public ResponseEntity<Book> getProductByTitle(@PathVariable String title) {
+        Book p = bookRepository.findByTitle(title).get(0);
+        if (p == null)
+            return ResponseEntity.notFound().build();
+        else
+            return ResponseEntity.ok().body(p);
+    }
+
+    @GetMapping(value = "/books/isbn/{isbn}", produces = { "application/json", "application/xml" })
+    public ResponseEntity<Book> getProductByISBN(@PathVariable String isbn) {
+        Book p = bookRepository.findByISBN(isbn).get(0);
+        if (p == null)
+            return ResponseEntity.notFound().build();
+        else
+            return ResponseEntity.ok().body(p);
+    }
+
+    @GetMapping(value = "/books/author/{authors}", produces = { "application/json", "application/xml" })
+    public ResponseEntity<Collection<Book>> getProductByAuthor(@PathVariable String authors) {
+        Collection<Book> books = bookRepository.findByAuthors(authors).stream()
+                .collect(Collectors.toList());
+        System.out.println("Number of books: " + books.size());
+        return ResponseEntity.ok().body(books);
+    }
+
+    @GetMapping(value = "/books/publisher/{publisher}", produces = { "application/json", "application/xml" })
+    public ResponseEntity<Collection<Book>> getProductByPublisher(@PathVariable String publisher) {
+        Collection<Book> books = bookRepository.findByPublisher(publisher).stream()
+                .collect(Collectors.toList());
+        System.out.println("Number of books: " + books.size());
+        return ResponseEntity.ok().body(books);
+    }
+
+    @GetMapping(value = "/books/tag/{tag}", produces = { "application/json", "application/xml" })
+    public ResponseEntity<Collection<Book>> getProductByTag(@PathVariable String tag) {
+        Collection<Book> books = bookRepository.findByTagsIn(tag).stream()
+                .collect(Collectors.toList());
+        System.out.println("Number of books: " + books.size());
+        return ResponseEntity.ok().body(books);
+    }
+
     @GetMapping(value = "/books", produces = { "application/json", "application/xml" })
     public ResponseEntity<Collection<Book>> getBooks() {
         Collection<Book> books = bookRepository.findAll().stream()
@@ -45,14 +87,11 @@ public class BookController {
     @PostMapping(value = "/addbooks", consumes = { "application/json", "application/xml" }, produces = {
             "application/json", "application/xml" })
     public ResponseEntity<?> insertProduct(@RequestBody Book book) {
-        if (!bookRepository.existsById(book.getId())) {
-            bookRepository.save(book);
-            URI uri = URI.create("/bookrepo/books/" + book.getId());
-            return ResponseEntity.created(uri).body(book);
 
-        } else {
-            return (ResponseEntity<?>) ResponseEntity.status(409);
-        }
+        book.setId(bookRepository.count() + 1);
+        bookRepository.save(book);
+        URI uri = URI.create("/bookrepo/books/" + book.getId());
+        return ResponseEntity.created(uri).body(book);
 
     }
 

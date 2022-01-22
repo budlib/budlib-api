@@ -32,7 +32,13 @@
 					"name": "Get Book by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFub3MiLCJleHAiOjE2NDI4NTMzMjAsImlhdCI6MTY0MjgxNzMyMH0.SMRBmU1P9n6HfNsxYFczZN0t4ImyVpSDcwdgb_iOgl0",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8111/bookrepo/books/1",
 							"protocol": "http",
@@ -50,13 +56,47 @@
 					"response": []
 				},
 				{
+					"name": "Get Book by Tag",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFub3MiLCJleHAiOjE2NDI4NTYyOTQsImlhdCI6MTY0MjgyMDI5NH0.l6YU_MUYTns8Nj1a0tUTOrYuQ-txegHScDV_VCVVGB4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8111/bookrepo/books/tag/Misc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"bookrepo",
+								"books",
+								"tag",
+								"Misc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Add new book",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFub3MiLCJleHAiOjE2NDI4NDcxMTQsImlhdCI6MTY0MjgxMTExNH0.qhEYTL1pTQquTUWaWBqvwsuAgpPB4geaN1H6RhbTluQ",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"id\": 999,\r\n        \"title\": \"Romeo and Juliet 2\",\r\n        \"authors\": \"Rudel- Joan and Siegfried\",\r\n        \"publisher\": \"Lanthorn Press- Peredur- East Grinstead- England\",\r\n        \"year\": \"1986\",\r\n        \"loaned_out\": false,\r\n        \"edition\": \"4\",\r\n        \"isbn\": \"n/a\"\r\n    }",
+							"raw": "{\r\n    \"id\": 999,\r\n    \"title\": \"Test Book\",\r\n    \"authors\": \"Voors- William\",\r\n    \"publisher\": \"Hazelden\",\r\n    \"year\": \"2000\",\r\n    \"tags\": [\r\n        \"Faculty Library\",\r\n        \"Misc\"\r\n    ],\r\n    \"edition\": \"n/a\",\r\n    \"qty\": 2,\r\n    \"available\": 2,\r\n    \"isbn\": \"1-56838-517-X\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -269,6 +309,129 @@
 			"item": []
 		},
 		{
+			"name": "Unbind Transactions",
+			"item": [
+				{
+					"name": "Get Transactions (Unbind)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFub3MiLCJleHAiOjE2NDI4NDcxMTQsImlhdCI6MTY0MjgxMTExNH0.qhEYTL1pTQquTUWaWBqvwsuAgpPB4geaN1H6RhbTluQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8111/utransactionrepo/transactions/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"utransactionrepo",
+								"transactions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction by ID (Unbind)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/transactionrepo/transactions/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"transactionrepo",
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Borrow Book (Unbind)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFub3MiLCJleHAiOjE2NDI4NTMxMDAsImlhdCI6MTY0MjgxNzEwMH0.IizRsiJzLXoJJCxQLrWxPHrTz-5UPtXydDx37uYr5iw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"bookId\": 1,\r\n    \"loaner\": \"Parent Loaner #1\",\r\n    \"transactionDate\": \"2022-01-01\",\r\n    \"transactionType\": \"Borrow\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/utransactionrepo/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"utransactionrepo",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Return Book (Unbind)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFub3MiLCJleHAiOjE2NDI4NTMxMDAsImlhdCI6MTY0MjgxNzEwMH0.IizRsiJzLXoJJCxQLrWxPHrTz-5UPtXydDx37uYr5iw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"bookId\": 1,\r\n    \"loaner\": \"Parent Loaner #1\",\r\n    \"transactionDate\": \"2022-01-01\",\r\n    \"transactionType\": \"Return\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/utransactionrepo/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"utransactionrepo",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Transactions",
 			"item": [
 				{
@@ -279,6 +442,35 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n        \"id\": 1,\r\n        \"bookId\": 2,\r\n        \"studentLId\": 1,\r\n        \"transactionDate\": \"2022-01-01\",\r\n        \"transactionType\": \"Return\"\r\n        \r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8111/transactionrepo/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"transactionrepo",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Borrow Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 1,\r\n        \"bookId\": 2,\r\n        \"studentLId\": 1,\r\n        \"transactionDate\": \"2022-01-01\",\r\n        \"transactionType\": \"Borrow\"\r\n        \r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -341,35 +533,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Borrow Book",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n        \"id\": 1,\r\n        \"bookId\": 2,\r\n        \"studentLId\": 1,\r\n        \"transactionDate\": \"2022-01-01\",\r\n        \"transactionType\": \"Borrow\"\r\n        \r\n    }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8111/transactionrepo/transactions",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8111",
-							"path": [
-								"transactionrepo",
-								"transactions"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -402,6 +565,33 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "http://localhost:8111/librarianrepo/librarians/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8111",
+							"path": [
+								"librarianrepo",
+								"librarians",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Librarian by username",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8111/librarianrepo/librarians/1",
 							"protocol": "http",
@@ -516,6 +706,15 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"thanos\",\r\n    \"password\": \"admin123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8111/authenticate",
 							"protocol": "http",

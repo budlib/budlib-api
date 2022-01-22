@@ -56,15 +56,15 @@ public class TransactionController {
 
             Book book = bookRepository.findById(transaction.getBookId()).get();
             if (transaction.getTransactionType().startsWith("B")) {
-                if (book.isLoaned_out() == false) {
-                    book.setLoaned_out(true);
+                if (book.getAvailable() > 0) {
+                    book.setAvailable(book.getAvailable() - 1);
                     bookRepository.save(book);
                 } else {
                     return ResponseEntity.notFound().build();
                 }
             } else {
-                if (book.isLoaned_out() == true) {
-                    book.setLoaned_out(false);
+                if (book.getAvailable() < book.getQty()) {
+                    book.setAvailable(book.getAvailable() + 1);
                     bookRepository.save(book);
                 } else {
                     return ResponseEntity.notFound().build();

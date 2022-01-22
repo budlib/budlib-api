@@ -32,6 +32,15 @@ public class LibrarianController {
             return ResponseEntity.ok().body(p);
     }
 
+    @GetMapping(value = "/librarians/user/{username}", produces = { "application/json", "application/xml" })
+    public ResponseEntity<Librarian> getLibByusername(@PathVariable String username) {
+        Librarian p = librarianRepository.findByuserName(username).get(0);
+        if (p == null)
+            return ResponseEntity.notFound().build();
+        else
+            return ResponseEntity.ok().body(p);
+    }
+
     @GetMapping(value = "/librarians", produces = { "application/json", "application/xml" })
     public ResponseEntity<Collection<Librarian>> getBooks() {
         Collection<Librarian> librarian = librarianRepository.findAll().stream()
@@ -43,10 +52,10 @@ public class LibrarianController {
     @PostMapping(value = "/addlibrarians", consumes = { "application/json", "application/xml" }, produces = {
             "application/json", "application/xml" })
     public ResponseEntity<?> insertProduct(@RequestBody Librarian librarian) {
-        if (librarianRepository.existsById(librarian.getId()) == true
-                || librarianRepository.findByuserName(librarian.getUserName()).size() > 0) {
+        if (librarianRepository.findByuserName(librarian.getUserName()).size() > 0) {
             return (ResponseEntity<?>) ResponseEntity.status(409);
         }
+        librarian.setId(librarianRepository.count() + 1);
         librarianRepository.save(librarian);
         URI uri = URI.create("/librarianrepo/librarians/" + librarian.getId());
         return ResponseEntity.created(uri).body(librarian);

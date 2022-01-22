@@ -1,5 +1,7 @@
 package com.budlib.api;
 
+import java.util.ArrayList;
+
 import javax.persistence.Id;
 
 public class Book {
@@ -11,23 +13,26 @@ public class Book {
     private String publisher;
     private String year;
     private String ISBN;
-    private Boolean loaned_out;
 
+    private ArrayList<String> tags;
     private String edition;
+    private int qty;
+    private int available;
 
     public Book(Long id, String ISBN, String title, String authors, String publisher, String year,
-            String edition) {
+            String edition, ArrayList<String> tags, int qty) {
         super();
         this.ISBN = ISBN;
         this.id = id;
-
+        this.qty = qty;
         this.title = title;
         this.authors = authors;
-
+        this.available = qty;
         this.publisher = publisher;
         this.year = year;
         this.edition = edition;
-        this.loaned_out = false;
+
+        this.tags = tags;
 
     }
 
@@ -130,17 +135,45 @@ public class Book {
     }
 
     /**
-     * @return Boolean return the loaned_out
+     * @return ArrayList<String> return the tags
      */
-    public Boolean isLoaned_out() {
-        return loaned_out;
+    public ArrayList<String> getTags() {
+        return tags;
     }
 
     /**
-     * @param loaned_out the loaned_out to set
+     * @param tags the tags to set
      */
-    public void setLoaned_out(Boolean loaned_out) {
-        this.loaned_out = loaned_out;
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
+    }
+
+    /**
+     * @return int return the qty
+     */
+    public int getQty() {
+        return qty;
+    }
+
+    /**
+     * @param qty the qty to set
+     */
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+
+    /**
+     * @return int return the available
+     */
+    public int getAvailable() {
+        return available;
+    }
+
+    /**
+     * @param available the available to set
+     */
+    public void setAvailable(int available) {
+        this.available = available;
     }
 
 }

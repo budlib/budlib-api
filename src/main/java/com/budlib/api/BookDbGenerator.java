@@ -29,6 +29,9 @@ public class BookDbGenerator {
     TransactionRepository tRepository;
 
     @Autowired
+    UnbindTransactionRepository uRepository;
+
+    @Autowired
     LibrarianRepository lRepository;
 
     public void genStudents(int studentpop) {
@@ -70,16 +73,19 @@ public class BookDbGenerator {
         String line = "";
         String splitBy = ",";
         Book temp;
+        ArrayList<String> tags = new ArrayList<String>();
+        tags.add("Faculty Library");
+        tags.add("Misc");
         try {
             BufferedReader br = new BufferedReader(
-                    new FileReader("C:\\Downloads\\library_test.csv"));
+                    new FileReader("library_test.csv"));
 
             while ((line = br.readLine()) != null) // returns a boolean value
             {
                 String[] read_line = line.split(splitBy); // use comma as separator
                 if (Integer.parseInt(read_line[0]) != -1) {
                     temp = new Book(Long.parseLong(read_line[0]), read_line[1], read_line[2], read_line[3],
-                            read_line[4], read_line[5], read_line[6]);
+                            read_line[4], read_line[5], read_line[6], tags, 2);
                     this.books.add(temp);
                 }
 
@@ -112,6 +118,10 @@ public class BookDbGenerator {
                 "Return");
         tRepository.save(transaction);
 
+        UnbindTransaction uTransaction = new UnbindTransaction(Long.valueOf(1), "Parent Loaner #1", Long.valueOf(1),
+                "2022-01-01", "Borrow");
+        uRepository.save(uTransaction);
+
         Librarian librarian = new Librarian(Long.valueOf(1), "thanos", "Leo", "Da Vinci", "admin123", "ADMIN");
         lRepository.save(librarian);
 
@@ -123,6 +133,7 @@ public class BookDbGenerator {
         srepository.deleteAll();
         tRepository.deleteAll();
         lRepository.deleteAll();
+        uRepository.deleteAll();
     }
 
 }

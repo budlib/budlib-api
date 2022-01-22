@@ -43,9 +43,8 @@ public class StudentController {
     @PostMapping(value = "/addstudents", consumes = { "application/json", "application/xml" }, produces = {
             "application/json", "application/xml" })
     public ResponseEntity<?> insertProduct(@RequestBody Student student) {
-        if (studentRepository.existsById(student.getId()) == true) {
-            return (ResponseEntity<?>) ResponseEntity.status(409);
-        }
+
+        student.setId(studentRepository.count() + 1);
         studentRepository.save(student);
         URI uri = URI.create("/studentrepo/students/" + student.getId());
         return ResponseEntity.created(uri).body(student);

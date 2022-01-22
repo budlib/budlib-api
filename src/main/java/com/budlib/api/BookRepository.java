@@ -9,4 +9,10 @@ public interface BookRepository extends MongoRepository<Book, Long> {
 
     List<Book> findByAuthors(String authors);
 
+    List<Book> findByISBN(String ISBN);
+
+    List<Book> findByPublisher(String publisher);
+
+    List<Book> findByTagsIn(String tag);
+
 }
