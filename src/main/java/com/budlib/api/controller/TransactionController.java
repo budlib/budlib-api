@@ -1,10 +1,13 @@
-package com.budlib.api;
+package com.budlib.api.controller;
 
 import java.net.URI;
 import java.util.Collection;
-
 import java.util.stream.Collectors;
-
+import com.budlib.api.model.Book;
+import com.budlib.api.model.Transaction;
+import com.budlib.api.repository.BookRepository;
+import com.budlib.api.repository.StudentRepository;
+import com.budlib.api.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/transactionrepo")
 @CrossOrigin
 public class TransactionController {
+
     @Autowired
     private TransactionRepository transactionRepository;
 
@@ -59,23 +63,30 @@ public class TransactionController {
                 if (book.getAvailable() > 0) {
                     book.setAvailable(book.getAvailable() - 1);
                     bookRepository.save(book);
-                } else {
+                }
+
+                else {
                     return ResponseEntity.notFound().build();
                 }
-            } else {
+            }
+
+            else {
                 if (book.getAvailable() < book.getQty()) {
                     book.setAvailable(book.getAvailable() + 1);
                     bookRepository.save(book);
-                } else {
-                    return ResponseEntity.notFound().build();
                 }
 
+                else {
+                    return ResponseEntity.notFound().build();
+                }
             }
 
             transactionRepository.save(transaction);
             URI uri = URI.create("/transactionrepo/transactions/" + transaction.getId());
             return ResponseEntity.created(uri).body(transaction);
-        } else {
+        }
+
+        else {
             return ResponseEntity.notFound().build();
         }
 
@@ -95,11 +106,10 @@ public class TransactionController {
         Transaction transaction = transactionRepository.findById(id).get();
         if (transaction == null)
             return ResponseEntity.notFound().build();
+
         else {
             transactionRepository.delete(transaction);
             return ResponseEntity.ok().build();
         }
-
     }
-
 }

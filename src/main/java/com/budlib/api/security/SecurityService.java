@@ -1,9 +1,7 @@
 package com.budlib.api.security;
 
 import java.util.ArrayList;
-
-import com.budlib.api.LibrarianRepository;
-
+import com.budlib.api.repository.LibrarianRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,16 +16,15 @@ public class SecurityService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // TODO Auto-generated method stub
         if (librarianRepository.findByuserName(username).size() > 0) {
 
             return new User(username, librarianRepository.findByuserName(username).get(0).getPassword(),
                     new ArrayList<>());
 
-        } else {
-            return null;
         }
 
+        else {
+            return null;
+        }
     }
-
 }

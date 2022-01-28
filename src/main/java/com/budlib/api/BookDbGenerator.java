@@ -5,12 +5,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
+import com.budlib.api.model.Book;
+import com.budlib.api.model.Librarian;
+import com.budlib.api.model.Student;
+import com.budlib.api.model.Transaction;
+import com.budlib.api.model.UnbindTransaction;
+import com.budlib.api.repository.BookRepository;
+import com.budlib.api.repository.LibrarianRepository;
+import com.budlib.api.repository.StudentRepository;
+import com.budlib.api.repository.TransactionRepository;
+import com.budlib.api.repository.UnbindTransactionRepository;
 import com.github.javafaker.Faker;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +67,6 @@ public class BookDbGenerator {
             students.add(
                     new Student((long) i, fakegen.name().firstName(), fakegen.name().lastName(),
                             fakegen.name().fullName(), classecodeArr.get(rand.nextInt(classecodeArr.size()))));
-
         }
 
         System.out.println("Student suppose to add: " + studentpop + " Students added: " + this.students.size());
@@ -95,11 +101,12 @@ public class BookDbGenerator {
 
             System.out.println("Number of books added: " + this.books.size());
 
-        } catch (IOException e) {
+        }
+
+        catch (IOException e) {
 
             e.printStackTrace();
         }
-
     }
 
     @PostConstruct
@@ -124,7 +131,6 @@ public class BookDbGenerator {
 
         Librarian librarian = new Librarian(Long.valueOf(1), "thanos", "Leo", "Da Vinci", "admin123", "ADMIN");
         lRepository.save(librarian);
-
     }
 
     @PreDestroy
@@ -135,5 +141,4 @@ public class BookDbGenerator {
         lRepository.deleteAll();
         uRepository.deleteAll();
     }
-
 }

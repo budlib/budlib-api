@@ -1,7 +1,6 @@
 package com.budlib.api.security;
 
 public class AuthenticationResponse {
-
     private final String token;
 
     public AuthenticationResponse(String token) {
@@ -11,5 +10,4 @@ public class AuthenticationResponse {
     public String getJwt() {
         return token;
     }
-
 }
