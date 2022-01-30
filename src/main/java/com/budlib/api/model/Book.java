@@ -1,174 +1,316 @@
 package com.budlib.api.model;
 
+import javax.persistence.*;
+import java.util.List;
 import java.util.ArrayList;
-import javax.persistence.Id;
 
+/**
+ * Represents a book in the library
+ */
 public class Book {
+    /**
+     * Internal unique ID of the book
+     */
     @Id
-    private Long id = (long) -1;
+    private Long bookId;
 
+    /**
+     * Title of the book
+     */
     private String title;
-    private String authors;
+
+    /**
+     * Subtitle of the book
+     */
+    private String subtitle;
+
+    /**
+     * List of authors of the book
+     */
+    private List<String> authors;
+
+    /**
+     * Publishing company of the book
+     */
     private String publisher;
-    private String year;
-    private String ISBN;
-    private ArrayList<String> tags;
+
+    /**
+     * Edition number of the book
+     */
     private String edition;
+
+    /**
+     * Year of publishing
+     */
+    private String year;
+
+    /**
+     * ISBN 10 of the book
+     */
+    private String isbn_10;
+
+    /**
+     * ISBN 13 of the book
+     */
+    private String isbn_13;
+
+    /**
+     * Section in the library branch where the book is usually placed
+     */
+    private String librarySection;
+
+    /**
+     * Any particular notes related to the book goes here
+     */
+    private String notes;
+
+    /**
+     * Total quantity of the book at the library branch
+     */
     private int qty;
+
+    /**
+     * Available quantity at the library branch
+     */
     private int available;
 
-    public Book(Long id, String ISBN, String title, String authors, String publisher, String year,
-            String edition, ArrayList<String> tags, int qty) {
-        super();
-        this.ISBN = ISBN;
-        this.id = id;
-        this.qty = qty;
+    /**
+     * Tags related to the book - like
+     * TODO: think of tags
+     */
+    private List<String> tags;
+
+    /**
+     * Categories related to the book - like
+     * TODO: think of categories
+     */
+    private List<String> categories;
+
+    /**
+     * URL of thumbnail the book
+     */
+    private String imageLink;
+
+    /**
+     * Language of the book
+     */
+    private String language;
+
+    /**
+     * Retail price of the book
+     */
+    private double retailPrice;
+
+    /**
+     * Price of the book at which it was procured in the library. For example, tt
+     * can be kept as $0.00 for the books that were donated to the library
+     */
+    private double internalLibraryPrice;
+
+    /**
+     * Online buying link on amazon.ca
+     * TODO: check if its datatype can be changed
+     */
+    private String amazonCaLink;
+
+    // add later
+    /*
+     * reserving feature
+     */
+
+    /**
+     * Private constructor to initialize empty lists
+     */
+    private Book() {
+        this.authors = new ArrayList<>();
+        this.tags = new ArrayList<>();
+        this.categories = new ArrayList<>();
+    }
+
+    public Book(Long bookId, String title, String subtitle, List<String> authors, String publisher, String edition,
+            String year, String isbn_10, String isbn_13, String librarySection, String notes, int qty, int available,
+            List<String> tags, List<String> categories, String imageLink, String language, double retailPrice,
+            double internalLibraryPrice, String amazonCaLink) {
+        this();
+        this.bookId = bookId;
         this.title = title;
+        this.subtitle = subtitle;
         this.authors = authors;
-        this.available = qty;
         this.publisher = publisher;
-        this.year = year;
         this.edition = edition;
+        this.year = year;
+        this.isbn_10 = isbn_10;
+        this.isbn_13 = isbn_13;
+        this.librarySection = librarySection;
+        this.notes = notes;
+        this.qty = qty;
+        this.available = available;
         this.tags = tags;
+        this.categories = categories;
+        this.imageLink = imageLink;
+        this.language = language;
+        this.retailPrice = retailPrice;
+        this.internalLibraryPrice = internalLibraryPrice;
+        this.amazonCaLink = amazonCaLink;
     }
 
-    /**
-     * @return Long return the id
-     */
-    public Long getId() {
-        return id;
+    public Long getBookId() {
+        return this.bookId;
     }
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
+    public void setBookId(Long bookId) {
+        this.bookId = bookId;
     }
 
-    /**
-     * @return String return the title
-     */
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
-    /**
-     * @param title the title to set
-     */
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * @return String return the authors
-     */
-    public String getAuthors() {
-        return authors;
+    public String getSubtitle() {
+        return this.subtitle;
     }
 
-    /**
-     * @param authors the authors to set
-     */
-    public void setAuthors(String authors) {
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public List<String> getAuthors() {
+        return this.authors;
+    }
+
+    public void setAuthors(List<String> authors) {
         this.authors = authors;
     }
 
-    /**
-     * @return String return the publisher
-     */
     public String getPublisher() {
-        return publisher;
+        return this.publisher;
     }
 
-    /**
-     * @param publisher the publisher to set
-     */
     public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
 
-    /**
-     * @return String return the year
-     */
-    public String getYear() {
-        return year;
-    }
-
-    /**
-     * @param year the year to set
-     */
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    /**
-     * @return String return the ISBN
-     */
-    public String getISBN() {
-        return ISBN;
-    }
-
-    /**
-     * @param ISBN the ISBN to set
-     */
-    public void setISBN(String ISBN) {
-        this.ISBN = ISBN;
-    }
-
-    /**
-     * @return String return the edition
-     */
     public String getEdition() {
-        return edition;
+        return this.edition;
     }
 
-    /**
-     * @param edition the edition to set
-     */
     public void setEdition(String edition) {
         this.edition = edition;
     }
 
-    /**
-     * @return ArrayList<String> return the tags
-     */
-    public ArrayList<String> getTags() {
-        return tags;
+    public String getYear() {
+        return this.year;
     }
 
-    /**
-     * @param tags the tags to set
-     */
-    public void setTags(ArrayList<String> tags) {
-        this.tags = tags;
+    public void setYear(String year) {
+        this.year = year;
     }
 
-    /**
-     * @return int return the qty
-     */
+    public String getIsbn_10() {
+        return this.isbn_10;
+    }
+
+    public void setIsbn_10(String isbn_10) {
+        this.isbn_10 = isbn_10;
+    }
+
+    public String getIsbn_13() {
+        return this.isbn_13;
+    }
+
+    public void setIsbn_13(String isbn_13) {
+        this.isbn_13 = isbn_13;
+    }
+
+    public String getLibrarySection() {
+        return this.librarySection;
+    }
+
+    public void setLibrarySection(String librarySection) {
+        this.librarySection = librarySection;
+    }
+
+    public String getNotes() {
+        return this.notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     public int getQty() {
-        return qty;
+        return this.qty;
     }
 
-    /**
-     * @param qty the qty to set
-     */
     public void setQty(int qty) {
         this.qty = qty;
     }
 
-    /**
-     * @return int return the available
-     */
     public int getAvailable() {
-        return available;
+        return this.available;
     }
 
-    /**
-     * @param available the available to set
-     */
     public void setAvailable(int available) {
         this.available = available;
+    }
+
+    public List<String> getTags() {
+        return this.tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public List<String> getCategories() {
+        return this.categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+
+    public String getImageLink() {
+        return this.imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
+    }
+
+    public String getLanguage() {
+        return this.language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public double getRetailPrice() {
+        return this.retailPrice;
+    }
+
+    public void setRetailPrice(double retailPrice) {
+        this.retailPrice = retailPrice;
+    }
+
+    public double getInternalLibraryPrice() {
+        return this.internalLibraryPrice;
+    }
+
+    public void setInternalLibraryPrice(double internalLibraryPrice) {
+        this.internalLibraryPrice = internalLibraryPrice;
+    }
+
+    public String getAmazonCaLink() {
+        return this.amazonCaLink;
+    }
+
+    public void setAmazonCaLink(String amazonCaLink) {
+        this.amazonCaLink = amazonCaLink;
     }
 }
