@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("api/books")
+@RequestMapping("api/book")
 public class BookController {
     @Autowired
     private BookRepository bookRepository;
@@ -344,9 +344,8 @@ public class BookController {
     /**
      * Endpoint for PUT - update book in db
      *
-     * @param c         the updated book details in json
-     * @param animalId  the animal whose comment it is
-     * @param commentId the id the comment that is getting updated
+     * @param b      the updated book details in json
+     * @param bookId the id of the book to be updated
      * @return the message
      */
     @PutMapping(path = "{bookId}")
