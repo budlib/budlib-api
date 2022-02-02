@@ -1,115 +1,249 @@
 package com.budlib.api.controller;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import com.budlib.api.model.Book;
-import com.budlib.api.model.Transaction;
-import com.budlib.api.repository.BookRepository;
-import com.budlib.api.repository.StudentRepository;
-import com.budlib.api.repository.TransactionRepository;
+import com.budlib.api.model.*;
+import com.budlib.api.repository.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/transactionrepo")
 @CrossOrigin
+@RestController
+@RequestMapping("api/transactions")
 public class TransactionController {
-
     @Autowired
     private TransactionRepository transactionRepository;
 
-    @Autowired
-    private StudentRepository studentRepository;
+    /**
+     * Search the transaction by id
+     *
+     * @param id transaction id
+     * @return list of transaction with id; the list would have utmost one element
+     */
+    private List<Transaction> searchTransactionById(Long id) {
+        Optional<Transaction> transactionOptional = this.transactionRepository.findById(id);
 
-    @Autowired
-    private BookRepository bookRepository;
-
-    @GetMapping(value = "/transactions/{id}", produces = { "application/json", "application/xml" })
-    public ResponseEntity<Transaction> getTransactionById(@PathVariable long id) {
-        Transaction p = transactionRepository.findById(id).get();
-        if (p == null)
-            return ResponseEntity.notFound().build();
-        else
-            return ResponseEntity.ok().body(p);
-    }
-
-    @GetMapping(value = "/transactions", produces = { "application/json", "application/xml" })
-    public ResponseEntity<Collection<Transaction>> getBooks() {
-        Collection<Transaction> transactions = transactionRepository.findAll().stream()
-                .collect(Collectors.toList());
-        System.out.println("Number of Transactions: " + transactions.size());
-        return ResponseEntity.ok().body(transactions);
-    }
-
-    @PostMapping(value = "/transactions", consumes = { "application/json", "application/xml" }, produces = {
-            "application/json", "application/xml" })
-    public ResponseEntity<Transaction> insertProduct(@RequestBody Transaction transaction) {
-        if (studentRepository.existsById(transaction.getStudentLId()) == true
-                && bookRepository.existsById(transaction.getBookId()) == true) {
-            transaction.setId(transactionRepository.count() + 1);
-
-            Book book = bookRepository.findById(transaction.getBookId()).get();
-            if (transaction.getTransactionType().startsWith("B")) {
-                if (book.getAvailable() > 0) {
-                    book.setAvailable(book.getAvailable() - 1);
-                    bookRepository.save(book);
-                }
-
-                else {
-                    return ResponseEntity.notFound().build();
-                }
-            }
-
-            else {
-                if (book.getAvailable() < book.getQty()) {
-                    book.setAvailable(book.getAvailable() + 1);
-                    bookRepository.save(book);
-                }
-
-                else {
-                    return ResponseEntity.notFound().build();
-                }
-            }
-
-            transactionRepository.save(transaction);
-            URI uri = URI.create("/transactionrepo/transactions/" + transaction.getId());
-            return ResponseEntity.created(uri).body(transaction);
+        if (transactionOptional.isPresent()) {
+            List<Transaction> searchResults = new ArrayList<>();
+            searchResults.add(transactionOptional.get());
+            return searchResults;
         }
 
         else {
-            return ResponseEntity.notFound().build();
+            return null;
+        }
+    }
+
+    /**
+     * Search the transaction by loaner
+     *
+     * @param allTransactions list of all transactions
+     * @param sT              search term
+     * @return filtered list of transaction with loaner meeting the search term
+     */
+    private List<Transaction> searchTransactionByLoaner(List<Transaction> allTransactions, String sT) {
+        List<Transaction> searchResults = new ArrayList<>();
+
+        try {
+            long searchTerm = Long.parseLong(sT.toLowerCase());
+
+            for (Transaction eachTransaction : allTransactions) {
+                if (eachTransaction.getLoanerId() != null
+                        && eachTransaction.getLoanerId().getLoanerId() == searchTerm) {
+                    searchResults.add(eachTransaction);
+                }
+            }
+
+            return searchResults;
         }
 
+        catch (NumberFormatException e) {
+            return searchResults;
+        }
     }
 
-    @PutMapping(value = "/transactions/{id}", consumes = { "application/json", "application/xml" })
-    public ResponseEntity<Void> updateProduct(@PathVariable long id, @RequestBody Transaction transaction) {
-        if (!transactionRepository.existsById(transaction.getId()))
-            return ResponseEntity.notFound().build();
-        else
-            transactionRepository.save(transaction);
-        return ResponseEntity.ok().build();
+    /**
+     * Search the transaction by coordinator
+     *
+     * @param allTransactions list of all transactions
+     * @param sT              search term
+     * @return filtered list of transaction with coordinator meeting the search term
+     */
+    private List<Transaction> searchTransactionByLibrarian(List<Transaction> allTransactions, String sT) {
+        List<Transaction> searchResults = new ArrayList<>();
+
+        try {
+            long searchTerm = Long.parseLong(sT.toLowerCase());
+
+            for (Transaction eachTransaction : allTransactions) {
+                if (eachTransaction.getLibrarianId() != null
+                        && eachTransaction.getLibrarianId().getLibrarianId() == searchTerm) {
+                    searchResults.add(eachTransaction);
+                }
+            }
+
+            return searchResults;
+        }
+
+        catch (NumberFormatException e) {
+            return searchResults;
+        }
     }
 
-    @DeleteMapping("/transactions/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable long id) {
-        Transaction transaction = transactionRepository.findById(id).get();
-        if (transaction == null)
-            return ResponseEntity.notFound().build();
+    /**
+     * Search the transactions by their transaction type
+     *
+     * @param allTransactions list of all transactions
+     * @param sT              search term
+     * @return filtered list of transactions with type meeting the search term
+     */
+    private List<Transaction> searchTransactionByType(List<Transaction> allTransactions, String sT) {
+        List<Transaction> searchResults = new ArrayList<>();
+
+        try {
+            TransactionType searchTerm = TransactionType.valueOf(sT.toUpperCase());
+
+            for (Transaction eachTransaction : allTransactions) {
+                if (eachTransaction.getTransactionType() == searchTerm) {
+                    searchResults.add(eachTransaction);
+                }
+            }
+
+            return searchResults;
+        }
+
+        catch (IllegalArgumentException e) {
+            return searchResults;
+        }
+    }
+
+    /**
+     * Endpoint for GET - fetch transaction by id
+     *
+     * @param id transaction id
+     * @return transaction
+     */
+    @GetMapping(path = "{transactionId}")
+    public ResponseEntity<?> getTransactionById(@PathVariable("transactionId") Long id) {
+        List<Transaction> t = this.searchTransactionById(id);
+
+        if (t == null) {
+            String message = "Transaction not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
 
         else {
-            transactionRepository.delete(transaction);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(HttpStatus.OK).body(t.get(0));
+        }
+    }
+
+    /**
+     * Endpoint for GET - search and fetch all transactions meeting search criteria
+     *
+     * @param searchBy   where to search
+     * @param searchTerm what to search
+     * @return list of transactions meeting search criteria
+     */
+    @GetMapping()
+    public ResponseEntity<?> searchTransactions(@RequestParam(name = "searchBy", required = false) String searchBy,
+            @RequestParam(name = "searchTerm", required = false) String searchTerm) {
+
+        List<Transaction> allTransactions = this.transactionRepository.findAll();
+
+        if (searchBy == null || searchTerm == null) {
+            return ResponseEntity.status(HttpStatus.OK).body(allTransactions);
+        }
+
+        else if (searchBy.equals("") || searchTerm.equals("")) {
+            return ResponseEntity.status(HttpStatus.OK).body(allTransactions);
+        }
+
+        else if (searchBy.equalsIgnoreCase("id")) {
+            return ResponseEntity.status(HttpStatus.OK).body(this.searchTransactionById(Long.valueOf(searchTerm)));
+        }
+
+        else if (searchBy.equalsIgnoreCase("loaner")) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(this.searchTransactionByLoaner(allTransactions, searchTerm));
+        }
+
+        else if (searchBy.equalsIgnoreCase("librarian")) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(this.searchTransactionByLibrarian(allTransactions, searchTerm));
+        }
+
+        else if (searchBy.equalsIgnoreCase("type")) {
+            return ResponseEntity.status(HttpStatus.OK).body(this.searchTransactionByType(allTransactions, searchTerm));
+        }
+
+        else {
+            String message = "Invalid transaction search operation";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+    }
+
+    /**
+     * Endpoint for POST - save the transaction in db
+     *
+     * @param t transaction details in json
+     * @return the message
+     */
+    @PostMapping
+    public ResponseEntity<?> addTransaction(@RequestBody Transaction t) {
+        // reset the id to 0 to prevent overwrite
+        t.setTransactionId(0L);
+
+        this.transactionRepository.save(t);
+
+        String message = "Transaction added successfully";
+        return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+    }
+
+    /**
+     * Endpoint for PUT - update transaction in db
+     *
+     * @param t             the updated transaction details in json
+     * @param transactionId the id of the transaction to be updated
+     * @return the message
+     */
+    @PutMapping(path = "{transactionId}")
+    public ResponseEntity<?> updateTransaction(@RequestBody Transaction t,
+            @PathVariable("transactionId") Long transactionId) {
+        Optional<Transaction> transactionOptional = this.transactionRepository.findById(transactionId);
+
+        if (transactionOptional.isPresent()) {
+            t.setTransactionId(transactionId);
+            this.transactionRepository.save(t);
+
+            String message = "Transaction updated successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+        }
+
+        else {
+            String message = "Transaction not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+    }
+
+    /**
+     * Endpoint for DELETE - delete transaction from db
+     *
+     * @param transactionId transaction id
+     */
+    @DeleteMapping(path = "{transactionId}")
+    public ResponseEntity<?> deleteTransaction(@PathVariable("transactionId") Long transactionId) {
+        if (!this.transactionRepository.existsById(transactionId)) {
+            String message = "Transaction not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+
+        else {
+            this.transactionRepository.deleteById(transactionId);
+            String message = "Transaction deleted successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
         }
     }
 }
