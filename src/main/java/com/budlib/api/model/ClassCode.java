@@ -19,9 +19,9 @@ public class ClassCode implements Serializable {
      * Unique ID of the class
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "class_id")
-    private int classCodeId;
+    private Long classCodeId;
 
     /**
      * Class code or class name

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents a branch of the library
@@ -18,9 +19,9 @@ public class LibraryBranch implements Serializable {
      * Internal unique ID of the branch
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "branch_id")
-    private Long branchId;
+    private long branchId;
 
     /**
      * Branch name of the library
@@ -44,5 +45,6 @@ public class LibraryBranch implements Serializable {
      * What all book does this branch has
      */
     @OneToMany(mappedBy = "bookId")
+    @JsonBackReference
     private List<BookQuantity> availableBooks;
 }

@@ -18,9 +18,9 @@ public class Librarian implements Serializable {
      * Internal unique ID of the library coordinator
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "librarian_id")
-    private Long librarianId;
+    private long librarianId;
 
     /**
      * First name of the coordinator

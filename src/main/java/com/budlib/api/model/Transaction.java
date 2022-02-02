@@ -20,9 +20,9 @@ public class Transaction implements Serializable {
      * Transaction ID
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trn_id")
-    private Long transactionId;
+    private long transactionId;
 
     /**
      * Branch at which transaction took place
@@ -56,17 +56,6 @@ public class Transaction implements Serializable {
     @OneToOne
     @JoinColumn(name = "coordinator_id", foreignKey = @ForeignKey(name = "fk_trn_coordinator"))
     private Librarian librarianId;
-
-    /**
-     * Books that exchanged hands during the transaction
-     */
-    // @ManyToMany
-    // @JoinTable(name = "transacted_books", joinColumns = @JoinColumn(name =
-    // "book_id", referencedColumnName = "book_id", foreignKey = @ForeignKey(name =
-    // "fk_booktag_bookid")), inverseJoinColumns = @JoinColumn(name = "tag_id",
-    // referencedColumnName = "tag_id", foreignKey = @ForeignKey(name =
-    // "fk_booktag_tagid")))
-    // private List<Book> loanedBooks;
 
     /**
      * The books involved in the transaction

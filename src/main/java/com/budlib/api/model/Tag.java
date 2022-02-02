@@ -18,9 +18,9 @@ public class Tag implements Serializable {
      * Internal unique ID of the tag
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_id")
-    private int tagId;
+    private long tagId;
 
     /**
      * String representation of the tag

@@ -3,6 +3,7 @@ package com.budlib.api.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents quantities of the Book
@@ -20,6 +21,7 @@ public class BookQuantity implements Serializable {
     @Id
     @ManyToOne
     @JoinColumn(name = "book_id", foreignKey = @ForeignKey(name = "fk_quantity_book"))
+    @JsonManagedReference
     private Book bookId;
 
     /**
@@ -28,6 +30,7 @@ public class BookQuantity implements Serializable {
     @Id
     @ManyToOne
     @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(name = "fk_quantity_branch"))
+    @JsonManagedReference
     private LibraryBranch branchId;
 
     /**

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents a book in the library
@@ -19,9 +20,9 @@ public class Book implements Serializable {
      * Internal unique ID of the book
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "book_id")
-    private Long bookId;
+    private long bookId;
 
     /**
      * Title of the book
@@ -81,6 +82,7 @@ public class Book implements Serializable {
      * What all branches have this book
      */
     @OneToMany(mappedBy = "branchId")
+    @JsonBackReference
     private List<BookQuantity> availableBranch;
 
     /**
@@ -118,13 +120,13 @@ public class Book implements Serializable {
      * Retail price of the book
      */
     @Column(name = "retailprice")
-    private double retailPrice;
+    private Double retailPrice;
 
     /**
      * Price of the book at which it is/was usually procured in the library
      */
     @Column(name = "libraryprice")
-    private double internalLibraryPrice;
+    private Double internalLibraryPrice;
 
     /**
      * Online buying link on amazon.ca

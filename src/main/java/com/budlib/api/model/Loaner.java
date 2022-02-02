@@ -19,15 +19,18 @@ public class Loaner implements Serializable {
      * Unique ID of the loaner
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "loaner_id")
-    private Long loanerId;
+    private long loanerId;
 
     /**
      * Employee ID for Faculty and Registration ID for students
      */
     @Column(name = "school_id")
     private String schoolId;
+
+    @Column(name = "is_student")
+    private boolean isStudent;
 
     /**
      * First name of the loaner
