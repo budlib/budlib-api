@@ -1,11 +1,11 @@
 package com.budlib.api.repository;
 
-import java.util.List;
 import com.budlib.api.model.Transaction;
-import org.springframework.data.mongodb.repository.MongoRepository;
+// import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface TransactionRepository extends MongoRepository<Transaction, Long> {
-    List<Transaction> findBystudentLId(Long studentLId);
+@Repository
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    List<Transaction> findBybookId(Long bookId);
 }
