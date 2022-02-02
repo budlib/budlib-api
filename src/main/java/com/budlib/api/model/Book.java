@@ -89,6 +89,7 @@ public class Book implements Serializable {
      * Copies of the books exchanging hands. To be kept
      */
     @OneToMany(mappedBy = "bookId")
+    @JsonBackReference
     private List<TrnQuantities> trnQuantities;
 
     /**
@@ -102,6 +103,7 @@ public class Book implements Serializable {
      */
     @ManyToMany
     @JoinTable(name = "book_tag", joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "book_id", foreignKey = @ForeignKey(name = "fk_booktag_bookid")), inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", foreignKey = @ForeignKey(name = "fk_booktag_tagid")))
+    @JsonBackReference
     private List<Tag> tags;
 
     /**

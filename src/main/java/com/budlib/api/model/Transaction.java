@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents a transaction
@@ -29,6 +30,7 @@ public class Transaction implements Serializable {
      */
     @OneToOne
     @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(name = "fk_trn_branch"))
+    @JsonManagedReference
     private LibraryBranch branchId;
 
     /**
@@ -48,6 +50,7 @@ public class Transaction implements Serializable {
      */
     @OneToOne
     @JoinColumn(name = "loaner_id", foreignKey = @ForeignKey(name = "fk_trn_loaner"))
+    @JsonManagedReference
     private Loaner loanerId;
 
     /**
@@ -55,11 +58,13 @@ public class Transaction implements Serializable {
      */
     @OneToOne
     @JoinColumn(name = "coordinator_id", foreignKey = @ForeignKey(name = "fk_trn_coordinator"))
+    @JsonManagedReference
     private Librarian librarianId;
 
     /**
      * The books involved in the transaction
      */
     @OneToMany(mappedBy = "transactionId")
+    @JsonBackReference
     private List<TrnQuantities> bookCopies;
 }

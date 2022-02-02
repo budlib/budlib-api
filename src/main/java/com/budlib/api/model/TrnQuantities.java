@@ -3,6 +3,7 @@ package com.budlib.api.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 @Entity
 @Getter
@@ -16,6 +17,7 @@ public class TrnQuantities implements Serializable {
     @Id
     @ManyToOne
     @JoinColumn(name = "trn_id", foreignKey = @ForeignKey(name = "fk_trnquan_trn"))
+    @JsonManagedReference
     private Transaction transactionId;
 
     /**
@@ -24,6 +26,7 @@ public class TrnQuantities implements Serializable {
     @Id
     @ManyToOne
     @JoinColumn(name = "book_id", foreignKey = @ForeignKey(name = "fk_trnquan_book"))
+    @JsonManagedReference
     private Book bookId;
 
     /**

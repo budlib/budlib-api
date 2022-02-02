@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 import java.io.Serializable;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents a class in the school
@@ -21,7 +22,7 @@ public class ClassCode implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "class_id")
-    private Long classCodeId;
+    private long classCodeId;
 
     /**
      * Class code or class name
@@ -30,5 +31,6 @@ public class ClassCode implements Serializable {
     private String classCode;
 
     @ManyToMany(mappedBy = "classCode")
+    @JsonBackReference
     private List<Loaner> facultyList;
 }

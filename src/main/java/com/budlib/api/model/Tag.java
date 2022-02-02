@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents the tags of books
@@ -32,5 +33,6 @@ public class Tag implements Serializable {
      * Books that has this tag
      */
     @ManyToMany(mappedBy = "tags")
+    @JsonBackReference
     private List<Book> books;
 }

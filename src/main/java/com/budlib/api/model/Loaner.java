@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 import java.io.Serializable;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents a loaner in the system
@@ -29,6 +30,9 @@ public class Loaner implements Serializable {
     @Column(name = "school_id")
     private String schoolId;
 
+    /**
+     * If this loaner is a student or a faculty
+     */
     @Column(name = "is_student")
     private boolean isStudent;
 
@@ -73,6 +77,7 @@ public class Loaner implements Serializable {
      */
     @ManyToMany
     @JoinTable(name = "faculty_class", joinColumns = @JoinColumn(name = "loaner_id", referencedColumnName = "loaner_id", foreignKey = @ForeignKey(name = "fk_faculty_employeeid")), inverseJoinColumns = @JoinColumn(name = "class_id", referencedColumnName = "class_id", foreignKey = @ForeignKey(name = "fk_class_classid")))
+    @JsonBackReference
     private List<ClassCode> classCode;
 
     /**
