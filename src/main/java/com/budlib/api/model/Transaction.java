@@ -1,91 +1,74 @@
 package com.budlib.api.model;
 
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.List;
+import lombok.*;
 
-public class Transaction {
+/**
+ * Represents a transaction
+ */
+@Entity
+@Getter
+@Setter
+@Table(name = "transaction")
+public class Transaction implements Serializable {
+    /**
+     * Transaction ID
+     */
     @Id
-    private Long id = (long) -1;
-    private Long bookId;
-    private Long studentLId;
-    private String transactionDate;
-    private String transactionType;
-
-    public Transaction(Long id, Long studentLId, Long bookId, String transactionDate, String transactionType) {
-        super();
-        this.id = id;
-        this.studentLId = studentLId;
-        this.bookId = bookId;
-        this.transactionDate = transactionDate;
-        this.transactionType = transactionType;
-    }
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "trn_id")
+    private Long transactionId;
 
     /**
-     * @return String return the id
+     * Branch at which transaction took place
      */
-    public Long getId() {
-        return id;
-    }
+    @OneToOne
+    @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(name = "fk_trn_branch"))
+    private LibraryBranch branchId;
 
     /**
-     * @param id the id to set
+     * Zoned Date Time for handling branches in different time zones
      */
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "trn_datetime")
+    private ZonedDateTime transactionDateTime;
 
     /**
-     * @return Long return the bookId
+     * The type of transaction - BORROW or RETURN or EXTEND or RESERVE
      */
-    public Long getBookId() {
-        return bookId;
-    }
+    @Column(name = "trn_type")
+    private TransactionType transactionType;
 
     /**
-     * @param bookId the bookId to set
+     * The loaner involved in the transaction
      */
-    public void setBookId(Long bookId) {
-        this.bookId = bookId;
-    }
+    @OneToOne
+    @JoinColumn(name = "loaner_id", foreignKey = @ForeignKey(name = "fk_trn_loaner"))
+    private Loaner loanerId;
 
     /**
-     * @return Long return the studentLId
+     * The coordinator who facilitated the transaction
      */
-    public Long getStudentLId() {
-        return studentLId;
-    }
+    @OneToOne
+    @JoinColumn(name = "coordinator_id", foreignKey = @ForeignKey(name = "fk_trn_coordinator"))
+    private Librarian librarianId;
 
     /**
-     * @param studentLId the studentLId to set
+     * Books that exchanged hands during the transaction
      */
-    public void setStudentLId(Long studentLId) {
-        this.studentLId = studentLId;
-    }
+    // @ManyToMany
+    // @JoinTable(name = "transacted_books", joinColumns = @JoinColumn(name =
+    // "book_id", referencedColumnName = "book_id", foreignKey = @ForeignKey(name =
+    // "fk_booktag_bookid")), inverseJoinColumns = @JoinColumn(name = "tag_id",
+    // referencedColumnName = "tag_id", foreignKey = @ForeignKey(name =
+    // "fk_booktag_tagid")))
+    // private List<Book> loanedBooks;
 
     /**
-     * @return String return the transactionDate
+     * The books involved in the transaction
      */
-    public String getTransactionDate() {
-        return transactionDate;
-    }
-
-    /**
-     * @param transactionDate the transactionDate to set
-     */
-    public void setTransactionDate(String transactionDate) {
-        this.transactionDate = transactionDate;
-    }
-
-    /**
-     * @return String return the transactionType
-     */
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    /**
-     * @param transactionType the transactionType to set
-     */
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
-    }
+    @OneToMany(mappedBy = "transactionId")
+    private List<TrnQuantities> bookCopies;
 }
