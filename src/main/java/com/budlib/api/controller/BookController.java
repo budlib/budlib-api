@@ -74,18 +74,8 @@ public class BookController {
         List<Book> searchResults = new ArrayList<>();
 
         for (Book eachBook : allBooks) {
-            Iterator<String> authorIterator = eachBook.getAuthors().iterator();
-
-            while (authorIterator.hasNext()) {
-                String checkAuthor = authorIterator.next();
-
-                if (checkAuthor != null && checkAuthor.toLowerCase().contains(searchTerm)) {
-                    searchResults.add(eachBook);
-
-                    // break from while loop as we dont want to check all author if one already
-                    // matched
-                    break;
-                }
+            if (eachBook.getAuthors() != null && eachBook.getAuthors().toLowerCase().contains(searchTerm)) {
+                searchResults.add(eachBook);
             }
         }
 
@@ -173,45 +163,15 @@ public class BookController {
         List<Book> searchResults = new ArrayList<>();
 
         for (Book eachBook : allBooks) {
-            Iterator<String> tagIterator = eachBook.getTags().iterator();
+            Iterator<Tag> tagIterator = eachBook.getTags().iterator();
 
             while (tagIterator.hasNext()) {
-                String checkTag = tagIterator.next();
+                Tag checkTag = tagIterator.next();
 
-                if (checkTag != null && checkTag.toLowerCase().contains(searchTerm)) {
+                if (checkTag != null && checkTag.getTagName().toLowerCase().contains(searchTerm)) {
                     searchResults.add(eachBook);
 
                     // break from while loop as we dont want to check all tags if one already
-                    // matched
-                    break;
-                }
-            }
-        }
-
-        return searchResults;
-    }
-
-    /**
-     * Search the books by their categories
-     *
-     * @param allBooks list of all books
-     * @param sT       search term
-     * @return filtered list of book with categories meeting the search term
-     */
-    private List<Book> searchBookByCategory(List<Book> allBooks, String sT) {
-        String searchTerm = sT.toLowerCase();
-        List<Book> searchResults = new ArrayList<>();
-
-        for (Book eachBook : allBooks) {
-            Iterator<String> categoryIterator = eachBook.getCategories().iterator();
-
-            while (categoryIterator.hasNext()) {
-                String checkCategory = categoryIterator.next();
-
-                if (checkCategory != null && checkCategory.toLowerCase().contains(searchTerm)) {
-                    searchResults.add(eachBook);
-
-                    // break from while loop as we dont want to check all categories if one already
                     // matched
                     break;
                 }
@@ -308,10 +268,6 @@ public class BookController {
 
         else if (searchBy.equalsIgnoreCase("tags")) {
             return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByTag(allBooks, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("categories")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByCategory(allBooks, searchTerm));
         }
 
         else if (searchBy.equalsIgnoreCase("language")) {
