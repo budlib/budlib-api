@@ -11,6 +11,8 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "loaner")
 public class Loaner implements Serializable {
     /**
@@ -69,12 +71,6 @@ public class Loaner implements Serializable {
     @ManyToMany
     @JoinTable(name = "faculty_class", joinColumns = @JoinColumn(name = "loaner_id", referencedColumnName = "loaner_id", foreignKey = @ForeignKey(name = "fk_faculty_employeeid")), inverseJoinColumns = @JoinColumn(name = "class_id", referencedColumnName = "class_id", foreignKey = @ForeignKey(name = "fk_class_classid")))
     private List<ClassCode> classCode;
-
-    private Loaner(String firstName, String middleName, String lastName) {
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-    }
 
     /**
      * Returns the full name of the loaner

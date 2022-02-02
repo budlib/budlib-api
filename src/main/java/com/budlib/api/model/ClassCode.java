@@ -11,6 +11,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "class_code")
 public class ClassCode implements Serializable {

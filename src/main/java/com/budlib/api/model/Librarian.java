@@ -10,6 +10,8 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "librarian")
 public class Librarian implements Serializable {
     /**

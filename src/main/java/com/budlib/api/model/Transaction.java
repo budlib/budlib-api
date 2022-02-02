@@ -12,6 +12,8 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "transaction")
 public class Transaction implements Serializable {
     /**

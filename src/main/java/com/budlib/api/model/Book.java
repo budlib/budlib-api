@@ -11,6 +11,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "book")
 public class Book implements Serializable {
