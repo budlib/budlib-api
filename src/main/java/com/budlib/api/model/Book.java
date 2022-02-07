@@ -81,14 +81,14 @@ public class Book implements Serializable {
     /**
      * What all branches have this book
      */
-    @OneToMany(mappedBy = "bookId")
+    @OneToMany(mappedBy = "bookId", cascade = { CascadeType.ALL })
     @JsonIgnore
     private List<BookQuantity> availableBranch;
 
     /**
      * Copies of the books exchanging hands
      */
-    @OneToMany(mappedBy = "bookId")
+    @OneToMany(mappedBy = "bookId", cascade = { CascadeType.ALL })
     @JsonIgnore
     private List<TrnQuantities> trnQuantities;
 
