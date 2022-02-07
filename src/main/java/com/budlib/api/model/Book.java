@@ -82,14 +82,14 @@ public class Book implements Serializable {
      * What all branches have this book
      */
     @OneToMany(mappedBy = "bookId")
-    @JsonBackReference
+    @JsonIgnore
     private List<BookQuantity> availableBranch;
 
     /**
      * Copies of the books exchanging hands
      */
     @OneToMany(mappedBy = "bookId")
-    @JsonBackReference
+    @JsonIgnore
     private List<TrnQuantities> trnQuantities;
 
     /**
@@ -103,7 +103,7 @@ public class Book implements Serializable {
      */
     @ManyToMany
     @JoinTable(name = "book_tag", joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "book_id", foreignKey = @ForeignKey(name = "fk_booktag_bookid")), inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", foreignKey = @ForeignKey(name = "fk_booktag_tagid")))
-    @JsonBackReference
+    @JsonIgnore
     private List<Tag> tags;
 
     /**
@@ -146,9 +146,6 @@ public class Book implements Serializable {
         long count = 0;
 
         for (BookQuantity i : this.availableBranch) {
-            System.out.printf("ID=%d in Branch=%s, Available=%d\n", i.getBookId().getBookId(),
-                    i.getBranchId().getBranchName(), i.getAvailable());
-
             count += i.getAvailable();
         }
 
