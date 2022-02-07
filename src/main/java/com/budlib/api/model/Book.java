@@ -81,12 +81,12 @@ public class Book implements Serializable {
     /**
      * What all branches have this book
      */
-    @OneToMany(mappedBy = "branchId")
+    @OneToMany(mappedBy = "bookId")
     @JsonBackReference
     private List<BookQuantity> availableBranch;
 
     /**
-     * Copies of the books exchanging hands. To be kept
+     * Copies of the books exchanging hands
      */
     @OneToMany(mappedBy = "bookId")
     @JsonBackReference
@@ -136,4 +136,37 @@ public class Book implements Serializable {
      */
     @Column(name = "amazonlink")
     private String amazonCaLink;
+
+    /**
+     * Computes total quantities of available books across all branches
+     *
+     * @return total quantities of the available books across all branches
+     */
+    public long getQuantities() {
+        long count = 0;
+
+        for (BookQuantity i : this.availableBranch) {
+            System.out.printf("ID=%d in Branch=%s, Available=%d\n", i.getBookId().getBookId(),
+                    i.getBranchId().getBranchName(), i.getAvailable());
+
+            count += i.getAvailable();
+        }
+
+        return count;
+    }
+
+    /**
+     * Returns the tags of the book
+     *
+     * @return space separated list of tags
+     */
+    public String getBookTags() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Tag t : this.tags) {
+            sb.append(" " + t.getTagName());
+        }
+
+        return sb.toString().trim();
+    }
 }

@@ -44,7 +44,7 @@ public class LibraryBranch implements Serializable {
     /**
      * What all book does this branch has
      */
-    @OneToMany(mappedBy = "bookId")
+    @OneToMany(mappedBy = "branchId")
     @JsonBackReference
     private List<BookQuantity> availableBooks;
 }
