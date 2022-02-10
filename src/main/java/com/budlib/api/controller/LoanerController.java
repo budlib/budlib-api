@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("api/loaner")
+@RequestMapping("api/loaners")
 public class LoanerController {
     @Autowired
     private LoanerRepository loanerRepository;
