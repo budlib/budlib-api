@@ -26,14 +26,6 @@ public class Transaction implements Serializable {
     private long transactionId;
 
     /**
-     * Branch at which transaction took place
-     */
-    @OneToOne
-    @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(name = "fk_trn_branch"))
-    @JsonManagedReference
-    private LibraryBranch branchId;
-
-    /**
      * Zoned Date Time for handling branches in different time zones
      */
     @Column(name = "trn_datetime")
@@ -54,10 +46,10 @@ public class Transaction implements Serializable {
     private Loaner loanerId;
 
     /**
-     * The coordinator who facilitated the transaction
+     * The librarian who facilitated the transaction
      */
     @OneToOne
-    @JoinColumn(name = "coordinator_id", foreignKey = @ForeignKey(name = "fk_trn_coordinator"))
+    @JoinColumn(name = "librarian_id", foreignKey = @ForeignKey(name = "fk_trn_librarian"))
     @JsonManagedReference
     private Librarian librarianId;
 

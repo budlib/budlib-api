@@ -61,6 +61,12 @@ public class Book implements Serializable {
     private String year;
 
     /**
+     * Language of the book
+     */
+    @Column(name = "language")
+    private String language;
+
+    /**
      * ISBN 10 of the book
      */
     @Column(name = "isbn_10")
@@ -79,11 +85,16 @@ public class Book implements Serializable {
     private String librarySection;
 
     /**
-     * What all branches have this book
+     * Total quantity at the library branch
      */
-    @OneToMany(mappedBy = "bookId", cascade = { CascadeType.ALL })
-    @JsonIgnore
-    private List<BookQuantity> availableBranch;
+    @Column(name = "total_quantity")
+    private int totalQuantity;
+
+    /**
+     * Available quantity at the library branch
+     */
+    @Column(name = "available_quantity")
+    private int availableQuantity;
 
     /**
      * Copies of the books exchanging hands
@@ -102,55 +113,27 @@ public class Book implements Serializable {
      * Tags related to the book
      */
     @ManyToMany
-    @JoinTable(name = "book_tag", joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "book_id", foreignKey = @ForeignKey(name = "fk_booktag_bookid")), inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", foreignKey = @ForeignKey(name = "fk_booktag_tagid")))
+    @JoinTable(name = "book_tag", joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "book_id", foreignKey = @ForeignKey(name = "fk_booktag_book")), inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", foreignKey = @ForeignKey(name = "fk_booktag_tag")))
     @JsonIgnore
     private List<Tag> tags;
 
     /**
      * URL of thumbnail the book
      */
-    @Column(name = "imagelink")
+    @Column(name = "image_link")
     private String imageLink;
-
-    /**
-     * Language of the book
-     */
-    @Column(name = "language")
-    private String language;
 
     /**
      * Retail price of the book
      */
-    @Column(name = "retailprice")
-    private Double retailPrice;
+    @Column(name = "retail_price")
+    private Double priceRetail;
 
     /**
      * Price of the book at which it is/was usually procured in the library
      */
-    @Column(name = "libraryprice")
-    private Double internalLibraryPrice;
-
-    /**
-     * Online buying link on amazon.ca
-     * TODO: check if its datatype can be changed
-     */
-    @Column(name = "amazonlink")
-    private String amazonCaLink;
-
-    /**
-     * Computes total quantities of available books across all branches
-     *
-     * @return total quantities of the available books across all branches
-     */
-    public long getQuantities() {
-        long count = 0;
-
-        for (BookQuantity i : this.availableBranch) {
-            count += i.getAvailable();
-        }
-
-        return count;
-    }
+    @Column(name = "library_price")
+    private Double priceLibrary;
 
     /**
      * Returns the tags of the book

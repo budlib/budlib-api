@@ -1,7 +1,6 @@
 package com.budlib.api.model;
 
 import javax.persistence.*;
-import java.util.List;
 import java.io.Serializable;
 import lombok.*;
 import com.fasterxml.jackson.annotation.*;
@@ -33,8 +32,15 @@ public class Loaner implements Serializable {
     /**
      * If this loaner is a student or a faculty
      */
+    @JsonProperty("isStudent")
     @Column(name = "is_student")
     private boolean isStudent;
+
+    /**
+     * For faculty Mr, Mrs, Ms, Master, Miss, Dr, Prof, etc
+     */
+    @Column(name = "salutation")
+    private String salutation;
 
     /**
      * First name of the loaner
@@ -67,24 +73,11 @@ public class Loaner implements Serializable {
     private String fatherName;
 
     /**
-     * For faculty Mr, Mrs, Ms, Master, Miss, Dr, Prof, etc
-     */
-    @Column(name = "salutation")
-    private String salutation;
-
-    /**
-     * Classes the faculty is handling
-     */
-    @ManyToMany
-    @JoinTable(name = "faculty_class", joinColumns = @JoinColumn(name = "loaner_id", referencedColumnName = "loaner_id", foreignKey = @ForeignKey(name = "fk_faculty_employeeid")), inverseJoinColumns = @JoinColumn(name = "class_id", referencedColumnName = "class_id", foreignKey = @ForeignKey(name = "fk_class_classid")))
-    @JsonBackReference
-    private List<ClassCode> classCode;
-
-    /**
      * Returns the full name of the loaner
      *
      * @return full name of the loaner
      */
+    @JsonProperty("fullName")
     public String getFullName() {
         StringBuilder sb = new StringBuilder();
 
@@ -107,6 +100,22 @@ public class Loaner implements Serializable {
 
         else {
             return sb.toString();
+        }
+    }
+
+    /**
+     * Returns the full name of the loaner with salutation
+     *
+     * @return full name of the loaner
+     */
+    @JsonProperty("fullNameWithSalutation")
+    public String getFullNameWithSalutation() {
+        if (this.salutation == null || this.salutation.equals("")) {
+            return this.getFullName();
+        }
+
+        else {
+            return this.salutation + " " + this.getFullName();
         }
     }
 }

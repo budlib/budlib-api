@@ -5,6 +5,9 @@ import java.io.Serializable;
 import lombok.*;
 import com.fasterxml.jackson.annotation.*;
 
+/**
+ * Represents quantity of books in the transaction
+ */
 @Entity
 @Getter
 @Setter
@@ -16,7 +19,7 @@ public class TrnQuantities implements Serializable {
      */
     @Id
     @ManyToOne
-    @JoinColumn(name = "trn_id", foreignKey = @ForeignKey(name = "fk_trnquan_trn"))
+    @JoinColumn(name = "trn_id", foreignKey = @ForeignKey(name = "fk_trnqty_trn"))
     @JsonManagedReference
     private Transaction transactionId;
 
@@ -25,15 +28,12 @@ public class TrnQuantities implements Serializable {
      */
     @Id
     @ManyToOne
-    @JoinColumn(name = "book_id", foreignKey = @ForeignKey(name = "fk_trnquan_book"))
+    @JoinColumn(name = "book_id", foreignKey = @ForeignKey(name = "fk_trnqty_book"))
     @JsonManagedReference
     private Book bookId;
 
     /**
-     * Copies of the books exchanging hands. To be kept
-     * +1 for BORROW
-     * -1 for RETURN
-     * 0 for EXTEND/RESERVE
+     * Copies of the books exchanging hands
      */
     @Column(name = "copies")
     private int copies;

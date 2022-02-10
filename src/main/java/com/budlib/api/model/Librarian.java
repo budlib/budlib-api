@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.*;
 
 /**
- * Represents the library coordinator
+ * Represents the librarian
  */
 @Entity
 @Getter
@@ -15,7 +15,7 @@ import lombok.*;
 @Table(name = "librarian")
 public class Librarian implements Serializable {
     /**
-     * Internal unique ID of the library coordinator
+     * Internal unique ID of the librarian
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,37 +23,37 @@ public class Librarian implements Serializable {
     private long librarianId;
 
     /**
-     * First name of the coordinator
-     */
-    @Column(name = "first_name")
-    private String firstName;
-
-    /**
-     * Middle name of the coordinator
-     */
-    @Column(name = "middle_name")
-    private String middleName;
-
-    /**
-     * Last name of the coordinator
-     */
-    @Column(name = "last_name")
-    private String lastName;
-
-    /**
-     * Login username of the coordinator
+     * Login username of the librarian
      */
     @Column(name = "username")
     private String userName;
 
     /**
-     * Email of the coordinator
+     * First name of the librarian
+     */
+    @Column(name = "first_name")
+    private String firstName;
+
+    /**
+     * Middle name of the librarian
+     */
+    @Column(name = "middle_name")
+    private String middleName;
+
+    /**
+     * Last name of the librarian
+     */
+    @Column(name = "last_name")
+    private String lastName;
+
+    /**
+     * Email of the librarian
      */
     @Column(name = "email")
     private String email;
 
     /**
-     * Login password of the coordinator
+     * Login password of the librarian
      * TODO: replace with encrypted string
      */
     @Column(name = "password")
@@ -64,6 +64,4 @@ public class Librarian implements Serializable {
      */
     @Column(name = "role")
     private String role;
-
-    // TODO: add branch wise coordinator and a superadmin
 }
