@@ -33,6 +33,6 @@ public class Tag implements Serializable {
      * Books that has this tag
      */
     @ManyToMany(mappedBy = "tags")
-    @JsonBackReference
+    @JsonIgnore
     private List<Book> books;
 }

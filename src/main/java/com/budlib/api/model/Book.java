@@ -114,7 +114,6 @@ public class Book implements Serializable {
      */
     @ManyToMany
     @JoinTable(name = "book_tag", joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "book_id", foreignKey = @ForeignKey(name = "fk_booktag_book")), inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", foreignKey = @ForeignKey(name = "fk_booktag_tag")))
-    @JsonIgnore
     private List<Tag> tags;
 
     /**
@@ -134,19 +133,4 @@ public class Book implements Serializable {
      */
     @Column(name = "library_price")
     private Double priceLibrary;
-
-    /**
-     * Returns the tags of the book
-     *
-     * @return space separated list of tags
-     */
-    public String getBookTags() {
-        StringBuilder sb = new StringBuilder();
-
-        for (Tag t : this.tags) {
-            sb.append(" " + t.getTagName());
-        }
-
-        return sb.toString().trim();
-    }
 }

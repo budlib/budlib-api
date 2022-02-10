@@ -21,6 +21,9 @@ public class BookController {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private TagRepository tagRepository;
+
     /**
      * Search the books by id
      *
@@ -225,6 +228,26 @@ public class BookController {
     }
 
     /**
+     * Endpoint for GET - fetch tags of a book by id
+     *
+     * @param id book id
+     * @return tag list
+     */
+    @GetMapping(path = "{bookId}/tags")
+    public ResponseEntity<?> getBookTags(@PathVariable("bookId") Long id) {
+        List<Book> b = this.searchBookById(id);
+
+        if (b == null) {
+            String message = "Book not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(b.get(0).getTags());
+        }
+    }
+
+    /**
      * Endpoint for GET - search and fetch all books meeting search criteria
      *
      * @param searchBy   where to search
@@ -283,6 +306,21 @@ public class BookController {
         }
     }
 
+    public Tag findUniqueTag(Tag t) {
+        // reset the id to 0 to prevent overwrite
+        t.setTagId(0L);
+
+        List<Tag> allTags = this.tagRepository.findAll();
+
+        for (Tag eachTag : allTags) {
+            if (eachTag.getTagName().equalsIgnoreCase((t.getTagName()))) {
+                return eachTag;
+            }
+        }
+
+        return this.tagRepository.save(t);
+    }
+
     /**
      * Endpoint for POST - save the book in db
      *
@@ -294,6 +332,15 @@ public class BookController {
         // reset the id to 0 to prevent overwrite
         b.setBookId(0L);
 
+        List<Tag> suppliedTagList = b.getTags();
+        List<Tag> uniqueTagList = new ArrayList<>();
+
+        for (Tag eachTag : suppliedTagList) {
+            Tag t = findUniqueTag(eachTag);
+            uniqueTagList.add(t);
+        }
+
+        b.setTags(uniqueTagList);
         this.bookRepository.save(b);
 
         String message = "Book added successfully";
@@ -313,6 +360,16 @@ public class BookController {
 
         if (bookOptional.isPresent()) {
             b.setBookId(bookId);
+
+            List<Tag> suppliedTagList = b.getTags();
+            List<Tag> uniqueTagList = new ArrayList<>();
+
+            for (Tag eachTag : suppliedTagList) {
+                Tag t = findUniqueTag(eachTag);
+                uniqueTagList.add(t);
+            }
+
+            b.setTags(uniqueTagList);
             this.bookRepository.save(b);
 
             String message = "Book updated successfully";
