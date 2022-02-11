@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller for loaner
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("api/loaners")
@@ -166,39 +169,79 @@ public class LoanerController {
     }
 
     /**
+     * Check if the loaner exists in the system. Works only if Loaner.schoolId is
+     * not null or empty
+     *
+     * @param l Loaner to be added or updated
+     * @return true if unique, false otherwise
+     */
+    private boolean checkLoanerUniqueness(Loaner l) {
+        if (l.getSchoolId() == null || l.getSchoolId().equals("")) {
+            return true;
+        }
+
+        List<Loaner> allLoaners = this.loanerRepository.findAll();
+
+        for (Loaner eachLoaner : allLoaners) {
+            if (eachLoaner.getLoanerId() == l.getLoanerId()) {
+                continue;
+            }
+
+            if (eachLoaner.getSchoolId() != null && eachLoaner.getSchoolId().equalsIgnoreCase(l.getSchoolId()))
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Endpoint for POST - save the loaner in db
      *
-     * @param s loaner details in json
+     * @param l loaner details in json
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addLoaner(@RequestBody Loaner s) {
+    public ResponseEntity<?> addLoaner(@RequestBody Loaner l) {
         // reset the id to 0 to prevent overwrite
-        s.setLoanerId(0L);
+        l.setLoanerId(0L);
 
-        this.loanerRepository.save(s);
+        if (this.checkLoanerUniqueness(l)) {
+            this.loanerRepository.save(l);
+            String message = "Loaner added successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+        }
 
-        String message = "Loaner added successfully";
-        return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+        else {
+            String message = "Loaner already exists";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
     }
 
     /**
      * Endpoint for PUT - update loaner in db
      *
-     * @param s        the updated loaner details in json
+     * @param l        the updated loaner details in json
      * @param loanerId the id of the loaner to be updated
      * @return the message
      */
     @PutMapping(path = "{loanerId}")
-    public ResponseEntity<?> updateLoaner(@RequestBody Loaner s, @PathVariable("loanerId") Long loanerId) {
+    public ResponseEntity<?> updateLoaner(@RequestBody Loaner l, @PathVariable("loanerId") Long loanerId) {
         Optional<Loaner> loanerOptional = this.loanerRepository.findById(loanerId);
 
         if (loanerOptional.isPresent()) {
-            s.setLoanerId(loanerId);
-            this.loanerRepository.save(s);
+            l.setLoanerId(loanerId);
 
-            String message = "Loaner updated successfully";
-            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+            if (this.checkLoanerUniqueness(l)) {
+                this.loanerRepository.save(l);
+                String message = "Loaner updated successfully";
+                return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+            }
+
+            else {
+                String message = "Loaner already exists";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
         }
 
         else {
