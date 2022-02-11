@@ -104,6 +104,27 @@ public class LibrarianController {
     }
 
     /**
+     * Endpoint for GET - fetch the transaction history made by a Librarian
+     * 
+     * @param id Librarian ID whose transaction history is required
+     * @return list of transactions
+     */
+    @GetMapping(path = "{librarianId}/history")
+    public ResponseEntity<?> getCoordinationHistory(@PathVariable("librarianId") Long id) {
+        List<Librarian> l = this.searchLibrarianById(id);
+
+        if (l == null) {
+            String message = "Librarian not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+
+        else {
+            List<Transaction> trnHistory = l.get(0).getTransactionHistory();
+            return ResponseEntity.status(HttpStatus.OK).body(trnHistory);
+        }
+    }
+
+    /**
      * Endpoint for GET - search and fetch all librarians meeting search criteria
      *
      * @param searchBy   where to search

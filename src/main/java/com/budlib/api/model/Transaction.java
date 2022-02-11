@@ -40,23 +40,21 @@ public class Transaction implements Serializable {
     /**
      * The loaner involved in the transaction
      */
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "loaner_id", foreignKey = @ForeignKey(name = "fk_trn_loaner"))
-    @JsonManagedReference
     private Loaner loaner;
 
     /**
      * The librarian who facilitated the transaction
      */
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "librarian_id", foreignKey = @ForeignKey(name = "fk_trn_librarian"))
-    @JsonManagedReference
     private Librarian librarian;
 
     /**
      * The books involved in the transaction
      */
     @OneToMany(mappedBy = "transactionId")
-    @JsonBackReference
+    @JsonIgnore
     private List<TrnQuantities> bookCopies;
 }

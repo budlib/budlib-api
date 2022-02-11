@@ -2,7 +2,9 @@ package com.budlib.api.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import lombok.*;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents the librarian
@@ -64,4 +66,11 @@ public class Librarian implements Serializable {
      */
     @Column(name = "role")
     private String role;
+
+    /**
+     * Coordination history of the Librarian
+     */
+    @OneToMany(mappedBy = "librarian")
+    @JsonIgnore
+    private List<Transaction> transactionHistory;
 }

@@ -126,6 +126,27 @@ public class LoanerController {
     }
 
     /**
+     * Endpoint for GET - fetch the transaction history of the Loaner
+     *
+     * @param id Loaner ID whose transaction history is required
+     * @return list of transactions
+     */
+    @GetMapping(path = "{loanerId}/history")
+    public ResponseEntity<?> getCoordinationHistory(@PathVariable("loanerId") Long id) {
+        List<Loaner> l = this.searchLoanerById(id);
+
+        if (l == null) {
+            String message = "Loaner not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+
+        else {
+            List<Transaction> trnHistory = l.get(0).getTransactionHistory();
+            return ResponseEntity.status(HttpStatus.OK).body(trnHistory);
+        }
+    }
+
+    /**
      * Endpoint for GET - search and fetch all loaners meeting search criteria
      *
      * @param searchBy   where to search

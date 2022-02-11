@@ -2,6 +2,7 @@ package com.budlib.api.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import lombok.*;
 import com.fasterxml.jackson.annotation.*;
 
@@ -71,6 +72,13 @@ public class Loaner implements Serializable {
      */
     @Column(name = "father_name")
     private String fatherName;
+
+    /**
+     * Borrowing history of the Loaner
+     */
+    @OneToMany(mappedBy = "loaner")
+    @JsonIgnore
+    private List<Transaction> transactionHistory;
 
     /**
      * Returns the full name of the loaner
