@@ -381,49 +381,4 @@ public class TransactionController {
         String message = "Transaction added successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
-
-    /**
-     * Endpoint for PUT - update transaction in db
-     *
-     * @param t             the updated transaction details in json
-     * @param transactionId the id of the transaction to be updated
-     * @return the message
-     */
-    @PutMapping(path = "{transactionId}")
-    public ResponseEntity<?> updateTransaction(@RequestBody Transaction t,
-            @PathVariable("transactionId") Long transactionId) {
-        Optional<Transaction> transactionOptional = this.transactionRepository.findById(transactionId);
-
-        if (transactionOptional.isPresent()) {
-            t.setTransactionId(transactionId);
-            this.transactionRepository.save(t);
-
-            String message = "Transaction updated successfully";
-            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-        }
-
-        else {
-            String message = "Transaction not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-    }
-
-    /**
-     * Endpoint for DELETE - delete transaction from db
-     *
-     * @param transactionId transaction id
-     */
-    @DeleteMapping(path = "{transactionId}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable("transactionId") Long transactionId) {
-        if (!this.transactionRepository.existsById(transactionId)) {
-            String message = "Transaction not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-
-        else {
-            this.transactionRepository.deleteById(transactionId);
-            String message = "Transaction deleted successfully";
-            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-        }
-    }
 }
