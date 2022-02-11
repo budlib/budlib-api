@@ -116,14 +116,12 @@ public class BookController {
      * @return filtered list of book with ISBN meeting the search term
      */
     private List<Book> searchBookByIsbn(List<Book> allBooks, String sT) {
-        // TODO: remove spaces, commas, dashes from ISBN
-
-        String searchTerm = sT.toLowerCase();
+        String searchTerm = sT.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
         List<Book> searchResults = new ArrayList<>();
 
         for (Book eachBook : allBooks) {
             if (searchTerm.length() == 10 && eachBook.getIsbn_10() != null
-                    && eachBook.getPublisher().toLowerCase().contains(searchTerm)) {
+                    && eachBook.getIsbn_10().toLowerCase().contains(searchTerm)) {
                 searchResults.add(eachBook);
             }
 

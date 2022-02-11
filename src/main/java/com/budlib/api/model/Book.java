@@ -133,4 +133,34 @@ public class Book implements Serializable {
      */
     @Column(name = "library_price")
     private Double priceLibrary;
+
+    /**
+     * Setter for ISBN 10 by removing special characters like dashes/hyphens
+     *
+     * @param isbn_10 ISBN 10 of the book
+     */
+    public void setIsbn_10(String isbn_10) {
+        if (isbn_10 != null) {
+            this.isbn_10 = isbn_10.toUpperCase().replaceAll("[^a-zA-Z0-9]", "");
+        }
+
+        else {
+            this.isbn_10 = isbn_10;
+        }
+    }
+
+    /**
+     * Setter for ISBN 13 by removing special characters like dashes/hyphens
+     *
+     * @param isbn_13 ISBN 13 of the book
+     */
+    public void setIsbn_13(String isbn_13) {
+        if (isbn_13 != null) {
+            this.isbn_13 = isbn_13.toUpperCase().replaceAll("[^a-zA-Z0-9]", "");
+        }
+
+        else {
+            this.isbn_13 = isbn_13;
+        }
+    }
 }
