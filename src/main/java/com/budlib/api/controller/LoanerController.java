@@ -191,7 +191,7 @@ public class LoanerController {
 
     /**
      * Check if the loaner exists in the system. Works only if Loaner.schoolId is
-     * not null or empty
+     * not null or empty. This method exists in TransactionController as well.
      *
      * @param l Loaner to be added or updated
      * @return true if unique, false otherwise

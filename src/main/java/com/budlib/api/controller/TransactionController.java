@@ -5,6 +5,7 @@ import com.budlib.api.repository.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,18 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController {
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private LoanerRepository loanerRepository;
+
+    @Autowired
+    private LibrarianRepository librarianRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private TrnQuantitiesRepository trnQuantitiesRepository;
 
     /**
      * Search the transaction by id
@@ -189,6 +202,32 @@ public class TransactionController {
     }
 
     /**
+     * Check if the loaner exists in the system. Works only if Loaner.schoolId is
+     * not null or empty. This method exists in LoanerController as well.
+     *
+     * @param l Loaner to be added or updated
+     * @return true if unique, false otherwise
+     */
+    private boolean checkLoanerUniqueness(Loaner l) {
+        if (l.getSchoolId() == null || l.getSchoolId().equals("")) {
+            return true;
+        }
+
+        List<Loaner> allLoaners = this.loanerRepository.findAll();
+
+        for (Loaner eachLoaner : allLoaners) {
+            if (eachLoaner.getLoanerId() == l.getLoanerId()) {
+                continue;
+            }
+
+            if (eachLoaner.getSchoolId() != null && eachLoaner.getSchoolId().equalsIgnoreCase(l.getSchoolId()))
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Endpoint for POST - save the transaction in db
      *
      * @param t transaction details in json
@@ -199,7 +238,145 @@ public class TransactionController {
         // reset the id to 0 to prevent overwrite
         t.setTransactionId(0L);
 
-        this.transactionRepository.save(t);
+        // reset the transaction date time
+        t.setTransactionDateTime(LocalDateTime.now());
+
+        Loaner suppliedLoaner = t.getLoaner();
+        Librarian suppliedLibrarian = t.getLibrarian();
+        List<TrnQuantities> suppliedTrnQtyList = t.getBookCopies();
+
+        List<TrnQuantities> checkedTrnQtyList = new ArrayList<>();
+
+        // check validity of librarian
+        // --------------------------------------------------------------------
+        if (suppliedLibrarian == null) {
+            String message = "No librarian coordinator specified";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        else {
+            Optional<Librarian> librarianOptional = this.librarianRepository
+                    .findById(suppliedLibrarian.getLibrarianId());
+
+            if (librarianOptional.isPresent()) {
+                // overwrite supplied details of the librarian
+                suppliedLibrarian = librarianOptional.get();
+                t.setLibrarian(suppliedLibrarian);
+            }
+
+            else {
+                String message = "Librarian not found";
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+            }
+        }
+        // --------------------------------------------------------------------
+
+        // check validity of books
+        // --------------------------------------------------------------------
+        if (suppliedTrnQtyList == null) {
+            String message = "No books specified";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        else {
+            for (TrnQuantities tq : suppliedTrnQtyList) {
+                if (tq.getCopies() < 1) {
+                    String message = "Invalid quantity specified";
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                }
+
+                Optional<Book> bookOptional = this.bookRepository.findById(tq.getBook().getBookId());
+
+                if (bookOptional.isPresent()) {
+                    Book b = bookOptional.get();
+
+                    if (t.getTransactionType().equals(TransactionType.BORROW)
+                            && tq.getCopies() > b.getAvailableQuantity()) {
+                        String message = "Not enough copies available";
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                    }
+
+                    else {
+                        tq.setBook(b);
+                        checkedTrnQtyList.add(tq);
+                    }
+                }
+
+                else {
+                    String message = "One or more books not found";
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+                }
+            }
+
+            t.setBookCopies(checkedTrnQtyList);
+        }
+        // --------------------------------------------------------------------
+
+        // check validity of loaner
+        // --------------------------------------------------------------------
+        if (suppliedLoaner == null) {
+            String message = "No loaner specified";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        else {
+            // for loaners not existing in system - save them before doing the transaction
+            if (suppliedLoaner.getLoanerId() == 0L) {
+                if (this.checkLoanerUniqueness(suppliedLoaner)) {
+                    this.loanerRepository.save(suppliedLoaner);
+                }
+
+                else {
+                    String message = "Loaner already exists";
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                }
+            }
+
+            else {
+                // for loaners existing in system - find them before doing the transaction
+                Optional<Loaner> loanerOptional = this.loanerRepository.findById(suppliedLoaner.getLoanerId());
+
+                if (loanerOptional.isPresent()) {
+                    // overwrite supplied details of the loaner
+                    suppliedLoaner = loanerOptional.get();
+                    t.setLoaner(suppliedLoaner);
+                }
+
+                else {
+                    String message = "Loaner not found";
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+                }
+            }
+        }
+        // --------------------------------------------------------------------
+
+        // save transaction
+        Transaction savedTrn = this.transactionRepository.save(t);
+
+        // save book quantities and transaction quantities
+        for (TrnQuantities ctq : checkedTrnQtyList) {
+            ctq.setTransaction(savedTrn);
+
+            Book ctqb = ctq.getBook();
+            int initialQty = ctqb.getAvailableQuantity();
+
+            if (t.getTransactionType().equals(TransactionType.BORROW)) {
+                ctqb.setAvailableQuantity(initialQty - ctq.getCopies());
+            }
+
+            else if (t.getTransactionType().equals(TransactionType.RETURN)) {
+                ctqb.setAvailableQuantity(initialQty + ctq.getCopies());
+            }
+
+            this.bookRepository.save(ctqb);
+            this.trnQuantitiesRepository.save(ctq);
+        }
 
         String message = "Transaction added successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));

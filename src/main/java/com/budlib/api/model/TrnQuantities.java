@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@IdClass(TrnQuantitiesId.class)
 @Table(name = "trn_quantities")
 public class TrnQuantities implements Serializable {
     /**

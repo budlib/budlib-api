@@ -72,6 +72,28 @@
 					"response": []
 				},
 				{
+					"name": "Current loans by book ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/books/2/loans",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"books",
+								"2",
+								"loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Search books",
 					"request": {
 						"method": "GET",
@@ -108,7 +130,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Rich Dad Poor Dad\",\r\n    \"subtitle\": \"What the Rich Teach Their Kids About Money That the Poor and Middle Class Do Not!\",\r\n    \"authors\": \"Robert T Kiyosaki\",\r\n    \"publisher\": \"Michealmas Press\",\r\n    \"edition\": null,\r\n    \"year\": \"2017-04\",\r\n    \"language\": \"en\",\r\n    \"isbn_10\": \"1612680194\",\r\n    \"isbn_13\": \"9781612680194\",\r\n    \"librarySection\": null,\r\n    \"totalQuantity\": 50,\r\n    \"availableQuantity\": 50,\r\n    \"notes\": null,\r\n    \"tags\": [\r\n        {\r\n            \"tagName\": \"business\"\r\n        },\r\n        {\r\n            \"tagName\": \"fiction\"\r\n        }\r\n    ],\r\n    \"imageLink\": \"http://books.google.com/books/content?id=f5osEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api\",\r\n    \"priceRetail\": null,\r\n    \"priceLibrary\": null\r\n}",
+							"raw": "{\r\n    \"title\": \"Rich Dad Poor Dad\",\r\n    \"subtitle\": \"What the Rich Teach Their Kids About Money That the Poor and Middle Class Do Not!\",\r\n    \"authors\": \"Robert T Kiyosaki\",\r\n    \"publisher\": \"Michealmas Press\",\r\n    \"edition\": null,\r\n    \"year\": \"2017-04\",\r\n    \"language\": \"en\",\r\n    \"isbn_10\": \"161-268-0194\",\r\n    \"isbn_13\": \"978-161-2680-194\",\r\n    \"librarySection\": null,\r\n    \"totalQuantity\": 50,\r\n    \"availableQuantity\": 50,\r\n    \"notes\": null,\r\n    \"tags\": [\r\n        {\r\n            \"tagName\": \"business\"\r\n        },\r\n        {\r\n            \"tagName\": \"fiction\"\r\n        }\r\n    ],\r\n    \"imageLink\": \"http://books.google.com/books/content?id=f5osEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api\",\r\n    \"priceRetail\": null,\r\n    \"priceLibrary\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -354,6 +376,28 @@
 					"response": []
 				},
 				{
+					"name": "Transaction history by librarian ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/librarian/2/history",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"librarian",
+								"2",
+								"history"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Search librarians",
 					"request": {
 						"method": "GET",
@@ -396,7 +440,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"bhavyai.gupta@ca\",\r\n    \"password\": \"zbhavyai\",\r\n    \"role\": \"admin\"\r\n}",
+							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"bhavyai.gupta@ucalgary.ca\",\r\n    \"password\": \"zbhavyai\",\r\n    \"role\": \"admin\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -464,6 +508,351 @@
 								"api",
 								"librarian",
 								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Loaners",
+			"item": [
+				{
+					"name": "Get loaners",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/loaners",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get loaners by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/loaners/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transaction history by loaner ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/loaners/1/history",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners",
+								"1",
+								"history"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search loaners",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/loaners?searchBy=name&searchTerm=deb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners"
+							],
+							"query": [
+								{
+									"key": "searchBy",
+									"value": "name"
+								},
+								{
+									"key": "searchTerm",
+									"value": "deb"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add loaner",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"schoolId\": \"XXXX\",\r\n    \"salutation\": null,\r\n    \"firstName\": \"Bhavyai\",\r\n    \"middleName\": null,\r\n    \"lastName\": \"Gupta\",\r\n    \"motherName\": null,\r\n    \"fatherName\": null,\r\n    \"isStudent\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loaners",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify loaner",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"schoolId\": \"XXXX\",\r\n    \"salutation\": \"Mr\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"middleName\": null,\r\n    \"lastName\": \"Gupta\",\r\n    \"motherName\": null,\r\n    \"fatherName\": null,\r\n    \"isStudent\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/loaners/104",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners",
+								"104"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete loaner",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/loaners/104",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners",
+								"104"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Get transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/transactions",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/transactions/4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search transactions by librarian",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/transactions?searchBy=librarian&searchTerm=1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "searchBy",
+									"value": "librarian"
+								},
+								{
+									"key": "searchTerm",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search transactions by loaner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/transactions?searchBy=loaner&searchTerm=7",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "searchBy",
+									"value": "loaner"
+								},
+								{
+									"key": "searchTerm",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search transactions by type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/transactions?searchBy=type&searchTerm=return",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "searchBy",
+									"value": "type"
+								},
+								{
+									"key": "searchTerm",
+									"value": "return"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add transaction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transactionDateTime\": \"2022-02-11T09:15:23\",\r\n    \"transactionType\": \"BORROW\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 9\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 2\r\n            },\r\n            \"copies\": 2\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 5\r\n            },\r\n            \"copies\": 1\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/transactions",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions"
 							]
 						}
 					},
