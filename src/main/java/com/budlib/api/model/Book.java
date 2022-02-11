@@ -104,6 +104,13 @@ public class Book implements Serializable {
     private List<TrnQuantities> trnQuantities;
 
     /**
+     * List of current loaners
+     */
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private List<Loan> currentLoans;
+
+    /**
      * Any particular notes related to the book goes here
      */
     @Column(name = "notes")

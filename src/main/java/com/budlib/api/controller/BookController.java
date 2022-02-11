@@ -246,6 +246,27 @@ public class BookController {
     }
 
     /**
+     * Endpoint for GET - fetch the current loans of the book
+     *
+     * @param id book ID
+     * @return list of loans
+     */
+    @GetMapping(path = "{bookId}/loans")
+    public ResponseEntity<?> getCurrentLoans(@PathVariable("bookId") Long id) {
+        List<Book> b = this.searchBookById(id);
+
+        if (b == null) {
+            String message = "Book not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+
+        else {
+            List<Loan> currentLoans = b.get(0).getCurrentLoans();
+            return ResponseEntity.status(HttpStatus.OK).body(currentLoans);
+        }
+    }
+
+    /**
      * Endpoint for GET - search and fetch all books meeting search criteria
      *
      * @param searchBy   where to search

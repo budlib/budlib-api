@@ -74,11 +74,18 @@ public class Loaner implements Serializable {
     private String fatherName;
 
     /**
-     * Borrowing history of the Loaner
+     * Borrowing history of the loaner
      */
     @OneToMany(mappedBy = "loaner")
     @JsonIgnore
     private List<Transaction> transactionHistory;
+
+    /**
+     * Current loans by the loaner
+     */
+    @OneToMany(mappedBy = "loaner")
+    @JsonIgnore
+    private List<Loan> currentLoans;
 
     /**
      * Returns the full name of the loaner
