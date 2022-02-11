@@ -20,6 +20,9 @@ public class LibrarianController {
     @Autowired
     LibrarianRepository librarianRepository;
 
+    @Autowired
+    TransactionRepository transactionRepository;
+
     /**
      * Search the librarian by id
      *
@@ -53,6 +56,26 @@ public class LibrarianController {
 
         for (Librarian eachLibrarian : allLibrarians) {
             if (eachLibrarian.getEmail() != null && eachLibrarian.getEmail().toLowerCase().contains(searchTerm)) {
+                searchResults.add(eachLibrarian);
+            }
+        }
+
+        return searchResults;
+    }
+
+    /**
+     * Search the librarians by their username
+     *
+     * @param alllibrarians list of all librarians
+     * @param sT            search term
+     * @return filtered list of librarian with username meeting the search term
+     */
+    private List<Librarian> searchLibrarianByUsername(List<Librarian> allLibrarians, String sT) {
+        String searchTerm = sT.toLowerCase();
+        List<Librarian> searchResults = new ArrayList<>();
+
+        for (Librarian eachLibrarian : allLibrarians) {
+            if (eachLibrarian.getUserName() != null && eachLibrarian.getUserName().toLowerCase().contains(searchTerm)) {
                 searchResults.add(eachLibrarian);
             }
         }
@@ -109,10 +132,84 @@ public class LibrarianController {
             return ResponseEntity.status(HttpStatus.OK).body(this.searchLibrarianByEmail(allLibrarians, searchTerm));
         }
 
+        else if (searchBy.equalsIgnoreCase("username")) {
+            return ResponseEntity.status(HttpStatus.OK).body(this.searchLibrarianByUsername(allLibrarians, searchTerm));
+        }
+
         else {
             String message = "Invalid librarian search operation";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
+    }
+
+    /**
+     * Check the details of the librarian supplied
+     *
+     * @param l librarian details
+     * @return response string, [0] contains true if all good or false if details
+     *         are incorrect. [1] contains reason for incorrect details
+     */
+    private String[] checkSuppliedDetails(Librarian l) {
+        String[] response = new String[2];
+
+        // these values will change in case of error
+        response[0] = "true";
+        response[1] = "All good";
+
+        List<Librarian> allLibrarians = this.librarianRepository.findAll();
+
+        String suppliedUsername = l.getUserName();
+        String suppliedEmail = l.getEmail();
+
+        // simple regex check
+        // String emailRegex = "^(.+)@(.+)$";
+
+        // RFC 5322 regex check
+        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+
+        if (suppliedUsername == null || suppliedUsername.equals("")) {
+            response[0] = "false";
+            response[1] = "Username cannot be empty";
+            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new
+            // ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        else if (suppliedEmail == null || suppliedEmail.equals("")) {
+            response[0] = "false";
+            response[1] = "Email cannot be empty";
+            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new
+            // ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        else if (!suppliedEmail.matches(emailRegex)) {
+            response[0] = "false";
+            response[1] = "Invalid email supplied";
+            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new
+            // ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        else {
+            for (Librarian eachLibrarian : allLibrarians) {
+                if (eachLibrarian.getLibrarianId() == l.getLibrarianId()) {
+                    continue;
+                }
+
+                if (eachLibrarian.getUserName() != null
+                        && eachLibrarian.getUserName().equalsIgnoreCase(suppliedUsername)) {
+                    response[0] = "false";
+                    response[1] = "Username already taken";
+                    break;
+                }
+
+                if (eachLibrarian.getEmail() != null && eachLibrarian.getEmail().equalsIgnoreCase(suppliedEmail)) {
+                    response[0] = "false";
+                    response[1] = "Email already taken";
+                    break;
+                }
+            }
+        }
+
+        return response;
     }
 
     /**
@@ -122,14 +219,22 @@ public class LibrarianController {
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addlibrarian(@RequestBody Librarian l) {
+    public ResponseEntity<?> addLibrarian(@RequestBody Librarian l) {
         // reset the id to 0 to prevent overwrite
         l.setLibrarianId(0L);
 
-        this.librarianRepository.save(l);
+        String[] checkDetails = this.checkSuppliedDetails(l);
 
-        String message = "Librarian added successfully";
-        return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+        if (checkDetails[0].equals("true")) {
+            this.librarianRepository.save(l);
+            String message = "Librarian added successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+        }
+
+        else {
+            String message = checkDetails[1];
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
     }
 
     /**
@@ -140,15 +245,25 @@ public class LibrarianController {
      * @return the message
      */
     @PutMapping(path = "{librarianId}")
-    public ResponseEntity<?> updatelibrarian(@RequestBody Librarian l, @PathVariable("librarianId") Long librarianId) {
+    public ResponseEntity<?> updateLibrarian(@RequestBody Librarian l, @PathVariable("librarianId") Long librarianId) {
         Optional<Librarian> librarianOptional = this.librarianRepository.findById(librarianId);
 
         if (librarianOptional.isPresent()) {
             l.setLibrarianId(librarianId);
-            this.librarianRepository.save(l);
 
-            String message = "Librarian updated successfully";
-            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+            String[] checkDetails = this.checkSuppliedDetails(l);
+
+            if (checkDetails[0].equals("true")) {
+                this.librarianRepository.save(l);
+                String message = "Librarian updated successfully";
+                return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+            }
+
+            else {
+                String message = checkDetails[1];
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
         }
 
         else {
@@ -163,13 +278,23 @@ public class LibrarianController {
      * @param librarianId librarian id
      */
     @DeleteMapping(path = "{librarianId}")
-    public ResponseEntity<?> deletelibrarian(@PathVariable("librarianId") Long librarianId) {
+    public ResponseEntity<?> deleteLibrarian(@PathVariable("librarianId") Long librarianId) {
         if (!this.librarianRepository.existsById(librarianId)) {
             String message = "Librarian not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
         }
 
         else {
+            List<Transaction> allTransactions = this.transactionRepository.findAll();
+
+            // loop to detach librarian first
+            for (Transaction eachTransaction : allTransactions) {
+                if (eachTransaction.getLibrarian().getLibrarianId() == librarianId) {
+                    eachTransaction.setLibrarian(null);
+                    this.transactionRepository.save(eachTransaction);
+                }
+            }
+
             this.librarianRepository.deleteById(librarianId);
             String message = "Librarian deleted successfully";
             return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));

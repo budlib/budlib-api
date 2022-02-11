@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller for transactions
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("api/transactions")
@@ -51,8 +54,8 @@ public class TransactionController {
             long searchTerm = Long.parseLong(sT.toLowerCase());
 
             for (Transaction eachTransaction : allTransactions) {
-                if (eachTransaction.getLoanerId() != null
-                        && eachTransaction.getLoanerId().getLoanerId() == searchTerm) {
+                if (eachTransaction.getLoaner() != null
+                        && eachTransaction.getLoaner().getLoanerId() == searchTerm) {
                     searchResults.add(eachTransaction);
                 }
             }
@@ -66,11 +69,11 @@ public class TransactionController {
     }
 
     /**
-     * Search the transaction by coordinator
+     * Search the transaction by librarian
      *
      * @param allTransactions list of all transactions
      * @param sT              search term
-     * @return filtered list of transaction with coordinator meeting the search term
+     * @return filtered list of transaction with librarian meeting the search term
      */
     private List<Transaction> searchTransactionByLibrarian(List<Transaction> allTransactions, String sT) {
         List<Transaction> searchResults = new ArrayList<>();
@@ -79,8 +82,8 @@ public class TransactionController {
             long searchTerm = Long.parseLong(sT.toLowerCase());
 
             for (Transaction eachTransaction : allTransactions) {
-                if (eachTransaction.getLibrarianId() != null
-                        && eachTransaction.getLibrarianId().getLibrarianId() == searchTerm) {
+                if (eachTransaction.getLibrarian() != null
+                        && eachTransaction.getLibrarian().getLibrarianId() == searchTerm) {
                     searchResults.add(eachTransaction);
                 }
             }
