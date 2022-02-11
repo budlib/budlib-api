@@ -161,31 +161,22 @@ public class LibrarianController {
         String suppliedUsername = l.getUserName();
         String suppliedEmail = l.getEmail();
 
-        // simple regex check
-        // String emailRegex = "^(.+)@(.+)$";
-
         // RFC 5322 regex check
         String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
         if (suppliedUsername == null || suppliedUsername.equals("")) {
             response[0] = "false";
             response[1] = "Username cannot be empty";
-            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new
-            // ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
         else if (suppliedEmail == null || suppliedEmail.equals("")) {
             response[0] = "false";
             response[1] = "Email cannot be empty";
-            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new
-            // ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
         else if (!suppliedEmail.matches(emailRegex)) {
             response[0] = "false";
             response[1] = "Invalid email supplied";
-            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new
-            // ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
         else {
