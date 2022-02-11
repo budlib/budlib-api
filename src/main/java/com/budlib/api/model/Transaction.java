@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.*;
-import com.fasterxml.jackson.annotation.*;
 
 /**
  * Represents a transaction
@@ -54,7 +53,6 @@ public class Transaction implements Serializable {
     /**
      * The books involved in the transaction
      */
-    @OneToMany(mappedBy = "transactionId")
-    @JsonIgnore
+    @OneToMany(mappedBy = "transaction")
     private List<TrnQuantities> bookCopies;
 }

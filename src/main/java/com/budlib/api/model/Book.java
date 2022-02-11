@@ -99,7 +99,7 @@ public class Book implements Serializable {
     /**
      * Copies of the books exchanging hands
      */
-    @OneToMany(mappedBy = "bookId", cascade = { CascadeType.ALL })
+    @OneToMany(mappedBy = "book", cascade = { CascadeType.ALL })
     @JsonIgnore
     private List<TrnQuantities> trnQuantities;
 

@@ -20,8 +20,8 @@ public class TrnQuantities implements Serializable {
     @Id
     @ManyToOne
     @JoinColumn(name = "trn_id", foreignKey = @ForeignKey(name = "fk_trnqty_trn"))
-    @JsonManagedReference
-    private Transaction transactionId;
+    @JsonIgnore
+    private Transaction transaction;
 
     /**
      * The books involved in the transaction
@@ -29,8 +29,7 @@ public class TrnQuantities implements Serializable {
     @Id
     @ManyToOne
     @JoinColumn(name = "book_id", foreignKey = @ForeignKey(name = "fk_trnqty_book"))
-    @JsonManagedReference
-    private Book bookId;
+    private Book book;
 
     /**
      * Copies of the books exchanging hands
