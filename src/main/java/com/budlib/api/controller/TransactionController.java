@@ -5,33 +5,42 @@ import com.budlib.api.repository.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.transaction.Transactional;
 
 /**
  * Controller for transactions
  */
 @CrossOrigin
 @RestController
+@Transactional
 @RequestMapping("api/transactions")
 public class TransactionController {
+    @Autowired
+    private BookRepository bookRepository;
+
     @Autowired
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private LoanerRepository loanerRepository;
+    private TrnQuantitiesRepository trnQuantitiesRepository;
 
     @Autowired
     private LibrarianRepository librarianRepository;
 
     @Autowired
-    private BookRepository bookRepository;
+    private LoanerRepository loanerRepository;
 
     @Autowired
-    private TrnQuantitiesRepository trnQuantitiesRepository;
+    private LoanRepository loanRepository;
 
     /**
      * Search the transaction by id
@@ -234,7 +243,9 @@ public class TransactionController {
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addTransaction(@RequestBody Transaction t) {
+    public ResponseEntity<?> addTransaction(@RequestBody Transaction t,
+            @RequestParam(name = "borrowDate", required = false) String suppliedBorrowDateString,
+            @RequestParam(name = "dueDate", required = false) String suppliedDueDateString) {
         // reset the id to 0 to prevent overwrite
         t.setTransactionId(0L);
 
@@ -247,11 +258,87 @@ public class TransactionController {
 
         List<TrnQuantities> checkedTrnQtyList = new ArrayList<>();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        // initializing with default values
+        LocalDate suppliedBorrowDate = t.getTransactionDateTime().toLocalDate();
+        LocalDate suppliedDueDate = t.getTransactionDateTime().toLocalDate().plusWeeks(4);
+
+        // check validity of dates
+        // --------------------------------------------------------------------
+        if (t.getTransactionType().equals(TransactionType.BORROW)) {
+            // borrow date must be specified when borrowing
+            if (suppliedBorrowDateString == null || suppliedBorrowDateString.equals("")) {
+                String message = "Borrow date not specified";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
+            try {
+                suppliedBorrowDate = LocalDate.parse(suppliedBorrowDateString, formatter);
+            }
+
+            catch (DateTimeParseException e) {
+                String message = "Invalid borrow date specified";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
+            // if due date is not specified, default is 4 weeks
+            if (suppliedDueDateString == null || suppliedDueDateString.equals("")) {
+                suppliedDueDate = suppliedBorrowDate.plusWeeks(4);
+            }
+
+            // else try to parse what user has supplied
+            else {
+                try {
+                    suppliedDueDate = LocalDate.parse(suppliedDueDateString, formatter);
+
+                    if (suppliedDueDate.compareTo(suppliedBorrowDate) < 1) {
+                        throw new Exception("Borrow date cannot be after due date");
+                    }
+                }
+
+                catch (DateTimeParseException e) {
+                    String message = "Invalid due date specified";
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                }
+
+                catch (Exception e) {
+                    String message = e.getMessage();
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                }
+            }
+        }
+
+        // due date must be specified when providing extension
+        else if (t.getTransactionType().equals(TransactionType.EXTEND)) {
+            if (suppliedDueDateString == null || suppliedDueDateString.equals("")) {
+                String message = "Due date not specified";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
+            try {
+                suppliedDueDate = LocalDate.parse(suppliedDueDateString, formatter);
+            }
+
+            catch (DateTimeParseException e) {
+                String message = "Invalid due date specified";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+        }
+        // --------------------------------------------------------------------
+
         // check validity of librarian
         // --------------------------------------------------------------------
         if (suppliedLibrarian == null) {
-            String message = "No librarian coordinator specified";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            String message = "Librarian coordinator not specified";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
         else {
@@ -269,50 +356,6 @@ public class TransactionController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
             }
-        }
-        // --------------------------------------------------------------------
-
-        // check validity of books
-        // --------------------------------------------------------------------
-        if (suppliedTrnQtyList == null) {
-            String message = "No books specified";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-        }
-
-        else {
-            for (TrnQuantities tq : suppliedTrnQtyList) {
-                if (tq.getCopies() < 1) {
-                    String message = "Invalid quantity specified";
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-                }
-
-                Optional<Book> bookOptional = this.bookRepository.findById(tq.getBook().getBookId());
-
-                if (bookOptional.isPresent()) {
-                    Book b = bookOptional.get();
-
-                    if (t.getTransactionType().equals(TransactionType.BORROW)
-                            && tq.getCopies() > b.getAvailableQuantity()) {
-                        String message = "Not enough copies available";
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-                    }
-
-                    else {
-                        tq.setBook(b);
-                        checkedTrnQtyList.add(tq);
-                    }
-                }
-
-                else {
-                    String message = "One or more books not found";
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-                }
-            }
-
-            t.setBookCopies(checkedTrnQtyList);
         }
         // --------------------------------------------------------------------
 
@@ -356,8 +399,64 @@ public class TransactionController {
         }
         // --------------------------------------------------------------------
 
+        // check validity of books
+        // --------------------------------------------------------------------
+        if (suppliedTrnQtyList == null) {
+            String message = "No books specified";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        else {
+            for (TrnQuantities tq : suppliedTrnQtyList) {
+                if (tq.getCopies() < 1) {
+                    String message = "Invalid quantity specified";
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                }
+
+                Optional<Book> bookOptional = this.bookRepository.findById(tq.getBook().getBookId());
+
+                if (bookOptional.isPresent()) {
+                    Book b = bookOptional.get();
+
+                    // cannot borrow if book has no copies left
+                    if (t.getTransactionType().equals(TransactionType.BORROW)
+                            && tq.getCopies() > b.getAvailableQuantity()) {
+                        String message = "Not enough copies available";
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                    }
+
+                    // cannot return more than you borrowed
+                    else if (t.getTransactionType().equals(TransactionType.RETURN)
+                            && tq.getCopies() > suppliedLoaner.findOutstandingCopiesByBook(b)) {
+                        String message = "Cannot return more than what was borrowed";
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                    }
+
+                    else {
+                        tq.setBook(b);
+                        checkedTrnQtyList.add(tq);
+                    }
+                }
+
+                else {
+                    String message = "One or more books not found";
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+                }
+            }
+
+            t.setBookCopies(checkedTrnQtyList);
+        }
+        // --------------------------------------------------------------------
+
         // save transaction
         Transaction savedTrn = this.transactionRepository.save(t);
+
+        // current loans
+        List<Loan> currentLoans = suppliedLoaner.getCurrentLoans();
 
         // save book quantities and transaction quantities
         for (TrnQuantities ctq : checkedTrnQtyList) {
@@ -366,12 +465,32 @@ public class TransactionController {
             Book ctqb = ctq.getBook();
             int initialQty = ctqb.getAvailableQuantity();
 
-            if (t.getTransactionType().equals(TransactionType.BORROW)) {
+            if (savedTrn.getTransactionType().equals(TransactionType.BORROW)) {
                 ctqb.setAvailableQuantity(initialQty - ctq.getCopies());
+
+                Loan newLoan = new Loan(0L, suppliedLoaner, ctqb, ctq.getCopies(), suppliedBorrowDate, suppliedDueDate);
+                this.loanRepository.save(newLoan);
+
+                currentLoans.add(newLoan);
+                // suppliedLoaner.setCurrentLoans(currentLoans); // redundant statement
+                this.loanerRepository.save(suppliedLoaner);
             }
 
-            else if (t.getTransactionType().equals(TransactionType.RETURN)) {
+            else if (savedTrn.getTransactionType().equals(TransactionType.RETURN)) {
                 ctqb.setAvailableQuantity(initialQty + ctq.getCopies());
+
+                // this list will have only atmost element
+                List<Loan> loansToBeDeleted = suppliedLoaner.updateLoans(ctqb, ctq.getCopies());
+
+                for (Loan deleteLoan : loansToBeDeleted) {
+                    this.loanRepository.delete(deleteLoan);
+                }
+
+                this.loanerRepository.save(suppliedLoaner);
+            }
+
+            else {
+                // TODO: add extend logic
             }
 
             this.bookRepository.save(ctqb);

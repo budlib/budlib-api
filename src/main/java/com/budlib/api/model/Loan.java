@@ -11,6 +11,8 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "loan")
 public class Loan implements Serializable {
     /**
@@ -19,7 +21,7 @@ public class Loan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "loan_id")
-    private Long loanId;
+    private long loanId;
 
     /**
      * Loaner who borrowed books

@@ -3,6 +3,7 @@ package com.budlib.api.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.ArrayList;
 import lombok.*;
 import com.fasterxml.jackson.annotation.*;
 
@@ -132,5 +133,56 @@ public class Loaner implements Serializable {
         else {
             return this.salutation + " " + this.getFullName();
         }
+    }
+
+    /**
+     * Returns the copies of returningBook that loaner has
+     *
+     * @param returningBook the book that loaner still holds
+     * @return number of copies
+     */
+    public int findOutstandingCopiesByBook(Book returningBook) {
+        for (Loan eachLoan : this.currentLoans) {
+            if (eachLoan.getBook().getBookId() == returningBook.getBookId()) {
+                return eachLoan.getCopies();
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Update the loans by the user after they return a book
+     *
+     * @param returningBook  the book loaner returned
+     * @param copiesReturned the copies of the book they returned
+     * @return loans returned by the Loaner
+     */
+    public List<Loan> updateLoans(Book returningBook, int copiesReturned) {
+        List<Loan> updatedLoans = new ArrayList<>();
+        List<Loan> settledLoans = new ArrayList<>();
+
+        for (Loan eachLoan : this.currentLoans) {
+            if (returningBook.getBookId() == eachLoan.getBook().getBookId()) {
+                int copiesStillLoaned = eachLoan.getCopies() - copiesReturned;
+
+                if (copiesStillLoaned <= 0) {
+                    settledLoans.add(eachLoan);
+                    continue;
+                }
+
+                else {
+                    eachLoan.setCopies(copiesStillLoaned);
+                    updatedLoans.add(eachLoan);
+                }
+            }
+
+            else {
+                updatedLoans.add(eachLoan);
+            }
+        }
+
+        this.currentLoans = updatedLoans;
+        return settledLoans;
     }
 }
