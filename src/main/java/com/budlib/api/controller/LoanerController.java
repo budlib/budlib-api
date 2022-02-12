@@ -132,7 +132,7 @@ public class LoanerController {
      * @return list of transactions
      */
     @GetMapping(path = "{loanerId}/history")
-    public ResponseEntity<?> getCoordinationHistory(@PathVariable("loanerId") Long id) {
+    public ResponseEntity<?> getTransactionHistory(@PathVariable("loanerId") Long id) {
         List<Loaner> l = this.searchLoanerById(id);
 
         if (l == null) {
@@ -143,6 +143,27 @@ public class LoanerController {
         else {
             List<Transaction> trnHistory = l.get(0).getTransactionHistory();
             return ResponseEntity.status(HttpStatus.OK).body(trnHistory);
+        }
+    }
+
+    /**
+     * Endpoint for GET - fetch the current outstanding books of the loaner
+     *
+     * @param id Loaner ID whose current loans is required
+     * @return list of loans
+     */
+    @GetMapping(path = "{loanerId}/loans")
+    public ResponseEntity<?> getCurrentLoans(@PathVariable("loanerId") Long id) {
+        List<Loaner> l = this.searchLoanerById(id);
+
+        if (l == null) {
+            String message = "Loaner not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+
+        else {
+            List<Loan> currentLoans = l.get(0).getCurrentLoans();
+            return ResponseEntity.status(HttpStatus.OK).body(currentLoans);
         }
     }
 
