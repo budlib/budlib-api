@@ -39,6 +39,12 @@ public class Loaner implements Serializable {
     private boolean isStudent;
 
     /**
+     * Email of the loaner
+     */
+    @Column(name = "email")
+    private String email;
+
+    /**
      * For faculty Mr, Mrs, Ms, Master, Miss, Dr, Prof, etc
      */
     @Column(name = "salutation")
@@ -149,6 +155,21 @@ public class Loaner implements Serializable {
         }
 
         return 0;
+    }
+
+    /**
+     * Return total number of borrowed books by the loaner
+     *
+     * @return total number of outstanding books
+     */
+    public int getTotalOutstanding() {
+        int totalLoans = 0;
+
+        for (Loan eachLoan : this.currentLoans) {
+            totalLoans += eachLoan.getCopies();
+        }
+
+        return totalLoans;
     }
 
     /**
