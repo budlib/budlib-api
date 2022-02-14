@@ -580,6 +580,28 @@
 					"response": []
 				},
 				{
+					"name": "Current loans by loaner ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/loaners/1/loans",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"loaners",
+								"1",
+								"loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Search loaners",
 					"request": {
 						"method": "GET",
@@ -831,13 +853,51 @@
 					"response": []
 				},
 				{
-					"name": "Add transaction",
+					"name": "Borrow transaction",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"transactionDateTime\": \"2022-02-11T09:15:23\",\r\n    \"transactionType\": \"BORROW\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 9\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 2\r\n            },\r\n            \"copies\": 2\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 5\r\n            },\r\n            \"copies\": 1\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"transactionDateTime\": \"2022-02-11T09:15:23\",\r\n    \"transactionType\": \"BORROW\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 9\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 6\r\n            },\r\n            \"copies\": 1\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 7\r\n            },\r\n            \"copies\": 2\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/transactions?borrowDate=20220211&dueDate=20220411",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "borrowDate",
+									"value": "20220211"
+								},
+								{
+									"key": "dueDate",
+									"value": "20220411"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Return transaction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transactionDateTime\": \"2022-02-11T09:15:23\",\r\n    \"transactionType\": \"RETURN\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 9\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 6\r\n            },\r\n            \"copies\": 1\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 7\r\n            },\r\n            \"copies\": 1\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
