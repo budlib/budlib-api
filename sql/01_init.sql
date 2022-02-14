@@ -44,7 +44,9 @@ CREATE TABLE tag (
 
 CREATE TABLE book_tag (
     book_id BIGINT NOT NULL,
-    tag_id BIGINT NOT NULL
+    tag_id BIGINT NOT NULL,
+    CONSTRAINT fk_booktag_book FOREIGN KEY (book_id) REFERENCES book (book_id),
+    CONSTRAINT fk_booktag_tag FOREIGN KEY (tag_id) REFERENCES tag (tag_id)
 );
 
 CREATE TABLE librarian (
@@ -62,6 +64,7 @@ CREATE TABLE librarian (
 CREATE TABLE loaner (
     loaner_id BIGINT NOT NULL AUTO_INCREMENT,
     school_id VARCHAR(255),
+    email VARCHAR(255),
     is_student BIT,
     salutation VARCHAR(255),
     first_name VARCHAR(255),
@@ -72,36 +75,34 @@ CREATE TABLE loaner (
     PRIMARY KEY (loaner_id)
 );
 
+CREATE TABLE loan (
+    loan_id BIGINT NOT NULL AUTO_INCREMENT,
+    book_id BIGINT,
+    copies INTEGER,
+    loaner_id BIGINT,
+    borrow_date DATE,
+    due_date DATE,
+    PRIMARY KEY (loan_id),
+    CONSTRAINT fk_loan_book FOREIGN KEY (book_id) REFERENCES book (book_id),
+    CONSTRAINT fk_loan_loaner FOREIGN KEY (loaner_id) REFERENCES loaner (loaner_id)
+);
+
 CREATE TABLE transaction (
     trn_id BIGINT NOT NULL AUTO_INCREMENT,
     trn_datetime DATETIME(6),
     trn_type INTEGER,
     librarian_id BIGINT,
     loaner_id BIGINT,
-    PRIMARY KEY (trn_id)
+    PRIMARY KEY (trn_id),
+    CONSTRAINT fk_trn_librarian FOREIGN KEY (librarian_id) REFERENCES librarian (librarian_id),
+    CONSTRAINT fk_trn_loaner FOREIGN KEY (loaner_id) REFERENCES loaner (loaner_id)
 );
 
 CREATE TABLE trn_quantities (
     trn_id BIGINT NOT NULL,
     book_id BIGINT NOT NULL,
     copies INTEGER,
-    PRIMARY KEY (trn_id , book_id)
+    PRIMARY KEY (trn_id , book_id),
+    CONSTRAINT fk_trnqty_trn FOREIGN KEY (trn_id) REFERENCES transaction (trn_id),
+    CONSTRAINT fk_trnqty_book FOREIGN KEY (book_id) REFERENCES book (book_id)
 );
-
-ALTER TABLE book_tag
-ADD CONSTRAINT fk_booktag_book FOREIGN KEY (book_id) REFERENCES book (book_id);
-
-ALTER TABLE book_tag
-ADD CONSTRAINT fk_booktag_tag FOREIGN KEY (tag_id) REFERENCES tag (tag_id);
-
-ALTER TABLE transaction
-ADD CONSTRAINT fk_trn_librarian FOREIGN KEY (librarian_id) REFERENCES librarian (librarian_id);
-
-ALTER TABLE transaction
-ADD CONSTRAINT fk_trn_loaner FOREIGN KEY (loaner_id) REFERENCES loaner (loaner_id);
-
-ALTER TABLE trn_quantities
-ADD CONSTRAINT fk_trnqty_trn FOREIGN KEY (trn_id) REFERENCES transaction (trn_id);
-
-ALTER TABLE trn_quantities
-ADD CONSTRAINT fk_trnqty_book FOREIGN KEY (book_id) REFERENCES book (book_id);
