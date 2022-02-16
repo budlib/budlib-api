@@ -305,6 +305,12 @@ public class LoanerController {
         }
 
         else {
+            if (this.loanerRepository.getById(loanerId).getTotalOutstanding() != 0) {
+                String message = "Cannot delete loaner with outstanding books";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
             this.loanerRepository.deleteById(loanerId);
             String message = "Loaner deleted successfully";
             return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
