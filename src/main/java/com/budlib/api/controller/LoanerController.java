@@ -20,6 +20,9 @@ public class LoanerController {
     @Autowired
     private LoanerRepository loanerRepository;
 
+    @Autowired
+    TransactionRepository transactionRepository;
+
     /**
      * Search the loaner by id
      *
@@ -305,10 +308,22 @@ public class LoanerController {
         }
 
         else {
-            if (this.loanerRepository.getById(loanerId).getTotalOutstanding() != 0) {
+            Loaner toBeDeleted = this.loanerRepository.getById(loanerId);
+
+            if (toBeDeleted.getTotalOutstanding() != 0) {
                 String message = "Cannot delete loaner with outstanding books";
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
+            // reset all the transactions
+            else {
+                List<Transaction> trnsToBeChange = toBeDeleted.getTransactionHistory();
+
+                for (Transaction trn : trnsToBeChange) {
+                    trn.setLoaner(null);
+                    this.transactionRepository.save(trn);
+                }
             }
 
             this.loanerRepository.deleteById(loanerId);
