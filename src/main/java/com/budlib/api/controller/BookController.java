@@ -419,6 +419,14 @@ public class BookController {
         }
 
         else {
+            Book toBeDeleted = this.bookRepository.getById(bookId);
+
+            if (toBeDeleted.getCurrentLoans().size() != 0) {
+                String message = "Cannot delete book with outstanding loans";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
             this.bookRepository.deleteById(bookId);
             String message = "Book deleted successfully";
             return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
