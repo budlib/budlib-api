@@ -351,6 +351,11 @@ public class BookController {
         // reset the id to 0 to prevent overwrite
         b.setBookId(0L);
 
+        if (b.getAvailableQuantity() > b.getTotalQuantity()) {
+            String message = "Total quantity cannot be higher than available";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
         List<Tag> suppliedTagList = b.getTags();
         List<Tag> uniqueTagList = new ArrayList<>();
 
