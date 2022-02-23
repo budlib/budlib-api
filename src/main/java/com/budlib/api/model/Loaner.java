@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDate;
 import lombok.*;
 import com.fasterxml.jackson.annotation.*;
 
@@ -205,5 +206,19 @@ public class Loaner implements Serializable {
 
         this.currentLoans = updatedLoans;
         return settledLoans;
+    }
+
+    /**
+     * Update the loans by the user after they extend a book
+     *
+     * @param extendingBook the book loaner returned
+     */
+    public void updateLoanDueDate(Book extendingBook, LocalDate newDueDate) {
+        for (Loan eachLoan : this.currentLoans) {
+            if (extendingBook.getBookId() == eachLoan.getBook().getBookId()) {
+                eachLoan.setDueDate(newDueDate);
+                break;
+            }
+        }
     }
 }

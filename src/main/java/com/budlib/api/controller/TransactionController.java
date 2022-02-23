@@ -435,6 +435,14 @@ public class TransactionController {
                                 .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
                     }
 
+                    // cannot extend partial number of copies of the same book
+                    else if (t.getTransactionType().equals(TransactionType.EXTEND)
+                            && tq.getCopies() != suppliedLoaner.findOutstandingCopiesByBook(b)) {
+                        String message = "Cannot extend partial number of copies";
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                    }
+
                     else {
                         tq.setBook(b);
                         checkedTrnQtyList.add(tq);
@@ -479,7 +487,7 @@ public class TransactionController {
             else if (savedTrn.getTransactionType().equals(TransactionType.RETURN)) {
                 ctqb.setAvailableQuantity(initialQty + ctq.getCopies());
 
-                // this list will have only atmost element
+                // this list will have only atmost one element
                 List<Loan> loansToBeDeleted = suppliedLoaner.updateLoans(ctqb, ctq.getCopies());
 
                 for (Loan deleteLoan : loansToBeDeleted) {
@@ -490,7 +498,8 @@ public class TransactionController {
             }
 
             else {
-                // TODO: add extend logic
+                suppliedLoaner.updateLoanDueDate(ctqb, suppliedDueDate);
+                this.loanerRepository.save(suppliedLoaner);
             }
 
             this.bookRepository.save(ctqb);
