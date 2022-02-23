@@ -217,6 +217,7 @@ public class TransactionController {
      * @param l Loaner to be added or updated
      * @return true if unique, false otherwise
      */
+    @SuppressWarnings("unused")
     private boolean checkLoanerUniqueness(Loaner l) {
         if (l.getSchoolId() == null || l.getSchoolId().equals("")) {
             return true;
@@ -367,34 +368,19 @@ public class TransactionController {
         }
 
         else {
-            // for loaners not existing in system - save them before doing the transaction
-            if (suppliedLoaner.getLoanerId() == 0L) {
-                if (this.checkLoanerUniqueness(suppliedLoaner)) {
-                    this.loanerRepository.save(suppliedLoaner);
-                }
+            // for loaners existing in system - find them before doing the transaction
+            Optional<Loaner> loanerOptional = this.loanerRepository.findById(suppliedLoaner.getLoanerId());
 
-                else {
-                    String message = "Loaner already exists";
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-                }
+            if (loanerOptional.isPresent()) {
+                // overwrite supplied details of the loaner
+                suppliedLoaner = loanerOptional.get();
+                t.setLoaner(suppliedLoaner);
             }
 
             else {
-                // for loaners existing in system - find them before doing the transaction
-                Optional<Loaner> loanerOptional = this.loanerRepository.findById(suppliedLoaner.getLoanerId());
-
-                if (loanerOptional.isPresent()) {
-                    // overwrite supplied details of the loaner
-                    suppliedLoaner = loanerOptional.get();
-                    t.setLoaner(suppliedLoaner);
-                }
-
-                else {
-                    String message = "Loaner not found";
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-                }
+                String message = "Loaner not found";
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ErrorBody(HttpStatus.NOT_FOUND, message));
             }
         }
         // --------------------------------------------------------------------
