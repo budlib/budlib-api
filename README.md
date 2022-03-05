@@ -21,7 +21,7 @@ REST API for BudLib - a library management tool
    1. [01_init.sql](sql/01_init.sql)
    2. [02_tables.sql](sql/02_dummy_data.sql)
 
-5. Running the below command from the project's root directory will get the backend server running.
+5. Running the below command from the repository's root directory will get the backend server running.
    ```bash
    $ mvn clean spring-boot:run
    ```
