@@ -325,7 +325,13 @@ public class BookController {
         }
     }
 
-    public Tag findUniqueTag(Tag t) {
+    /**
+     * Saves and returns and tag of the book, while handling duplicates
+     *
+     * @param t Tag to be saved
+     * @return Tag saved
+     */
+    private Tag findUniqueTag(Tag t) {
         // reset the id to 0 to prevent overwrite
         t.setTagId(0L);
 
@@ -351,8 +357,8 @@ public class BookController {
         // reset the id to 0 to prevent overwrite
         b.setBookId(0L);
 
-        if (b.getAvailableQuantity() > b.getTotalQuantity()) {
-            String message = "Total quantity cannot be higher than available";
+        if (b.getTotalQuantity() != b.getAvailableQuantity()) {
+            String message = "Total quantity and available quantity should be equal when adding new books";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
@@ -372,6 +378,26 @@ public class BookController {
     }
 
     /**
+     * Calculate the total number of outstanding copies of given book
+     *
+     * @param b Book for which total number of outstanding copies is required
+     * @return total number of outstanding copies
+     */
+    private int getLoanCountOfBook(Book b) {
+        List<Loan> currentLoans = b.getCurrentLoans();
+
+        System.out.println("\n\n\n" + currentLoans.size());
+
+        int count = 0;
+
+        for (Loan eachLoan : currentLoans) {
+            count = count + eachLoan.getCopies();
+        }
+
+        return count;
+    }
+
+    /**
      * Endpoint for PUT - update book in db
      *
      * @param b      the updated book details in json
@@ -384,6 +410,18 @@ public class BookController {
 
         if (bookOptional.isPresent()) {
             b.setBookId(bookId);
+
+            int totalQty = b.getTotalQuantity();
+            int availableQty = b.getAvailableQuantity();
+            int loanQty = this.getLoanCountOfBook(bookOptional.get());
+
+            if (totalQty != availableQty + loanQty) {
+                String message = String.format(
+                        "Invalid values for total quantity or available quantity.%nTotal (%d) should match sum of available (%d) and loan count (%d)",
+                        totalQty, availableQty, loanQty);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
 
             List<Tag> suppliedTagList = b.getTags();
             List<Tag> uniqueTagList = new ArrayList<>();
