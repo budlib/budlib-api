@@ -376,6 +376,41 @@ public class BookController {
         String message = "Book added successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
+	
+	/**
+     * Endpoint for POST - save the book in db
+     *
+     * @param b book details in json
+     * @return the message
+     */
+    @PostMapping (path = "multiple")
+    public ResponseEntity<?> addBooks(@RequestBody List<Book> bs) {
+        // reset the id to 0 to prevent overwrite
+		System.out.println("got into multiple. Size of bs is " + bs.size());
+		for(Book b: bs){
+			b.setBookId(0L);
+
+        if (b.getTotalQuantity() != b.getAvailableQuantity()) {
+            String message = "Total quantity and available quantity should be equal when adding new books";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+		
+		System.out.println("got to quantity check");
+
+        List<Tag> suppliedTagList = b.getTags();
+        List<Tag> uniqueTagList = new ArrayList<>();
+
+        
+
+        
+        this.bookRepository.save(b);
+			
+		}
+        
+
+        String message = "Book added successfully";
+        return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+    }
 
     /**
      * Calculate the total number of outstanding copies of given book
