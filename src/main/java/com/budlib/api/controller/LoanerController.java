@@ -261,6 +261,31 @@ public class LoanerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
     }
+	
+	/**
+     * Endpoint for POST - save the loaner in db
+     *
+     * @param l loaner details in json
+     * @return the message
+     */
+    @PostMapping (path = "multiple")
+    public ResponseEntity<?> addLoaner(@RequestBody List<Loaner> ls) {
+        // reset the id to 0 to prevent overwrite
+		
+		for(Loaner l: ls){
+			l.setLoanerId(0L);
+
+			if (this.checkLoanerUniqueness(l)) {
+				this.loanerRepository.save(l);
+				
+				
+			}
+
+			
+		}
+		String message = "Loaners all added successfully";
+		return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+    }
 
     /**
      * Endpoint for PUT - update loaner in db
