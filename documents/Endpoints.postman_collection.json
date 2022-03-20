@@ -6,13 +6,53 @@
 	},
 	"item": [
 		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"zbhavyai@gmail.com\",\r\n    \"password\": \"easypassword\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/auth",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Books",
 			"item": [
 				{
 					"name": "Get books",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer XXX",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/books",
 							"protocol": "http",
@@ -130,7 +170,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Rich Dad Poor Dad\",\r\n    \"subtitle\": \"What the Rich Teach Their Kids About Money That the Poor and Middle Class Do Not!\",\r\n    \"authors\": \"Robert T Kiyosaki\",\r\n    \"publisher\": \"Michealmas Press\",\r\n    \"edition\": null,\r\n    \"year\": \"2017-04\",\r\n    \"language\": \"en\",\r\n    \"isbn_10\": \"161-268-0194\",\r\n    \"isbn_13\": \"978-161-2680-194\",\r\n    \"librarySection\": null,\r\n    \"totalQuantity\": 50,\r\n    \"availableQuantity\": 50,\r\n    \"notes\": null,\r\n    \"tags\": [\r\n        {\r\n            \"tagName\": \"business\"\r\n        },\r\n        {\r\n            \"tagName\": \"fiction\"\r\n        }\r\n    ],\r\n    \"imageLink\": \"http://books.google.com/books/content?id=f5osEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api\",\r\n    \"priceRetail\": null,\r\n    \"priceLibrary\": null\r\n}",
+							"raw": "{\r\n    \"title\": \"Rich Dad Poor Dad\",\r\n    \"subtitle\": \"What the Rich Teach Their Kids About Money That the Poor and Middle Class Do Not!\",\r\n    \"authors\": \"Robert T Kiyosaki\",\r\n    \"publisher\": \"Michealmas Press\",\r\n    \"edition\": null,\r\n    \"year\": \"2017-04\",\r\n    \"language\": \"en\",\r\n    \"isbn_10\": \"161-268-0194\",\r\n    \"isbn_13\": \"978-161-2680-194\",\r\n    \"librarySection\": null,\r\n    \"totalQuantity\": 50,\r\n    \"availableQuantity\": 50,\r\n    \"notes\": null,\r\n    \"tags\": [\r\n        {\r\n            \"tagName\": \"check\"\r\n        },\r\n        {\r\n            \"tagName\": \"outs\"\r\n        }\r\n    ],\r\n    \"imageLink\": \"http://books.google.com/books/content?id=f5osEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api\",\r\n    \"priceRetail\": null,\r\n    \"priceLibrary\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -338,7 +378,14 @@
 					"name": "Get librarians",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer XXX",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/librarian",
 							"protocol": "http",
@@ -466,10 +513,17 @@
 					"name": "Modify librarian",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer XXX",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"zbhavyai@gmail.com\",\r\n    \"password\": \"zbhavyai\",\r\n    \"role\": \"admin\"\r\n}",
+							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"zbhavyai@gmail.com\",\r\n    \"password\": \"easypassword\",\r\n    \"role\": \"admin\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -477,7 +531,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/librarian/8",
+							"raw": "http://localhost:8080/api/librarian/3",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -486,7 +540,7 @@
 							"path": [
 								"api",
 								"librarian",
-								"8"
+								"3"
 							]
 						}
 					},
@@ -947,6 +1001,32 @@
 									"key": "dueDate",
 									"value": "20220623"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Get stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/stats",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"stats"
 							]
 						}
 					},
