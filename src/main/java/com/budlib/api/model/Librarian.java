@@ -72,4 +72,35 @@ public class Librarian implements Serializable {
     @OneToMany(mappedBy = "librarian")
     @JsonIgnore
     private List<Transaction> transactionHistory;
+
+    /**
+     * Returns the full name of the librarian
+     *
+     * @return full name of the librarian
+     */
+    @JsonProperty("fullName")
+    public String getFullName() {
+        StringBuilder sb = new StringBuilder();
+
+        if (this.firstName != null) {
+            sb.append(this.firstName);
+        }
+
+        if (this.middleName != null) {
+            sb.append(" " + this.middleName);
+        }
+
+        if (this.lastName != null) {
+            sb.append(" " + this.lastName);
+        }
+
+        // to handle null if no name is provided
+        if (sb.length() == 0) {
+            return "";
+        }
+
+        else {
+            return sb.toString();
+        }
+    }
 }
