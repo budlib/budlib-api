@@ -56,7 +56,7 @@ public class AuthenticationController {
         Librarian verifiedLibrarian = this.librarianService.getLibrarianByEmail(l.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new AuthResponse(HttpStatus.OK, "", verifiedLibrarian.getFirstName(),
+                .body(new AuthResponse(HttpStatus.OK, "", verifiedLibrarian.getUserName(),
                         verifiedLibrarian.getRole(), verifiedLibrarian.getLibrarianId(), jwt));
     }
 }

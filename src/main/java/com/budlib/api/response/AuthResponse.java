@@ -20,9 +20,9 @@ public class AuthResponse {
     private String message;
 
     /**
-     * The name of the logged in user
+     * The username of the logged in user
      */
-    private String name;
+    private String username;
 
     /**
      * The role of the logged in user
@@ -42,16 +42,16 @@ public class AuthResponse {
     public AuthResponse(HttpStatus httpStatus, String message) {
         this.status = httpStatus;
         this.message = message;
-        this.name = null;
+        this.username = null;
         this.role = null;
         this.id = null;
         this.token = null;
     }
 
-    public AuthResponse(HttpStatus httpStatus, String message, String name, String role, Long id, String token) {
+    public AuthResponse(HttpStatus httpStatus, String message, String username, String role, Long id, String token) {
         this.status = httpStatus;
         this.message = message;
-        this.name = name;
+        this.username = username;
         this.role = role;
         this.id = id;
         this.token = token;
