@@ -2,6 +2,7 @@ package com.budlib.api.controller;
 
 import com.budlib.api.model.*;
 import com.budlib.api.repository.*;
+import com.budlib.api.response.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Controller for librarian
@@ -105,7 +107,7 @@ public class LibrarianController {
 
     /**
      * Endpoint for GET - fetch the transaction history made by a Librarian
-     * 
+     *
      * @param id Librarian ID whose transaction history is required
      * @return list of transactions
      */
@@ -181,6 +183,7 @@ public class LibrarianController {
 
         String suppliedUsername = l.getUserName();
         String suppliedEmail = l.getEmail();
+        String suppliedPassword = l.getPassword();
 
         // RFC 5322 regex check
         String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
@@ -188,6 +191,11 @@ public class LibrarianController {
         if (suppliedUsername == null || suppliedUsername.equals("")) {
             response[0] = "false";
             response[1] = "Username cannot be empty";
+        }
+
+        else if (suppliedPassword == null || suppliedPassword.equals("")) {
+            response[0] = "false";
+            response[1] = "Password cannot be empty";
         }
 
         else if (suppliedEmail == null || suppliedEmail.equals("")) {
@@ -238,6 +246,9 @@ public class LibrarianController {
         String[] checkDetails = this.checkSuppliedDetails(l);
 
         if (checkDetails[0].equals("true")) {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            l.setPassword(encoder.encode(l.getPassword()));
+
             this.librarianRepository.save(l);
             String message = "Librarian added successfully";
             return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
@@ -266,6 +277,9 @@ public class LibrarianController {
             String[] checkDetails = this.checkSuppliedDetails(l);
 
             if (checkDetails[0].equals("true")) {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                l.setPassword(encoder.encode(l.getPassword()));
+
                 this.librarianRepository.save(l);
                 String message = "Librarian updated successfully";
                 return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));

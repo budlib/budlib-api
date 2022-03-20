@@ -56,7 +56,6 @@ public class Librarian implements Serializable {
 
     /**
      * Login password of the librarian
-     * TODO: replace with encrypted string
      */
     @Column(name = "password")
     private String password;

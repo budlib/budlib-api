@@ -1,5 +1,6 @@
 package com.budlib.api.security;
 
+import com.budlib.api.service.LibrarianService;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,9 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class TokenFilter extends OncePerRequestFilter {
-
     @Autowired
-    private SecurityService sService;
+    private LibrarianService librarianService;
 
     @Autowired
     private Token token;
@@ -25,7 +25,7 @@ public class TokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // TODO Auto-generated method stub
+
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
@@ -37,12 +37,15 @@ public class TokenFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.sService.loadUserByUsername(username);
+            UserDetails userDetails = this.librarianService.loadUserByUsername(username);
+
             if (token.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
+
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }

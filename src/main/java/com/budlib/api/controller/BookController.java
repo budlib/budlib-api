@@ -2,6 +2,7 @@ package com.budlib.api.controller;
 
 import com.budlib.api.model.*;
 import com.budlib.api.repository.*;
+import com.budlib.api.response.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -376,37 +377,33 @@ public class BookController {
         String message = "Book added successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
-	
-	/**
+
+    /**
      * Endpoint for POST - save the book in db
      *
      * @param b book details in json
      * @return the message
      */
-    @PostMapping (path = "multiple")
+    @PostMapping(path = "multiple")
     public ResponseEntity<?> addBooks(@RequestBody List<Book> bs) {
         // reset the id to 0 to prevent overwrite
-		System.out.println("got into multiple. Size of bs is " + bs.size());
-		for(Book b: bs){
-			b.setBookId(0L);
+        System.out.println("got into multiple. Size of bs is " + bs.size());
+        for (Book b : bs) {
+            b.setBookId(0L);
 
-        if (b.getTotalQuantity() != b.getAvailableQuantity()) {
-            String message = "Total quantity and available quantity should be equal when adding new books";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            if (b.getTotalQuantity() != b.getAvailableQuantity()) {
+                String message = "Total quantity and available quantity should be equal when adding new books";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
+            System.out.println("got to quantity check");
+
+            List<Tag> suppliedTagList = b.getTags();
+            List<Tag> uniqueTagList = new ArrayList<>();
+
+            this.bookRepository.save(b);
         }
-		
-		System.out.println("got to quantity check");
-
-        List<Tag> suppliedTagList = b.getTags();
-        List<Tag> uniqueTagList = new ArrayList<>();
-
-        
-
-        
-        this.bookRepository.save(b);
-			
-		}
-        
 
         String message = "Book added successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
@@ -420,8 +417,6 @@ public class BookController {
      */
     private int getLoanCountOfBook(Book b) {
         List<Loan> currentLoans = b.getCurrentLoans();
-
-        System.out.println("\n\n\n" + currentLoans.size());
 
         int count = 0;
 

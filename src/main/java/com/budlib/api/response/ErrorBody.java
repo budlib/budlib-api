@@ -1,4 +1,4 @@
-package com.budlib.api.model;
+package com.budlib.api.response;
 
 import org.springframework.http.HttpStatus;
 import lombok.*;

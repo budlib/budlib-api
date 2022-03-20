@@ -2,6 +2,7 @@ package com.budlib.api.controller;
 
 import com.budlib.api.model.*;
 import com.budlib.api.repository.*;
+import com.budlib.api.response.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -261,30 +262,28 @@ public class LoanerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
     }
-	
-	/**
+
+    /**
      * Endpoint for POST - save the loaner in db
      *
      * @param l loaner details in json
      * @return the message
      */
-    @PostMapping (path = "multiple")
+    @PostMapping(path = "multiple")
     public ResponseEntity<?> addLoaner(@RequestBody List<Loaner> ls) {
         // reset the id to 0 to prevent overwrite
-		
-		for(Loaner l: ls){
-			l.setLoanerId(0L);
 
-			if (this.checkLoanerUniqueness(l)) {
-				this.loanerRepository.save(l);
-				
-				
-			}
+        for (Loaner l : ls) {
+            l.setLoanerId(0L);
 
-			
-		}
-		String message = "Loaners all added successfully";
-		return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+            if (this.checkLoanerUniqueness(l)) {
+                this.loanerRepository.save(l);
+
+            }
+        }
+
+        String message = "Loaners all added successfully";
+        return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
 
     /**
