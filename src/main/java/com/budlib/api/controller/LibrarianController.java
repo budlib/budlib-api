@@ -299,26 +299,64 @@ public class LibrarianController {
     }
 
     /**
+     * Counts the number of admins in the system
+     *
+     * @return Number of library administrators
+     */
+    @SuppressWarnings("unused")
+    private int getAdminCount() {
+        int count = 0;
+
+        List<Librarian> allLibrarians = this.librarianRepository.findAll();
+
+        for (Librarian eachLibrarian : allLibrarians) {
+            if (eachLibrarian.getRole().equals("admin")) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
      * Endpoint for DELETE - delete librarian from db
      *
      * @param librarianId librarian id
      */
     @DeleteMapping(path = "{librarianId}")
-    public ResponseEntity<?> deleteLibrarian(@PathVariable("librarianId") Long librarianId) {
+    public ResponseEntity<?> deleteLibrarian(@PathVariable("librarianId") Long librarianId,
+            @RequestParam(name = "deleteBy", required = true) Long deleterId) {
+
+        if (librarianId == deleterId) {
+            String message = "You cannot delete your own account";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorBody(HttpStatus.FORBIDDEN, message));
+        }
+
+        if (this.librarianRepository.existsById(deleterId)) {
+            if (this.librarianRepository.findById(deleterId).get().getRole().equalsIgnoreCase("faculty")) {
+                String message = "You dont have necessary rights";
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorBody(HttpStatus.FORBIDDEN, message));
+            }
+        }
+
+        else {
+            String message = "Unknown delete requester";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorBody(HttpStatus.FORBIDDEN, message));
+        }
+
         if (!this.librarianRepository.existsById(librarianId)) {
             String message = "Librarian not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
         }
 
         else {
-            List<Transaction> allTransactions = this.transactionRepository.findAll();
+            Librarian toBeDeleted = this.librarianRepository.getById(librarianId);
+            List<Transaction> trnsToBeUpdated = toBeDeleted.getTransactionHistory();
 
             // loop to detach librarian first
-            for (Transaction eachTransaction : allTransactions) {
-                if (eachTransaction.getLibrarian().getLibrarianId() == librarianId) {
-                    eachTransaction.setLibrarian(null);
-                    this.transactionRepository.save(eachTransaction);
-                }
+            for (Transaction trn : trnsToBeUpdated) {
+                trn.setLibrarian(null);
+                this.transactionRepository.save(trn);
             }
 
             this.librarianRepository.deleteById(librarianId);
