@@ -262,7 +262,7 @@ public class LibrarianController {
     }
 
     /**
-     * Endpoint for PUT - update librarian in db
+     * Endpoint for PUT - update librarian in db, without changing the password
      *
      * @param l           the updated librarian details in json
      * @param librarianId the id of the librarian to be updated
@@ -274,15 +274,54 @@ public class LibrarianController {
 
         if (librarianOptional.isPresent()) {
             l.setLibrarianId(librarianId);
+            l.setPassword(librarianOptional.get().getPassword());
 
             String[] checkDetails = this.checkSuppliedDetails(l);
 
             if (checkDetails[0].equals("true")) {
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                l.setPassword(encoder.encode(l.getPassword()));
 
                 this.librarianRepository.save(l);
                 String message = "Librarian updated successfully";
+                return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+            }
+
+            else {
+                String message = checkDetails[1];
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+        }
+
+        else {
+            String message = "Librarian not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        }
+    }
+
+    /**
+     * Endpoint for PUT - change librarian password
+     *
+     * @param librarianId the id of the librarian whose password is to be changed
+     * @return the message
+     */
+    @PutMapping(path = "{librarianId}/changepassword")
+    public ResponseEntity<?> changePassword(@RequestBody Librarian l, @PathVariable("librarianId") Long librarianId) {
+        Optional<Librarian> librarianOptional = this.librarianRepository.findById(librarianId);
+
+        if (librarianOptional.isPresent()) {
+            Librarian oldDetails = librarianOptional.get();
+
+            // temporarily set unencrypted password for checkDetails method
+            oldDetails.setPassword(l.getPassword());
+
+            String[] checkDetails = this.checkSuppliedDetails(oldDetails);
+
+            if (checkDetails[0].equals("true")) {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                oldDetails.setPassword(encoder.encode(oldDetails.getPassword()));
+
+                this.librarianRepository.save(oldDetails);
+                String message = "Password updated successfully";
                 return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
             }
 
