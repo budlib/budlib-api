@@ -1,4 +1,4 @@
-package com.budlib.api.model;
+package com.budlib.api.enums;
 
 /**
  * Represents type of transaction

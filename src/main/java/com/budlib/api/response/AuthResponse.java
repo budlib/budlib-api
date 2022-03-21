@@ -1,5 +1,6 @@
 package com.budlib.api.response;
 
+import com.budlib.api.enums.*;
 import org.springframework.http.HttpStatus;
 import lombok.*;
 
@@ -27,7 +28,7 @@ public class AuthResponse {
     /**
      * The role of the logged in user
      */
-    private String role;
+    private LibrarianRole role;
 
     /**
      * The id of the logged in user
@@ -48,7 +49,8 @@ public class AuthResponse {
         this.token = null;
     }
 
-    public AuthResponse(HttpStatus httpStatus, String message, String username, String role, Long id, String token) {
+    public AuthResponse(HttpStatus httpStatus, String message, String username, LibrarianRole role, Long id,
+            String token) {
         this.status = httpStatus;
         this.message = message;
         this.username = username;

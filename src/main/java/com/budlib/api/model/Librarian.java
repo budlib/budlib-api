@@ -1,5 +1,6 @@
 package com.budlib.api.model;
 
+import com.budlib.api.enums.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -64,7 +65,7 @@ public class Librarian implements Serializable {
      * Role in the library
      */
     @Column(name = "role")
-    private String role;
+    private LibrarianRole role;
 
     /**
      * Coordination history of the Librarian

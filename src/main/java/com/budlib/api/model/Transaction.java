@@ -1,5 +1,6 @@
 package com.budlib.api.model;
 
+import com.budlib.api.enums.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;

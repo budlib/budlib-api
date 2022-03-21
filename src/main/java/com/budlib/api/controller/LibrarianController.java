@@ -1,6 +1,7 @@
 package com.budlib.api.controller;
 
 import com.budlib.api.model.*;
+import com.budlib.api.enums.*;
 import com.budlib.api.repository.*;
 import com.budlib.api.response.*;
 import java.util.List;
@@ -310,7 +311,7 @@ public class LibrarianController {
         List<Librarian> allLibrarians = this.librarianRepository.findAll();
 
         for (Librarian eachLibrarian : allLibrarians) {
-            if (eachLibrarian.getRole().equals("admin")) {
+            if (eachLibrarian.getRole().equals(LibrarianRole.ADMIN)) {
                 count++;
             }
         }
@@ -333,7 +334,7 @@ public class LibrarianController {
         }
 
         if (this.librarianRepository.existsById(deleterId)) {
-            if (this.librarianRepository.findById(deleterId).get().getRole().equalsIgnoreCase("faculty")) {
+            if (this.librarianRepository.findById(deleterId).get().getRole().equals(LibrarianRole.FACULTY)) {
                 String message = "You dont have necessary rights";
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorBody(HttpStatus.FORBIDDEN, message));
             }
