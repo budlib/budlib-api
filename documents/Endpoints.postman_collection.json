@@ -48,9 +48,8 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer XXX",
-								"type": "text",
-								"disabled": true
+								"value": "Bearer test",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -72,7 +71,13 @@
 					"name": "Get book by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/books/2",
 							"protocol": "http",
@@ -93,7 +98,13 @@
 					"name": "Get tags of book ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/books/2/tags",
 							"protocol": "http",
@@ -115,7 +126,13 @@
 					"name": "Current loans by book ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/books/2/loans",
 							"protocol": "http",
@@ -137,7 +154,13 @@
 					"name": "Search books",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/books?searchBy=author&searchTerm=Johnson%20Fenner",
 							"protocol": "http",
@@ -167,7 +190,13 @@
 					"name": "Add book",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"title\": \"Rich Dad Poor Dad\",\r\n    \"subtitle\": \"What the Rich Teach Their Kids About Money That the Poor and Middle Class Do Not!\",\r\n    \"authors\": \"Robert T Kiyosaki\",\r\n    \"publisher\": \"Michealmas Press\",\r\n    \"edition\": null,\r\n    \"year\": \"2017-04\",\r\n    \"language\": \"en\",\r\n    \"isbn_10\": \"161-268-0194\",\r\n    \"isbn_13\": \"978-161-2680-194\",\r\n    \"librarySection\": null,\r\n    \"totalQuantity\": 50,\r\n    \"availableQuantity\": 50,\r\n    \"notes\": null,\r\n    \"tags\": [\r\n        {\r\n            \"tagName\": \"check\"\r\n        },\r\n        {\r\n            \"tagName\": \"outs\"\r\n        }\r\n    ],\r\n    \"imageLink\": \"http://books.google.com/books/content?id=f5osEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api\",\r\n    \"priceRetail\": null,\r\n    \"priceLibrary\": null\r\n}",
@@ -196,7 +225,13 @@
 					"name": "Modify book",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"title\": \"Rich Dad Poor Dad\",\r\n    \"subtitle\": \"What the Rich Teach Their Kids About Money That the Poor and Middle Class Do Not!\",\r\n    \"authors\": \"Robert T Kiyosaki\",\r\n    \"publisher\": \"Michealmas Press\",\r\n    \"edition\": null,\r\n    \"year\": \"2017-04\",\r\n    \"language\": \"en\",\r\n    \"isbn_10\": \"1612680194\",\r\n    \"isbn_13\": \"9781612680194\",\r\n    \"librarySection\": null,\r\n    \"totalQuantity\": 5,\r\n    \"availableQuantity\": 4,\r\n    \"notes\": null,\r\n    \"tags\": [\r\n        {\r\n            \"tagName\": \"fakeness\"\r\n        }\r\n    ],\r\n    \"imageLink\": \"http://books.google.com/books/content?id=f5osEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api\",\r\n    \"priceRetail\": null,\r\n    \"priceLibrary\": null\r\n}",
@@ -226,7 +261,13 @@
 					"name": "Delete book",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/books/139",
 							"protocol": "http",
@@ -252,7 +293,13 @@
 					"name": "Get tags",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/tags",
 							"protocol": "http",
@@ -272,7 +319,13 @@
 					"name": "Get tag by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/tags/5",
 							"protocol": "http",
@@ -293,7 +346,13 @@
 					"name": "Search tags",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/tags?searchBy=name&searchTerm=nove",
 							"protocol": "http",
@@ -323,7 +382,13 @@
 					"name": "Add tag",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"tagName\": \"magic\"\r\n}",
@@ -352,7 +417,13 @@
 					"name": "Delete unused tags",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/tags/cleanup",
 							"protocol": "http",
@@ -381,9 +452,8 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer XXX",
-								"type": "text",
-								"disabled": true
+								"value": "Bearer test",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -405,7 +475,13 @@
 					"name": "Get librarian by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/librarian/2",
 							"protocol": "http",
@@ -426,7 +502,13 @@
 					"name": "Transaction history by librarian ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/librarian/2/history",
 							"protocol": "http",
@@ -451,7 +533,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "",
+								"value": "Bearer test",
 								"type": "text"
 							}
 						],
@@ -474,6 +556,11 @@
 								{
 									"key": "searchTerm",
 									"value": "y"
+								},
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
 								}
 							]
 						}
@@ -484,10 +571,16 @@
 					"name": "Add librarian",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"bhavyai.gupta@ucalgary.ca\",\r\n    \"password\": \"zbhavyai\",\r\n    \"role\": \"admin\"\r\n}",
+							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"bhavyai.gupta@ucalgary.ca\",\r\n    \"password\": \"zbhavyai\",\r\n    \"role\": \"ADMIN\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -516,14 +609,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer XXX",
-								"type": "text",
-								"disabled": true
+								"value": "Bearer test",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"zbhavyai@gmail.com\",\r\n    \"password\": \"easypassword\",\r\n    \"role\": \"admin\"\r\n}",
+							"raw": "{\r\n    \"userName\": \"zbhavyai\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"lastName\": \"Gupta\",\r\n    \"email\": \"zbhavyai@gmail.com\",\r\n    \"password\": \"easypassword\",\r\n    \"role\": \"ADMIN\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -550,9 +642,15 @@
 					"name": "Delete librarian",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "http://localhost:8080/api/librarian/2",
+							"raw": "http://localhost:8080/api/librarian/4?deleteBy=1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -561,7 +659,13 @@
 							"path": [
 								"api",
 								"librarian",
-								"2"
+								"4"
+							],
+							"query": [
+								{
+									"key": "deleteBy",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -576,7 +680,13 @@
 					"name": "Get loaners",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/loaners",
 							"host": [
@@ -595,7 +705,13 @@
 					"name": "Get loaners by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/loaners/5",
 							"host": [
@@ -615,7 +731,13 @@
 					"name": "Transaction history by loaner ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/loaners/1/history",
 							"protocol": "http",
@@ -637,7 +759,13 @@
 					"name": "Current loans by loaner ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/loaners/1/loans",
 							"protocol": "http",
@@ -662,7 +790,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "",
+								"value": "Bearer test",
 								"type": "text"
 							}
 						],
@@ -697,8 +825,8 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "",
-								"value": "",
+								"key": "Authorization",
+								"value": "Bearer test",
 								"type": "text",
 								"disabled": true
 							}
@@ -730,7 +858,13 @@
 					"name": "Modify loaner",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"schoolId\": \"XXXX\",\r\n    \"salutation\": \"Mr\",\r\n    \"firstName\": \"Bhavyai\",\r\n    \"middleName\": null,\r\n    \"lastName\": \"Gupta\",\r\n    \"motherName\": null,\r\n    \"fatherName\": null,\r\n    \"isStudent\": true\r\n}",
@@ -759,7 +893,13 @@
 					"name": "Delete loaner",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/loaners/16",
 							"host": [
@@ -784,7 +924,13 @@
 					"name": "Get transactions",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/transactions",
 							"host": [
@@ -803,7 +949,13 @@
 					"name": "Get transactions by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/transactions/4",
 							"host": [
@@ -823,7 +975,13 @@
 					"name": "Search transactions by librarian",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/transactions?searchBy=librarian&searchTerm=1",
 							"host": [
@@ -852,7 +1010,13 @@
 					"name": "Search transactions by loaner",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/transactions?searchBy=loaner&searchTerm=7",
 							"host": [
@@ -881,7 +1045,13 @@
 					"name": "Search transactions by type",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/api/transactions?searchBy=type&searchTerm=return",
 							"host": [
@@ -910,7 +1080,13 @@
 					"name": "Borrow transaction",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"transactionType\": \"BORROW\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 1\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 54\r\n            },\r\n            \"copies\": 2\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 134\r\n            },\r\n            \"copies\": 2\r\n        }\r\n    ]\r\n}",
@@ -948,7 +1124,13 @@
 					"name": "Return transaction",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"transactionType\": \"RETURN\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 2\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 6\r\n            },\r\n            \"copies\": 1\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 7\r\n            },\r\n            \"copies\": 1\r\n        }\r\n    ]\r\n}",
@@ -976,7 +1158,13 @@
 					"name": "Extend transaction",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"transactionType\": \"EXTEND\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 2\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 54\r\n            },\r\n            \"copies\": 2\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 134\r\n            },\r\n            \"copies\": 2\r\n        }\r\n    ]\r\n}",
@@ -1015,7 +1203,13 @@
 					"name": "Get stats",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/api/dashboard/stats",
 							"protocol": "http",
