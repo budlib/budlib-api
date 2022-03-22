@@ -2,7 +2,6 @@ package com.budlib.api.repository;
 
 import com.budlib.api.model.TrnQuantities;
 import com.budlib.api.model.TrnQuantitiesId;
-// import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
