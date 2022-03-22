@@ -3,6 +3,9 @@ package com.budlib.api.controller;
 import com.budlib.api.model.*;
 import com.budlib.api.repository.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,5 +59,49 @@ public class DashboardController {
         currentStats.setTotalOutstandingCopies(countTotalOutstandingCopies);
 
         return ResponseEntity.status(HttpStatus.OK).body(currentStats);
+    }
+
+    /**
+     * Get the list of overdue loans
+     *
+     * @return list of loans that are overdue
+     */
+    @GetMapping(path = "overdue")
+    public ResponseEntity<?> getOverdueList() {
+        List<Loan> allLoans = this.loanRepository.findAll();
+
+        List<Loan> overdueLoans = new ArrayList<>();
+        LocalDate dateNow = LocalDate.now();
+
+        for (Loan eachLoan : allLoans) {
+            if (eachLoan.getDueDate().isBefore(dateNow)) {
+                overdueLoans.add(eachLoan);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(overdueLoans);
+    }
+
+    /**
+     * Get the list of loans that are due in upcoming week
+     *
+     * @return list of upcoming loans in the next week
+     */
+    @GetMapping(path = "upcomingdue")
+    public ResponseEntity<?> getUpcomingDueList() {
+        List<Loan> allLoans = this.loanRepository.findAll();
+
+        List<Loan> upcomingDueLoans = new ArrayList<>();
+        LocalDate dateNow = LocalDate.now();
+
+        for (Loan eachLoan : allLoans) {
+            long deltaDays = ChronoUnit.DAYS.between(dateNow, eachLoan.getDueDate());
+
+            if (deltaDays > 0 && deltaDays <= 7) {
+                upcomingDueLoans.add(eachLoan);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(upcomingDueLoans);
     }
 }
