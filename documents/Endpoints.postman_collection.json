@@ -1262,6 +1262,60 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get overdue",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/overdue",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"overdue"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get upcoming due",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/upcomingdue",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"upcomingdue"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
