@@ -864,8 +864,7 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer test",
-								"type": "text",
-								"disabled": true
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1312,6 +1311,122 @@
 								"api",
 								"dashboard",
 								"upcomingdue"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export books",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/batch/export/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"batch",
+								"export",
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export loaners",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/batch/export/loaners",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"batch",
+								"export",
+								"loaners"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export loans",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/batch/export/loans",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"batch",
+								"export",
+								"loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/batch/export/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"batch",
+								"export",
+								"transactions"
 							]
 						}
 					},
