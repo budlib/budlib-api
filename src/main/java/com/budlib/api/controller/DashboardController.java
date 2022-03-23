@@ -126,7 +126,8 @@ public class DashboardController {
         List<Book> allBooks = this.bookRepository.findAll();
 
         try {
-            String exportFileName = "export_books.csv";
+            new File("exports").mkdirs();
+            String exportFileName = "exports/budlib_books_export.csv";
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -209,7 +210,8 @@ public class DashboardController {
         List<Loaner> allLoaners = this.loanerRepository.findAll();
 
         try {
-            String exportFileName = "export_loaners.csv";
+            new File("exports").mkdirs();
+            String exportFileName = "exports/budlib_loaners_export.csv";
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -275,7 +277,8 @@ public class DashboardController {
         List<Loan> allLoans = this.loanRepository.findAll();
 
         try {
-            String exportFileName = "export_loans.csv";
+            new File("exports").mkdirs();
+            String exportFileName = "exports/budlib_outstanding_loans_export.csv";
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -347,7 +350,8 @@ public class DashboardController {
         List<Transaction> allTrns = this.transactionRepository.findAll();
 
         try {
-            String exportFileName = "export_transactions.csv";
+            new File("exports").mkdirs();
+            String exportFileName = "exports/budlib_transactions_export.csv";
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
