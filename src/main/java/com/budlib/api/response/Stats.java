@@ -1,7 +1,5 @@
-package com.budlib.api.model;
+package com.budlib.api.response;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import lombok.*;
 
 /**
@@ -11,8 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "stats")
-public class Stats implements Serializable {
+public class Stats {
     /**
      * Total number of unique titles in the library
      */
