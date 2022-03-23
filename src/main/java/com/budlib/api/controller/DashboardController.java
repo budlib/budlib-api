@@ -370,13 +370,32 @@ public class DashboardController {
                 record[0] = String.valueOf(eachTrn.getTransactionId());
                 record[1] = eachTrn.getTransactionDateTime().toString();
                 record[2] = eachTrn.getTransactionType().toString();
-                record[3] = String.valueOf(correspondingFacilitator.getLibrarianId());
-                record[4] = correspondingFacilitator.getFullName();
-                record[5] = correspondingFacilitator.getEmail();
-                record[6] = String.valueOf(correspondingLoaner.getLoanerId());
-                record[7] = correspondingLoaner.getSchoolId();
-                record[8] = correspondingLoaner.getFullNameWithSalutation();
-                record[9] = correspondingLoaner.getEmail();
+
+                if (correspondingFacilitator == null) {
+                    record[3] = "<removed>";
+                    record[4] = "<removed>";
+                    record[5] = "<removed>";
+                }
+
+                else {
+                    record[3] = String.valueOf(correspondingFacilitator.getLibrarianId());
+                    record[4] = correspondingFacilitator.getFullName();
+                    record[5] = correspondingFacilitator.getEmail();
+                }
+
+                if (correspondingLoaner == null) {
+                    record[6] = "<removed>";
+                    record[7] = "<removed>";
+                    record[8] = "<removed>";
+                    record[9] = "<removed>";
+                }
+
+                else {
+                    record[6] = String.valueOf(correspondingLoaner.getLoanerId());
+                    record[7] = correspondingLoaner.getSchoolId();
+                    record[8] = correspondingLoaner.getFullNameWithSalutation();
+                    record[9] = correspondingLoaner.getEmail();
+                }
 
                 for (TrnQuantities eachTrnQty : correspondingAllTrnQty) {
                     Book correspondingBook = eachTrnQty.getBook();
