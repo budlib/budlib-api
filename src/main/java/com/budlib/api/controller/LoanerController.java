@@ -184,33 +184,42 @@ public class LoanerController {
 
         List<Loaner> allLoaners = this.loanerRepository.findAll();
 
-        if (searchBy == null || searchTerm == null) {
+        try {
+            if (searchBy == null || searchTerm == null) {
+                return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
+            }
+
+            else if (searchBy.equals("") || searchTerm.equals("")) {
+                return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
+            }
+
+            else if (searchBy.equalsIgnoreCase("id")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerById(Long.valueOf(searchTerm)));
+            }
+
+            else if (searchBy.equalsIgnoreCase("schoolId")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerBySchoolId(allLoaners, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("name")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerByName(allLoaners, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("parentName")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchStudentByParentName(allLoaners, searchTerm));
+            }
+
+            else {
+                // String message = "Invalid loaner search operation";
+                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
+            }
+        }
+
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
-        }
-
-        else if (searchBy.equals("") || searchTerm.equals("")) {
-            return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
-        }
-
-        else if (searchBy.equalsIgnoreCase("id")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerById(Long.valueOf(searchTerm)));
-        }
-
-        else if (searchBy.equalsIgnoreCase("schoolId")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerBySchoolId(allLoaners, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("name")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerByName(allLoaners, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("parentName")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchStudentByParentName(allLoaners, searchTerm));
-        }
-
-        else {
-            String message = "Invalid loaner search operation";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
     }
 

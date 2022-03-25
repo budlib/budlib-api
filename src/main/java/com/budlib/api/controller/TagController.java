@@ -95,25 +95,33 @@ public class TagController {
 
         List<Tag> allTags = this.tagRepository.findAll();
 
-        if (searchBy == null || searchTerm == null) {
+        try {
+            if (searchBy == null || searchTerm == null) {
+                return ResponseEntity.status(HttpStatus.OK).body(allTags);
+            }
+
+            else if (searchBy.equals("") || searchTerm.equals("")) {
+                return ResponseEntity.status(HttpStatus.OK).body(allTags);
+            }
+
+            else if (searchBy.equalsIgnoreCase("id")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchTagById(Long.valueOf(searchTerm)));
+            }
+
+            else if (searchBy.equalsIgnoreCase("name")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchTagByName(allTags, searchTerm));
+            }
+
+            else {
+                // String message = "Invalid tag search operation";
+                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                return ResponseEntity.status(HttpStatus.OK).body(allTags);
+            }
+        }
+
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body(allTags);
-        }
-
-        else if (searchBy.equals("") || searchTerm.equals("")) {
-            return ResponseEntity.status(HttpStatus.OK).body(allTags);
-        }
-
-        else if (searchBy.equalsIgnoreCase("id")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchTagById(Long.valueOf(searchTerm)));
-        }
-
-        else if (searchBy.equalsIgnoreCase("name")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchTagByName(allTags, searchTerm));
-        }
-
-        else {
-            String message = "Invalid tag search operation";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
     }
 

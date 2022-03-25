@@ -280,49 +280,58 @@ public class BookController {
 
         List<Book> allBooks = this.bookRepository.findAll();
 
-        if (searchBy == null || searchTerm == null) {
+        try {
+            if (searchBy == null || searchTerm == null) {
+                return ResponseEntity.status(HttpStatus.OK).body(allBooks);
+            }
+
+            else if (searchBy.equals("") || searchTerm.equals("")) {
+                return ResponseEntity.status(HttpStatus.OK).body(allBooks);
+            }
+
+            else if (searchBy.equalsIgnoreCase("id")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchBookById(Long.valueOf(searchTerm)));
+            }
+
+            else if (searchBy.equalsIgnoreCase("title")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchBookByTitleOrSubtitle(allBooks, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("author")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByAuthor(allBooks, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("publisher")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByPublisher(allBooks, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("isbn")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByIsbn(allBooks, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("librarysection")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByLibrarySection(allBooks, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("tags")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByTag(allBooks, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("language")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByLanguage(allBooks, searchTerm));
+            }
+
+            else {
+                // String message = "Invalid book search operation";
+                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                return ResponseEntity.status(HttpStatus.OK).body(allBooks);
+            }
+        }
+
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body(allBooks);
-        }
-
-        else if (searchBy.equals("") || searchTerm.equals("")) {
-            return ResponseEntity.status(HttpStatus.OK).body(allBooks);
-        }
-
-        else if (searchBy.equalsIgnoreCase("id")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookById(Long.valueOf(searchTerm)));
-        }
-
-        else if (searchBy.equalsIgnoreCase("title")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByTitleOrSubtitle(allBooks, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("author")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByAuthor(allBooks, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("publisher")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByPublisher(allBooks, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("isbn")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByIsbn(allBooks, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("librarysection")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByLibrarySection(allBooks, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("tags")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByTag(allBooks, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("language")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchBookByLanguage(allBooks, searchTerm));
-        }
-
-        else {
-            String message = "Invalid book search operation";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
     }
 

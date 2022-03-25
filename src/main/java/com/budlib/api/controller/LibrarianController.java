@@ -140,29 +140,39 @@ public class LibrarianController {
 
         List<Librarian> allLibrarians = this.librarianRepository.findAll();
 
-        if (searchBy == null || searchTerm == null) {
+        try {
+            if (searchBy == null || searchTerm == null) {
+                return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
+            }
+
+            else if (searchBy.equals("") || searchTerm.equals("")) {
+                return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
+            }
+
+            else if (searchBy.equalsIgnoreCase("id")) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.searchLibrarianById(Long.valueOf(searchTerm)));
+            }
+
+            else if (searchBy.equalsIgnoreCase("email")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchLibrarianByEmail(allLibrarians, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("username")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchLibrarianByUsername(allLibrarians, searchTerm));
+            }
+
+            else {
+                // String message = "Invalid librarian search operation";
+                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
+            }
+        }
+
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
-        }
-
-        else if (searchBy.equals("") || searchTerm.equals("")) {
-            return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
-        }
-
-        else if (searchBy.equalsIgnoreCase("id")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchLibrarianById(Long.valueOf(searchTerm)));
-        }
-
-        else if (searchBy.equalsIgnoreCase("email")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchLibrarianByEmail(allLibrarians, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("username")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchLibrarianByUsername(allLibrarians, searchTerm));
-        }
-
-        else {
-            String message = "Invalid librarian search operation";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
     }
 

@@ -179,35 +179,45 @@ public class TransactionController {
 
         List<Transaction> allTransactions = this.transactionRepository.findAll();
 
-        if (searchBy == null || searchTerm == null) {
+        try {
+            if (searchBy == null || searchTerm == null) {
+                return ResponseEntity.status(HttpStatus.OK).body(allTransactions);
+            }
+
+            else if (searchBy.equals("") || searchTerm.equals("")) {
+                return ResponseEntity.status(HttpStatus.OK).body(allTransactions);
+            }
+
+            else if (searchBy.equalsIgnoreCase("id")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchTransactionById(Long.valueOf(searchTerm)));
+            }
+
+            else if (searchBy.equalsIgnoreCase("loaner")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchTransactionByLoaner(allTransactions, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("librarian")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchTransactionByLibrarian(allTransactions, searchTerm));
+            }
+
+            else if (searchBy.equalsIgnoreCase("type")) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(this.searchTransactionByType(allTransactions, searchTerm));
+            }
+
+            else {
+                // String message = "Invalid transaction search operation";
+                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+                return ResponseEntity.status(HttpStatus.OK).body(allTransactions);
+            }
+        }
+
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body(allTransactions);
-        }
-
-        else if (searchBy.equals("") || searchTerm.equals("")) {
-            return ResponseEntity.status(HttpStatus.OK).body(allTransactions);
-        }
-
-        else if (searchBy.equalsIgnoreCase("id")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchTransactionById(Long.valueOf(searchTerm)));
-        }
-
-        else if (searchBy.equalsIgnoreCase("loaner")) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(this.searchTransactionByLoaner(allTransactions, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("librarian")) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(this.searchTransactionByLibrarian(allTransactions, searchTerm));
-        }
-
-        else if (searchBy.equalsIgnoreCase("type")) {
-            return ResponseEntity.status(HttpStatus.OK).body(this.searchTransactionByType(allTransactions, searchTerm));
-        }
-
-        else {
-            String message = "Invalid transaction search operation";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
     }
 
