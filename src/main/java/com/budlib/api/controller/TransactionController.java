@@ -503,7 +503,7 @@ public class TransactionController {
             this.trnQuantitiesRepository.save(ctq);
         }
 
-        String message = "Transaction added successfully";
+        String message = "Transaction completed successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
 }
