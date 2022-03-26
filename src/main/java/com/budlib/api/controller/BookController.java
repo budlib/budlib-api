@@ -482,6 +482,10 @@ public class BookController {
                         .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
             }
 
+            if (b.getLibrarySection() == null) {
+                b.setLibrarySection(LibrarySection.CHILDREN_LIBRARY);
+            }
+
             List<Tag> suppliedTagList = b.getTags();
             List<Tag> uniqueTagList = new ArrayList<>();
 
