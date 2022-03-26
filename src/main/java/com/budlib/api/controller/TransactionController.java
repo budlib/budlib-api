@@ -306,7 +306,7 @@ public class TransactionController {
                 try {
                     suppliedDueDate = LocalDate.parse(suppliedDueDateString, formatter);
 
-                    if (suppliedDueDate.compareTo(suppliedBorrowDate) < 1) {
+                    if (suppliedDueDate.compareTo(suppliedBorrowDate) < 0) {
                         throw new Exception("Borrow date cannot be after due date");
                     }
                 }
@@ -398,7 +398,7 @@ public class TransactionController {
 
         // check validity of books
         // --------------------------------------------------------------------
-        if (suppliedTrnQtyList == null) {
+        if (suppliedTrnQtyList == null || suppliedTrnQtyList.isEmpty()) {
             String message = "No books specified";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
