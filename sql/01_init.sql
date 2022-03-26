@@ -106,3 +106,10 @@ CREATE TABLE trn_quantities (
     CONSTRAINT fk_trnqty_trn FOREIGN KEY (trn_id) REFERENCES transaction (trn_id),
     CONSTRAINT fk_trnqty_book FOREIGN KEY (book_id) REFERENCES book (book_id)
 );
+
+-- create user for login
+INSERT INTO librarian (librarian_id,username,first_name,middle_name,last_name,email,password,role) VALUES
+("1","irene","Irene",NULL,"Pauchard","i.pauchard@calgarywaldorf.org","$2a$10$Gitv.jdJOSpID30NmPEqn.IwH5CztayH4HbRUjxGDJKNM3DWCwMmy","0"),
+("2","yves","Yves",NULL,"Pauchard","yves.pauchard@ucalgary.ca","$2a$10$GWg.rygxrh6caI2PaZTFvOreHBGaglUmkx1tyhutkxPN0QC1G1oT2","0"),
+("3","zbhavyai","Bhavyai",NULL,"Gupta","zbhavyai@gmail.com","$2a$10$..4RvEGzO5/TiayeVSm1lOTHqo456ZPPCrf7G7.eyPvndgkICr/tq","1"),
+("4","mmylee","Michael","Man Yin","Lee","mmylee@ucalgary.ca","$2a$10$vrf9vKF0tT3xBQlEFbVjje.4LZgyCtRfBaIjCf4KO0QDQuvOKEijC","1");
