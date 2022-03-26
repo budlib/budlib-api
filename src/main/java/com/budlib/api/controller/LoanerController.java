@@ -273,25 +273,38 @@ public class LoanerController {
     }
 
     /**
-     * Endpoint for POST - save the loaner in db
+     * Endpoint for POST - import multiple loaners in db
      *
-     * @param l loaner details in json
+     * @param l list of loaner details in json
      * @return the message
      */
-    @PostMapping(path = "multiple")
-    public ResponseEntity<?> addLoaner(@RequestBody List<Loaner> ls) {
-        // reset the id to 0 to prevent overwrite
+    @PostMapping(path = "import")
+    public ResponseEntity<?> importLoaners(@RequestBody List<Loaner> loanerList) {
+        boolean flag = false;
+        int countNotImported = 0;
+        int countImported = 0;
 
-        for (Loaner l : ls) {
-            l.setLoanerId(0L);
+        for (Loaner eachLoaner : loanerList) {
+            // reset the id to 0 to prevent overwrite
+            eachLoaner.setLoanerId(0L);
 
-            if (this.checkLoanerUniqueness(l)) {
-                this.loanerRepository.save(l);
+            if (this.checkLoanerUniqueness(eachLoaner)) {
+                this.loanerRepository.save(eachLoaner);
+                countImported++;
+            }
 
+            else {
+                flag = true;
+                countNotImported++;
             }
         }
 
-        String message = "Loaners all added successfully";
+        String message = String.format("%d loaners imported successfully", countImported);
+
+        if (flag) {
+            message += String.format("\n%d duplicate loaners not imported", countNotImported);
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
 
