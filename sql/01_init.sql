@@ -26,7 +26,7 @@ CREATE TABLE book (
     language VARCHAR(255),
     isbn_10 VARCHAR(255),
     isbn_13 VARCHAR(255),
-    library_section VARCHAR(255),
+    library_section INTEGER NOT NULL,
     total_quantity INTEGER,
     available_quantity INTEGER,
     notes VARCHAR(255),

@@ -1,5 +1,6 @@
 package com.budlib.api.model;
 
+import com.budlib.api.enums.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -82,7 +83,7 @@ public class Book implements Serializable {
      * Section in the library branch where the book is usually placed
      */
     @Column(name = "library_section")
-    private String librarySection;
+    private LibrarySection librarySection;
 
     /**
      * Total quantity at the library branch

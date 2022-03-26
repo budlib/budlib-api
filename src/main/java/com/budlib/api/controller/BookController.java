@@ -1,5 +1,6 @@
 package com.budlib.api.controller;
 
+import com.budlib.api.enums.LibrarySection;
 import com.budlib.api.model.*;
 import com.budlib.api.repository.*;
 import com.budlib.api.response.*;
@@ -146,14 +147,20 @@ public class BookController {
         String searchTerm = sT.toLowerCase();
         List<Book> searchResults = new ArrayList<>();
 
-        for (Book eachBook : allBooks) {
-            if (eachBook.getLibrarySection() != null
-                    && eachBook.getLibrarySection().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachBook);
+        try {
+            for (Book eachBook : allBooks) {
+                if (eachBook.getLibrarySection() != null
+                        && eachBook.getLibrarySection().toString().toLowerCase().contains(searchTerm)) {
+                    searchResults.add(eachBook);
+                }
             }
+
+            return searchResults;
         }
 
-        return searchResults;
+        catch (IllegalArgumentException e) {
+            return searchResults;
+        }
     }
 
     /**
@@ -372,6 +379,10 @@ public class BookController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
+        if (b.getLibrarySection() == null) {
+            b.setLibrarySection(LibrarySection.CHILDREN_LIBRARY);
+        }
+
         List<Tag> suppliedTagList = b.getTags();
         List<Tag> uniqueTagList = new ArrayList<>();
 
@@ -403,6 +414,10 @@ public class BookController {
             // reset the id to 0 to prevent overwrite
             eachBook.setBookId(0L);
 
+            if (eachBook.getLibrarySection() == null) {
+                eachBook.setLibrarySection(LibrarySection.CHILDREN_LIBRARY);
+            }
+
             if (eachBook.getTotalQuantity() != eachBook.getAvailableQuantity()) {
                 flag = true;
                 countNotImported++;
@@ -414,10 +429,10 @@ public class BookController {
             }
         }
 
-        String message = String.format("%d books imported successfully", countImported);
+        String message = String.format("%d books imported successfully.", countImported);
 
         if (flag) {
-            message += String.format("\n%d books not imported due to invalid quantity", countNotImported);
+            message += String.format("\n%d books not imported.", countNotImported);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));

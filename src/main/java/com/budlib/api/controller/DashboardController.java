@@ -90,9 +90,9 @@ public class DashboardController {
     }
 
     /**
-     * Get the list of loans that are due in upcoming week
+     * Get the list of loans that are due today or in next week
      *
-     * @return list of upcoming loans in the next week
+     * @return list of upcoming loans today or in the next week
      */
     @GetMapping(path = "upcomingdue")
     public ResponseEntity<?> getUpcomingDueList() {
@@ -104,7 +104,7 @@ public class DashboardController {
         for (Loan eachLoan : allLoans) {
             long deltaDays = ChronoUnit.DAYS.between(dateNow, eachLoan.getDueDate());
 
-            if (deltaDays > 0 && deltaDays <= 7) {
+            if (deltaDays >= 0 && deltaDays <= 7) {
                 upcomingDueLoans.add(eachLoan);
             }
         }
@@ -153,7 +153,7 @@ public class DashboardController {
                 record[7] = eachBook.getLanguage();
                 record[8] = eachBook.getIsbn_10();
                 record[9] = eachBook.getIsbn_13();
-                record[10] = eachBook.getLibrarySection();
+                record[10] = eachBook.getLibrarySection().toString();
                 record[11] = String.valueOf(eachBook.getTotalQuantity());
                 record[12] = String.valueOf(eachBook.getAvailableQuantity());
                 record[13] = eachBook.getNotes();
