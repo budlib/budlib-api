@@ -17,7 +17,14 @@ public class Token {
     private String SECRET_KEY;
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        }
+
+        catch (Exception e) {
+            // System.out.println("Invalid token supplied");
+            return null;
+        }
     }
 
     public Date extractExpiration(String token) {
