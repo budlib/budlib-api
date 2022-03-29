@@ -35,12 +35,12 @@ public class AuthenticationController {
         }
 
         catch (BadCredentialsException e) {
-            String message = "Incorrect email or password";
+            String message = "Incorrect password";
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new AuthResponse(HttpStatus.FORBIDDEN, message));
         }
 
         catch (AuthenticationException e) {
-            String message = "Incorrect email or password";
+            String message = "Email not found";
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new AuthResponse(HttpStatus.FORBIDDEN, message));
         }
 
