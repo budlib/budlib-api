@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 @Service
 public class LibrarianService implements UserDetailsService {
@@ -21,11 +24,29 @@ public class LibrarianService implements UserDetailsService {
 
         for (Librarian eachLibrarian : allLibrarians) {
             if (eachLibrarian.getEmail().equalsIgnoreCase(username)) {
-                return new User(username, eachLibrarian.getPassword(), new ArrayList<>());
+                // return new User(username, eachLibrarian.getPassword(),
+                // this.getAuthorities(eachLibrarian));
+
+                UserDetails user = User.withUsername(username)
+                        .password(eachLibrarian.getPassword())
+                        .roles(eachLibrarian.getRole().toString())
+                        // .authorities(this.getAuthorities(eachLibrarian)).build();
+                        .build();
+
+                return user;
             }
         }
 
         return null;
+    }
+
+    @SuppressWarnings("unused")
+    private Collection<GrantedAuthority> getAuthorities(Librarian l) {
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+
+        authorities.add(new SimpleGrantedAuthority(l.getRole().toString()));
+
+        return authorities;
     }
 
     public Librarian getLibrarianByEmail(String email) {
