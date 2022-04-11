@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -262,7 +262,7 @@ public class TransactionController {
         t.setTransactionId(0L);
 
         // reset the transaction date time
-        t.setTransactionDateTime(LocalDateTime.now());
+        t.setTransactionDateTime(ZonedDateTime.now());
 
         Loaner suppliedLoaner = t.getLoaner();
         Librarian suppliedLibrarian = t.getLibrarian();

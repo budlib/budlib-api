@@ -3,7 +3,7 @@ package com.budlib.api.model;
 import com.budlib.api.enums.*;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.*;
 
@@ -29,7 +29,7 @@ public class Transaction implements Serializable {
      * Date Time of the transaction
      */
     @Column(name = "trn_datetime")
-    private LocalDateTime transactionDateTime;
+    private ZonedDateTime transactionDateTime;
 
     /**
      * The type of transaction - BORROW or RETURN or EXTEND or RESERVE
