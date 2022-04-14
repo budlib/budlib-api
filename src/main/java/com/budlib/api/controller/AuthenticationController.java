@@ -4,6 +4,7 @@ import com.budlib.api.model.*;
 import com.budlib.api.response.*;
 import com.budlib.api.security.*;
 import com.budlib.api.service.*;
+import java.time.ZonedDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,7 @@ public class AuthenticationController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new AuthResponse(HttpStatus.OK, "", verifiedLibrarian.getUserName(),
-                        verifiedLibrarian.getRole(), verifiedLibrarian.getLibrarianId(), jwt));
+                        verifiedLibrarian.getRole(), verifiedLibrarian.getLibrarianId(), jwt,
+                        ZonedDateTime.now().plusDays(7)));
     }
 }

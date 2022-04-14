@@ -3,6 +3,7 @@ package com.budlib.api.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,11 @@ public class Token {
     public String extractUsername(String token) {
         try {
             return extractClaim(token, Claims::getSubject);
+        }
+
+        catch (ExpiredJwtException e) {
+            // System.out.println("Expired token supplied");
+            return null;
         }
 
         catch (Exception e) {
@@ -51,12 +57,17 @@ public class Token {
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 365))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
+
+        if (username == null) {
+            return false;
+        }
+
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

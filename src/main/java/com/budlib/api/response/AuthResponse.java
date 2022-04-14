@@ -2,6 +2,7 @@ package com.budlib.api.response;
 
 import com.budlib.api.enums.*;
 import org.springframework.http.HttpStatus;
+import java.time.ZonedDateTime;
 import lombok.*;
 
 /**
@@ -40,6 +41,11 @@ public class AuthResponse {
      */
     private String token;
 
+    /**
+     * Expiry date time of the token
+     */
+    private ZonedDateTime expiry;
+
     public AuthResponse(HttpStatus httpStatus, String message) {
         this.status = httpStatus;
         this.message = message;
@@ -47,15 +53,17 @@ public class AuthResponse {
         this.role = null;
         this.id = null;
         this.token = null;
+        this.expiry = null;
     }
 
     public AuthResponse(HttpStatus httpStatus, String message, String username, LibrarianRole role, Long id,
-            String token) {
+            String token, ZonedDateTime expiry) {
         this.status = httpStatus;
         this.message = message;
         this.username = username;
         this.role = role;
         this.id = id;
         this.token = token;
+        this.expiry = expiry;
     }
 }
