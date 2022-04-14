@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"zbhavyai@gmail.com\",\r\n    \"password\": \"easypassword\"\r\n}",
+							"raw": "{\r\n    \"email\": \"admin@localhost\",\r\n    \"password\": \"easypassword\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1126,6 +1126,50 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"transactionType\": \"BORROW\",\r\n    \"loaner\": {\r\n        \"loanerId\": 14\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 1\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 54\r\n            },\r\n            \"copies\": 2\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 134\r\n            },\r\n            \"copies\": 2\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/transactions?borrowDate=20220223&dueDate=20220423",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "borrowDate",
+									"value": "20220223"
+								},
+								{
+									"key": "dueDate",
+									"value": "20220423"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Borrow transaction Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6YmhhdnlhaUBnbWFpbC5jb20iLCJleHAiOjE2NDk2NjA5MTcsImlhdCI6MTY0ODE4OTY4OX0.aLWnrCHh8f0eIziBP4EdB-W2OQlsEit8xyiDwZ_C3yQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transactionType\": \"BORROW\",\r\n    \"loaner\": {\r\n        \"loanerId\": 1\r\n    },\r\n    \"librarian\": {\r\n        \"librarianId\": 3\r\n    },\r\n    \"bookCopies\": [\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 2\r\n            },\r\n            \"copies\": 1\r\n        },\r\n        {\r\n            \"book\": {\r\n                \"bookId\": 3\r\n            },\r\n            \"copies\": 1\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
