@@ -179,7 +179,6 @@ public class DashboardController {
             pw.close();
 
             Path path = Paths.get(outFile.getAbsolutePath());
-            System.out.println(path.toAbsolutePath());
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
             return ResponseEntity
@@ -246,7 +245,6 @@ public class DashboardController {
             pw.close();
 
             Path path = Paths.get(outFile.getAbsolutePath());
-            System.out.println(path.toAbsolutePath());
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
             return ResponseEntity
@@ -318,7 +316,6 @@ public class DashboardController {
             pw.close();
 
             Path path = Paths.get(outFile.getAbsolutePath());
-            System.out.println(path.toAbsolutePath());
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
             return ResponseEntity
@@ -420,7 +417,6 @@ public class DashboardController {
             pw.close();
 
             Path path = Paths.get(outFile.getAbsolutePath());
-            System.out.println(path.toAbsolutePath());
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
             return ResponseEntity
