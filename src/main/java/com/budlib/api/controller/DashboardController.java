@@ -404,4 +404,140 @@ public class DashboardController {
                     .body(new ErrorBody(HttpStatus.GATEWAY_TIMEOUT, message));
         }
     }
+
+    /**
+     * Download the sample file to import the books in the database
+     *
+     * @return file containing sample books in CSV format
+     */
+    @GetMapping(path = "batch/samplebooks")
+    public ResponseEntity<?> showImportSampleBooks() {
+        String[] bookHeaders = { "title", "subtitle", "authors", "publisher", "edition", "year", "language", "isbn10",
+                "isbn13", "librarySection", "totalQuantity", "availableQuantity", "notes", "imageLink", "retailPrice",
+                "libraryPrice" };
+
+        try {
+            Path tempPath = Files.createTempFile("sample_books_import", ".csv");
+            File tempFile = tempPath.toFile();
+
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(tempFile, false)), true);
+            CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT.withHeader(bookHeaders));
+
+            printer.printRecord(
+                    "How to Stop Losing Your Sh*t with Your Kids",
+                    "A Practical Guide to Becoming a Calmer, Happier Parent",
+                    "Carla Naumburg",
+                    "Workman Publishing Company",
+                    "",
+                    "2019-08-20",
+                    "en",
+                    "1523505427",
+                    "9781523505425",
+                    "PARENT_LIBRARY",
+                    5,
+                    5,
+                    "",
+                    "https://images-na.ssl-images-amazon.com/images/I/51TFx51B-FL._SX357_BO1,204,203,200_.jpg",
+                    21.73,
+                    19);
+            printer.printRecord(
+                    "I Spy - Everything!",
+                    "A Fun Guessing Game for 2-4 Year Olds",
+                    "Books For Little Ones",
+                    "",
+                    "",
+                    "2018-03-19",
+                    "en",
+                    "1980596743",
+                    "9781980596745",
+                    "CHILDREN_LIBRARY",
+                    7,
+                    7,
+                    "",
+                    "https://m.media-amazon.com/images/P/1980596743.01._SCLZZZZZZZ_SX500_.jpg",
+                    10.8,
+                    5.99);
+            printer.printRecord(
+                    "Student Engagement Techniques",
+                    "A Handbook for College Faculty",
+                    "Elizabeth F. Barkley,Claire H. Major",
+                    "John Wiley & Sons",
+                    "",
+                    "2020-05-05",
+                    "en",
+                    "1119686776",
+                    "9781119686774",
+                    "FACULTY_LIBRARY",
+                    2,
+                    2,
+                    "",
+                    "https://images-na.ssl-images-amazon.com/images/I/81G8F2OV9SL.jpg",
+                    53.45,
+                    50.5);
+            printer.printRecord(
+                    "Classes Are Canceled!",
+                    "",
+                    "Jack Chabert",
+                    "Eerie Elementary",
+                    "",
+                    "2017",
+                    "en",
+                    "1338181807",
+                    "9781338181807",
+                    "CHILDREN_LIBRARY",
+                    15,
+                    15,
+                    "",
+                    "https://images-na.ssl-images-amazon.com/images/I/81vHq-mWzWL.jpg",
+                    7.91,
+                    2.99);
+
+            printer.close();
+            pw.close();
+
+            return fileDownloader(tempFile.getAbsolutePath());
+        }
+
+        catch (IOException e) {
+            String message = "Error while processing export request";
+            return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
+                    .body(new ErrorBody(HttpStatus.GATEWAY_TIMEOUT, message));
+        }
+    }
+
+    /**
+     * Download the sample file to import the loaners in the database
+     *
+     * @return file containing sample loaners in CSV format
+     */
+    @GetMapping(path = "batch/sampleloaners")
+    public ResponseEntity<?> showImportSampleLoaners() {
+        String[] loanerHeaders = { "schoolId", "isStudent", "email", "salutation", "first_name",
+                "middle_name", "last_name", "mother_name", "father_name" };
+
+        try {
+            Path tempPath = Files.createTempFile("sample_loaners_import", ".csv");
+            File tempFile = tempPath.toFile();
+
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(tempFile, false)), true);
+            CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT.withHeader(loanerHeaders));
+
+            printer.printRecord("STU-1001", true, "", "Miss", "Josephine", "", "Murray", "Yazmin Murray", "Adonis Murray");
+            printer.printRecord("STU-1002", true, "", "Mr", "Mildred", "", "Gonzales", "Micaela Gonzales", "Rhett Gonzales");
+            printer.printRecord("STU-1003", true, "", "Miss", "Loretta", "", "Carrillo", "Esperanza Carrillo", "Roland Carrillo");
+            printer.printRecord("FAC-1001", false, "", "Mr", "Dwight", "", "Schrute", "", "");
+            printer.printRecord("FAC-1002", false, "", "Miss", "Angela", "", "Martin", "", "");
+
+            printer.close();
+            pw.close();
+
+            return fileDownloader(tempFile.getAbsolutePath());
+        }
+
+        catch (IOException e) {
+            String message = "Error while processing export request";
+            return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
+                    .body(new ErrorBody(HttpStatus.GATEWAY_TIMEOUT, message));
+        }
+    }
 }
