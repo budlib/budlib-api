@@ -1390,6 +1390,62 @@
 					"response": []
 				},
 				{
+					"name": "Get sample books",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/batch/samplebooks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"batch",
+								"samplebooks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get sample loaners",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer test",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/dashboard/batch/sampleloaners",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"dashboard",
+								"batch",
+								"sampleloaners"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Export loaners",
 					"request": {
 						"method": "GET",
