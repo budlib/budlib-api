@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import org.apache.commons.csv.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -367,9 +368,10 @@ public class DashboardController {
                 Librarian correspondingFacilitator = eachTrn.getLibrarian();
                 Loaner correspondingLoaner = eachTrn.getLoaner();
                 List<TrnQuantities> correspondingAllTrnQty = eachTrn.getBookCopies();
+                DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
 
                 record[0] = String.valueOf(eachTrn.getTransactionId());
-                record[1] = eachTrn.getTransactionDateTime().toString();
+                record[1] = eachTrn.getTransactionDateTime().format(formatter);
                 record[2] = eachTrn.getTransactionType().toString();
 
                 if (correspondingFacilitator == null) {
