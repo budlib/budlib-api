@@ -114,6 +114,39 @@ public class DashboardController {
     }
 
     /**
+     * Downloads the give filename via API call
+     *
+     * @param fileName the file on the filesystem to download
+     * @return the file to download via API call
+     */
+    private ResponseEntity<?> fileDownloader(String fileName) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+            headers.add("Pragma", "no-cache");
+            headers.add("Expires", "0");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+
+            File outFile = new File(fileName);
+            Path path = Paths.get(outFile.getAbsolutePath());
+            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(outFile.length())
+                    .body(resource);
+        }
+
+        catch (IOException e) {
+            String message = "Error while downloading file";
+            return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
+                    .body(new ErrorBody(HttpStatus.GATEWAY_TIMEOUT, message));
+        }
+    }
+
+    /**
      * Export all the books in the database into CSV
      *
      * @return CSV containing snapshot of all the books in the database
@@ -129,12 +162,6 @@ public class DashboardController {
         try {
             new File("exports").mkdirs();
             String exportFileName = "exports/budlib_books_export.csv";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-            headers.add("Pragma", "no-cache");
-            headers.add("Expires", "0");
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + exportFileName + "\"");
 
             File outFile = new File(exportFileName);
 
@@ -179,15 +206,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            Path path = Paths.get(outFile.getAbsolutePath());
-            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(headers)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .contentLength(outFile.length())
-                    .body(resource);
+            return fileDownloader(exportFileName);
         }
 
         catch (IOException e) {
@@ -212,12 +231,6 @@ public class DashboardController {
         try {
             new File("exports").mkdirs();
             String exportFileName = "exports/budlib_loaners_export.csv";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-            headers.add("Pragma", "no-cache");
-            headers.add("Expires", "0");
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + exportFileName + "\"");
 
             File outFile = new File(exportFileName);
 
@@ -245,15 +258,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            Path path = Paths.get(outFile.getAbsolutePath());
-            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(headers)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .contentLength(outFile.length())
-                    .body(resource);
+            return fileDownloader(exportFileName);
         }
 
         catch (IOException e) {
@@ -278,12 +283,6 @@ public class DashboardController {
         try {
             new File("exports").mkdirs();
             String exportFileName = "exports/budlib_outstanding_loans_export.csv";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-            headers.add("Pragma", "no-cache");
-            headers.add("Expires", "0");
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + exportFileName + "\"");
 
             File outFile = new File(exportFileName);
 
@@ -316,15 +315,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            Path path = Paths.get(outFile.getAbsolutePath());
-            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(headers)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .contentLength(outFile.length())
-                    .body(resource);
+            return fileDownloader(exportFileName);
         }
 
         catch (IOException e) {
@@ -350,12 +341,6 @@ public class DashboardController {
         try {
             new File("exports").mkdirs();
             String exportFileName = "exports/budlib_transactions_export.csv";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-            headers.add("Pragma", "no-cache");
-            headers.add("Expires", "0");
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + exportFileName + "\"");
 
             File outFile = new File(exportFileName);
 
@@ -418,15 +403,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            Path path = Paths.get(outFile.getAbsolutePath());
-            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(headers)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .contentLength(outFile.length())
-                    .body(resource);
+            return fileDownloader(exportFileName);
         }
 
         catch (IOException e) {
