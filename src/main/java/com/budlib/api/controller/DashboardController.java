@@ -160,12 +160,10 @@ public class DashboardController {
         List<Book> allBooks = this.bookRepository.findAll();
 
         try {
-            new File("exports").mkdirs();
-            String exportFileName = "exports/budlib_books_export.csv";
+            Path tempPath = Files.createTempFile("budlib_books_export", ".csv");
+            File tempFile = tempPath.toFile();
 
-            File outFile = new File(exportFileName);
-
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile, false)), true);
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(tempFile, false)), true);
             CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT.withHeader(bookHeaders));
 
             for (Book eachBook : allBooks) {
@@ -206,7 +204,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(exportFileName);
+            return fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -229,12 +227,10 @@ public class DashboardController {
         List<Loaner> allLoaners = this.loanerRepository.findAll();
 
         try {
-            new File("exports").mkdirs();
-            String exportFileName = "exports/budlib_loaners_export.csv";
+            Path tempPath = Files.createTempFile("budlib_loaners_export", ".csv");
+            File tempFile = tempPath.toFile();
 
-            File outFile = new File(exportFileName);
-
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile, false)), true);
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(tempFile, false)), true);
             CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT.withHeader(loanerHeaders));
 
             for (Loaner eachLoaner : allLoaners) {
@@ -258,7 +254,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(exportFileName);
+            return fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -281,12 +277,10 @@ public class DashboardController {
         List<Loan> allLoans = this.loanRepository.findAll();
 
         try {
-            new File("exports").mkdirs();
-            String exportFileName = "exports/budlib_outstanding_loans_export.csv";
+            Path tempPath = Files.createTempFile("budlib_outstanding_loans_export", ".csv");
+            File tempFile = tempPath.toFile();
 
-            File outFile = new File(exportFileName);
-
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile, false)), true);
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(tempFile, false)), true);
             CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT.withHeader(loanHeaders));
 
             for (Loan eachLoan : allLoans) {
@@ -315,7 +309,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(exportFileName);
+            return fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -339,12 +333,10 @@ public class DashboardController {
         List<Transaction> allTrns = this.transactionRepository.findAll();
 
         try {
-            new File("exports").mkdirs();
-            String exportFileName = "exports/budlib_transactions_export.csv";
+            Path tempPath = Files.createTempFile("budlib_transactions_export", ".csv");
+            File tempFile = tempPath.toFile();
 
-            File outFile = new File(exportFileName);
-
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile, false)), true);
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(tempFile, false)), true);
             CSVPrinter printer = new CSVPrinter(pw, CSVFormat.DEFAULT.withHeader(trnHeaders));
 
             for (Transaction eachTrn : allTrns) {
@@ -403,7 +395,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(exportFileName);
+            return fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
