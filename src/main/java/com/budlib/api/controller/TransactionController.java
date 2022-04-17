@@ -255,7 +255,8 @@ public class TransactionController {
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addTransaction(@RequestBody Transaction t,
+    public ResponseEntity<?> addTransaction(
+            @RequestBody Transaction t,
             @RequestParam(name = "borrowDate", required = false) String suppliedBorrowDateString,
             @RequestParam(name = "dueDate", required = false) String suppliedDueDateString) {
         // reset the id to 0 to prevent overwrite
@@ -292,6 +293,12 @@ public class TransactionController {
 
             catch (DateTimeParseException e) {
                 String message = "Invalid borrow date specified";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
+            catch (Exception e) {
+                String message = e.getMessage();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
             }
@@ -339,6 +346,12 @@ public class TransactionController {
 
             catch (DateTimeParseException e) {
                 String message = "Invalid due date specified";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+            }
+
+            catch (Exception e) {
+                String message = e.getMessage();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
             }
@@ -404,7 +417,29 @@ public class TransactionController {
         }
 
         else {
-            for (TrnQuantities tq : suppliedTrnQtyList) {
+            // BUGFIX: aggregate the quantities of the books - if the same book is specified
+            // more than once (different loanIds), the quantity is added up
+            List<TrnQuantities> aggregatedTrnQtyList = new ArrayList<>();
+
+            for (TrnQuantities stq : suppliedTrnQtyList) {
+                boolean found = false;
+
+                for (TrnQuantities atq : aggregatedTrnQtyList) {
+                    if (stq.getBook().getBookId() == atq.getBook().getBookId()) {
+                        int oldCopies = atq.getCopies();
+
+                        atq.setCopies(oldCopies + stq.getCopies());
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    aggregatedTrnQtyList.add(stq);
+                }
+            }
+
+            for (TrnQuantities tq : aggregatedTrnQtyList) {
                 if (tq.getCopies() < 1) {
                     String message = "Invalid quantity specified";
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -54,4 +54,10 @@ public class Loan implements Serializable {
      */
     @Column(name = "due_date")
     private LocalDate dueDate;
+
+    @Override
+    public String toString() {
+        return String.format("Loan[loanId=%d, bookId=%d, copies=%d, borrowDate=%s, dueDate=%s]", loanId,
+                book.getBookId(), copies, borrowDate, dueDate);
+    }
 }
