@@ -29,4 +29,4 @@ REST API for BudLib - a library management tool
 ## Contributors
 
 - [Bhavyai Gupta](https://github.com/zbhavyai)
-- [Michael Man Yin Lee](https://github.com/mikeePy)
+- [Mike Lee](https://github.com/mikeePy)
