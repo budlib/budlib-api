@@ -1,0 +1,18 @@
+# Note: run from project root
+#
+# Create the network
+#   $ docker network create budnetwork
+#
+# Build
+#   $ docker build -f docker/Dockerfile.db -t budlib-mysql:1.0.0 .
+#
+# Run
+#   $ docker run -d -it --network budnetwork -e MYSQL_ROOT_PASSWORD=root --name budlib-mysql budlib-mysql:1.0.0
+#
+# Connect (optional)
+#   $ docker exec -it budlib-mysql mysql -u root -proot buddb
+
+FROM mysql:8.0
+LABEL description="MySQL DB for BubLib"
+ADD sql/01_init.sql /docker-entrypoint-initdb.d/
+EXPOSE 3306
