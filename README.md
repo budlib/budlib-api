@@ -35,6 +35,11 @@ Check the [wiki](https://github.com/budlib/budlib-api/wiki) for deployment instr
    $ mvn clean spring-boot:run
    ```
 
+**Note**:
+
+- The initial credentials to use the API are `admin@localhost` and `easypassword`
+- Postman endpoints file, which is available [here](documents/Endpoints.postman_collection.json), can be used to playaround with the API
+
 ## Contributors
 
 - [Bhavyai Gupta](https://github.com/zbhavyai)
