@@ -1,17 +1,30 @@
 package com.budlib.api.controller;
 
-import com.budlib.api.model.*;
-import com.budlib.api.enums.*;
-import com.budlib.api.repository.*;
-import com.budlib.api.response.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import com.budlib.api.enums.LibrarianRole;
+import com.budlib.api.model.Librarian;
+import com.budlib.api.model.Transaction;
+import com.budlib.api.repository.LibrarianRepository;
+import com.budlib.api.repository.TransactionRepository;
+import com.budlib.api.response.ErrorBody;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for librarian
@@ -20,11 +33,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @RestController
 @RequestMapping("api/librarian")
 public class LibrarianController {
-    @Autowired
-    LibrarianRepository librarianRepository;
+
+    private final LibrarianRepository librarianRepository;
+    private final TransactionRepository transactionRepository;
 
     @Autowired
-    TransactionRepository transactionRepository;
+    public LibrarianController(final LibrarianRepository lr, final TransactionRepository tr) {
+        this.librarianRepository = lr;
+        this.transactionRepository = tr;
+    }
 
     /**
      * Search the librarian by id

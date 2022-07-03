@@ -1,20 +1,44 @@
 package com.budlib.api.controller;
 
-import com.budlib.api.model.*;
-import com.budlib.api.repository.*;
-import com.budlib.api.response.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.*;
-import java.nio.file.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import org.apache.commons.csv.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.budlib.api.model.Book;
+import com.budlib.api.model.Librarian;
+import com.budlib.api.model.Loan;
+import com.budlib.api.model.Loaner;
+import com.budlib.api.model.Tag;
+import com.budlib.api.model.Transaction;
+import com.budlib.api.model.TrnQuantities;
+import com.budlib.api.repository.BookRepository;
+import com.budlib.api.repository.LoanRepository;
+import com.budlib.api.repository.LoanerRepository;
+import com.budlib.api.repository.TransactionRepository;
+import com.budlib.api.response.ErrorBody;
+import com.budlib.api.response.Stats;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for dashboard
@@ -23,17 +47,23 @@ import org.springframework.core.io.ByteArrayResource;
 @RestController
 @RequestMapping("api/dashboard")
 public class DashboardController {
-    @Autowired
-    private BookRepository bookRepository;
 
-    @Autowired
-    private LoanRepository loanRepository;
+    private final BookRepository bookRepository;
+    private final LoanRepository loanRepository;
+    private final LoanerRepository loanerRepository;
+    private final TransactionRepository transactionRepository;
 
-    @Autowired
-    private LoanerRepository loanerRepository;
+    public DashboardController(
+            final BookRepository bookR,
+            final LoanRepository loanR,
+            final LoanerRepository loanerR,
+            final TransactionRepository transactionR) {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+        this.bookRepository = bookR;
+        this.loanRepository = loanR;
+        this.loanerRepository = loanerR;
+        this.transactionRepository = transactionR;
+    }
 
     /**
      * Computes and returns basic statistics on the count of books, loans, and
@@ -52,7 +82,7 @@ public class DashboardController {
         List<Book> allBooks = this.bookRepository.findAll();
 
         for (Book eachBook : allBooks) {
-            countTotalCopies = countTotalCopies + (long) eachBook.getTotalQuantity();
+            countTotalCopies = countTotalCopies + eachBook.getTotalQuantity();
         }
 
         currentStats.setTotalCopies(countTotalCopies);
@@ -61,7 +91,7 @@ public class DashboardController {
         List<Loan> allLoans = this.loanRepository.findAll();
 
         for (Loan eachLoan : allLoans) {
-            countTotalOutstandingCopies = countTotalOutstandingCopies + (long) eachLoan.getCopies();
+            countTotalOutstandingCopies = countTotalOutstandingCopies + eachLoan.getCopies();
         }
 
         currentStats.setTotalOutstandingCopies(countTotalOutstandingCopies);
@@ -153,9 +183,9 @@ public class DashboardController {
      */
     @GetMapping(path = "batch/export/books")
     public ResponseEntity<?> exportBooks() {
-        String[] bookHeaders = { "bookId", "title", "subtitle", "authors", "publisher", "edition",
-                "year", "language", "isbn10", "isbn13", "librarySection", "totalQuantity", "availableQuantity", "notes",
-                "imageLink", "retailPrice", "libraryPrice", "tags" };
+        String[] bookHeaders = { "bookId", "title", "subtitle", "authors", "publisher", "edition", "year", "language",
+                "isbn10", "isbn13", "librarySection", "totalQuantity", "availableQuantity", "notes", "imageLink",
+                "retailPrice", "libraryPrice", "tags" };
 
         List<Book> allBooks = this.bookRepository.findAll();
 
@@ -204,7 +234,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(tempFile.getAbsolutePath());
+            return this.fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -254,7 +284,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(tempFile.getAbsolutePath());
+            return this.fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -309,7 +339,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(tempFile.getAbsolutePath());
+            return this.fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -395,7 +425,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(tempFile.getAbsolutePath());
+            return this.fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -440,6 +470,7 @@ public class DashboardController {
                     "https://images-na.ssl-images-amazon.com/images/I/51TFx51B-FL._SX357_BO1,204,203,200_.jpg",
                     21.73,
                     19);
+
             printer.printRecord(
                     "I Spy - Everything!",
                     "A Fun Guessing Game for 2-4 Year Olds",
@@ -457,6 +488,7 @@ public class DashboardController {
                     "https://m.media-amazon.com/images/P/1980596743.01._SCLZZZZZZZ_SX500_.jpg",
                     10.8,
                     5.99);
+
             printer.printRecord(
                     "Student Engagement Techniques",
                     "A Handbook for College Faculty",
@@ -474,6 +506,7 @@ public class DashboardController {
                     "https://images-na.ssl-images-amazon.com/images/I/81G8F2OV9SL.jpg",
                     53.45,
                     50.5);
+
             printer.printRecord(
                     "Classes Are Canceled!",
                     "",
@@ -495,7 +528,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(tempFile.getAbsolutePath());
+            return this.fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {
@@ -512,8 +545,8 @@ public class DashboardController {
      */
     @GetMapping(path = "batch/sampleloaners")
     public ResponseEntity<?> showImportSampleLoaners() {
-        String[] loanerHeaders = { "schoolId", "isStudent", "email", "salutation", "first_name",
-                "middle_name", "last_name", "mother_name", "father_name" };
+        String[] loanerHeaders = { "schoolId", "isStudent", "email", "salutation", "first_name", "middle_name",
+                "last_name", "mother_name", "father_name" };
 
         try {
             Path tempPath = Files.createTempFile("sample_loaners_import", ".csv");
@@ -531,7 +564,7 @@ public class DashboardController {
             printer.close();
             pw.close();
 
-            return fileDownloader(tempFile.getAbsolutePath());
+            return this.fileDownloader(tempFile.getAbsolutePath());
         }
 
         catch (IOException e) {

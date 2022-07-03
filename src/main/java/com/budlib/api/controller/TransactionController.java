@@ -1,21 +1,41 @@
 package com.budlib.api.controller;
 
-import com.budlib.api.model.*;
-import com.budlib.api.enums.*;
-import com.budlib.api.repository.*;
-import com.budlib.api.response.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+import com.budlib.api.enums.TransactionType;
+import com.budlib.api.model.Book;
+import com.budlib.api.model.Librarian;
+import com.budlib.api.model.Loan;
+import com.budlib.api.model.Loaner;
+import com.budlib.api.model.Transaction;
+import com.budlib.api.model.TrnQuantities;
+import com.budlib.api.repository.BookRepository;
+import com.budlib.api.repository.LibrarianRepository;
+import com.budlib.api.repository.LoanRepository;
+import com.budlib.api.repository.LoanerRepository;
+import com.budlib.api.repository.TransactionRepository;
+import com.budlib.api.repository.TrnQuantitiesRepository;
+import com.budlib.api.response.ErrorBody;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import javax.transaction.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for transactions
@@ -25,23 +45,30 @@ import javax.transaction.Transactional;
 @Transactional
 @RequestMapping("api/transactions")
 public class TransactionController {
-    @Autowired
-    private BookRepository bookRepository;
+
+    private final BookRepository bookRepository;
+    private final TransactionRepository transactionRepository;
+    private final TrnQuantitiesRepository trnQuantitiesRepository;
+    private final LibrarianRepository librarianRepository;
+    private final LoanerRepository loanerRepository;
+    private final LoanRepository loanRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    public TransactionController(
+            final BookRepository bookR,
+            final TransactionRepository transactionR,
+            final TrnQuantitiesRepository trnQuantitiesR,
+            final LibrarianRepository librarianR,
+            final LoanerRepository loanerR,
+            final LoanRepository loanR) {
 
-    @Autowired
-    private TrnQuantitiesRepository trnQuantitiesRepository;
-
-    @Autowired
-    private LibrarianRepository librarianRepository;
-
-    @Autowired
-    private LoanerRepository loanerRepository;
-
-    @Autowired
-    private LoanRepository loanRepository;
+        this.bookRepository = bookR;
+        this.transactionRepository = transactionR;
+        this.trnQuantitiesRepository = trnQuantitiesR;
+        this.librarianRepository = librarianR;
+        this.loanerRepository = loanerR;
+        this.loanRepository = loanR;
+    }
 
     /**
      * Search the transaction by id
@@ -77,8 +104,7 @@ public class TransactionController {
             long searchTerm = Long.parseLong(sT.toLowerCase());
 
             for (Transaction eachTransaction : allTransactions) {
-                if (eachTransaction.getLoaner() != null
-                        && eachTransaction.getLoaner().getLoanerId() == searchTerm) {
+                if (eachTransaction.getLoaner() != null && eachTransaction.getLoaner().getLoanerId() == searchTerm) {
                     searchResults.add(eachTransaction);
                 }
             }
@@ -241,8 +267,9 @@ public class TransactionController {
                 continue;
             }
 
-            if (eachLoaner.getSchoolId() != null && eachLoaner.getSchoolId().equalsIgnoreCase(l.getSchoolId()))
+            if (eachLoaner.getSchoolId() != null && eachLoaner.getSchoolId().equalsIgnoreCase(l.getSchoolId())) {
                 return false;
+            }
         }
 
         return true;
@@ -259,6 +286,7 @@ public class TransactionController {
             @RequestBody Transaction t,
             @RequestParam(name = "borrowDate", required = false) String suppliedBorrowDateString,
             @RequestParam(name = "dueDate", required = false) String suppliedDueDateString) {
+
         // reset the id to 0 to prevent overwrite
         t.setTransactionId(0L);
 

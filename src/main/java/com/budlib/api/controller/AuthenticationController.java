@@ -1,10 +1,12 @@
 package com.budlib.api.controller;
 
-import com.budlib.api.model.*;
-import com.budlib.api.response.*;
-import com.budlib.api.security.*;
-import com.budlib.api.service.*;
 import java.time.ZonedDateTime;
+
+import com.budlib.api.model.Librarian;
+import com.budlib.api.response.AuthResponse;
+import com.budlib.api.security.Token;
+import com.budlib.api.service.LibrarianService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,26 +15,39 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for authentication
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("api/auth")
 public class AuthenticationController {
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
+    private final AuthenticationManager authenticationManager;
+    private final LibrarianService librarianService;
+    private final Token token;
 
     @Autowired
-    private LibrarianService librarianService;
+    public AuthenticationController(
+            final AuthenticationManager am,
+            final LibrarianService ls,
+            final Token t) {
 
-    @Autowired
-    private Token token;
+        this.authenticationManager = am;
+        this.librarianService = ls;
+        this.token = t;
+    }
 
     @PostMapping
     public ResponseEntity<?> createAuthToken(@RequestBody Librarian l) {
         try {
-            this.authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(l.getEmail(), l.getPassword()));
+            this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(l.getEmail(), l.getPassword()));
         }
 
         catch (BadCredentialsException e) {
@@ -57,8 +72,13 @@ public class AuthenticationController {
         Librarian verifiedLibrarian = this.librarianService.getLibrarianByEmail(l.getEmail());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new AuthResponse(HttpStatus.OK, "", verifiedLibrarian.getUserName(),
-                        verifiedLibrarian.getRole(), verifiedLibrarian.getLibrarianId(), jwt,
+                .body(new AuthResponse(
+                        HttpStatus.OK,
+                        "",
+                        verifiedLibrarian.getUserName(),
+                        verifiedLibrarian.getRole(),
+                        verifiedLibrarian.getLibrarianId(),
+                        jwt,
                         ZonedDateTime.now().plusDays(7)));
     }
 }

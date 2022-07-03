@@ -1,17 +1,31 @@
 package com.budlib.api.controller;
 
-import com.budlib.api.enums.LibrarySection;
-import com.budlib.api.model.*;
-import com.budlib.api.repository.*;
-import com.budlib.api.response.*;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+
+import com.budlib.api.enums.LibrarySection;
+import com.budlib.api.model.Book;
+import com.budlib.api.model.Loan;
+import com.budlib.api.model.Tag;
+import com.budlib.api.repository.BookRepository;
+import com.budlib.api.repository.TagRepository;
+import com.budlib.api.response.ErrorBody;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for books
@@ -20,11 +34,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/books")
 public class BookController {
-    @Autowired
-    private BookRepository bookRepository;
+
+    private final BookRepository bookRepository;
+    private final TagRepository tagRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    public BookController(final BookRepository br, final TagRepository tr) {
+        this.bookRepository = br;
+        this.tagRepository = tr;
+    }
 
     /**
      * Search the books by id
@@ -387,7 +405,7 @@ public class BookController {
         List<Tag> uniqueTagList = new ArrayList<>();
 
         for (Tag eachTag : suppliedTagList) {
-            Tag t = findUniqueTag(eachTag);
+            Tag t = this.findUniqueTag(eachTag);
             uniqueTagList.add(t);
         }
 
@@ -401,7 +419,7 @@ public class BookController {
     /**
      * Endpoint for POST - import multiple books in db
      *
-     * @param b list of book details in json
+     * @param bookList list of book details in json
      * @return the message
      */
     @PostMapping(path = "import")
@@ -490,7 +508,7 @@ public class BookController {
             List<Tag> uniqueTagList = new ArrayList<>();
 
             for (Tag eachTag : suppliedTagList) {
-                Tag t = findUniqueTag(eachTag);
+                Tag t = this.findUniqueTag(eachTag);
                 uniqueTagList.add(t);
             }
 
