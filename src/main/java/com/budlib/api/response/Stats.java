@@ -1,6 +1,9 @@
 package com.budlib.api.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents stats for the library dashboard

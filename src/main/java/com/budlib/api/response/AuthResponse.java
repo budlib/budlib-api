@@ -1,9 +1,13 @@
 package com.budlib.api.response;
 
-import com.budlib.api.enums.*;
-import org.springframework.http.HttpStatus;
 import java.time.ZonedDateTime;
-import lombok.*;
+
+import com.budlib.api.enums.LibrarianRole;
+
+import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Wraps a custom message as object to be presented during authentication
@@ -46,6 +50,12 @@ public class AuthResponse {
      */
     private ZonedDateTime expiry;
 
+    /**
+     * Constructor for creating failed authorization responses
+     *
+     * @param httpStatus HTTP status of the type of failure
+     * @param message failure cause
+     */
     public AuthResponse(HttpStatus httpStatus, String message) {
         this.status = httpStatus;
         this.message = message;
@@ -56,6 +66,17 @@ public class AuthResponse {
         this.expiry = null;
     }
 
+    /**
+     * Constructor for creating successful authorization responses
+     *
+     * @param httpStatus HTTP status of the authorization request
+     * @param message success message, if any
+     * @param username username of the authenticated email
+     * @param role {@link LibrarianRole} of the authenticated email
+     * @param id ID of the authenticated email
+     * @param token JWT token
+     * @param expiry expiry date of the token
+     */
     public AuthResponse(HttpStatus httpStatus, String message, String username, LibrarianRole role, Long id,
             String token, ZonedDateTime expiry) {
         this.status = httpStatus;

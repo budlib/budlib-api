@@ -1,7 +1,10 @@
 package com.budlib.api.response;
 
 import org.springframework.http.HttpStatus;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Wraps a custom message as object to be presented during bad requests
