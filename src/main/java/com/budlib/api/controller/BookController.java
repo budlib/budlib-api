@@ -13,6 +13,8 @@ import com.budlib.api.repository.BookRepository;
 import com.budlib.api.repository.TagRepository;
 import com.budlib.api.response.ErrorBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +37,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/books")
 public class BookController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
+
     private final BookRepository bookRepository;
     private final TagRepository tagRepository;
 
     @Autowired
     public BookController(final BookRepository br, final TagRepository tr) {
+
+        LOGGER.debug("BookController");
+
         this.bookRepository = br;
         this.tagRepository = tr;
     }
@@ -51,6 +58,9 @@ public class BookController {
      * @return list of books with id; the list would have utmost one element
      */
     private List<Book> searchBookById(Long id) {
+
+        LOGGER.info("searchBookById: bookId = {}", id);
+
         Optional<Book> bookOptional = this.bookRepository.findById(id);
 
         if (bookOptional.isPresent()) {
@@ -72,6 +82,9 @@ public class BookController {
      * @return filtered list of book with title or subtitle meeting the search term
      */
     private List<Book> searchBookByTitleOrSubtitle(List<Book> allBooks, String sT) {
+
+        LOGGER.info("searchBookByTitleOrSubtitle: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Book> searchResults = new ArrayList<>();
 
@@ -96,6 +109,9 @@ public class BookController {
      * @return filtered list of book with authors meeting the search term
      */
     private List<Book> searchBookByAuthor(List<Book> allBooks, String sT) {
+
+        LOGGER.info("searchBookByAuthor: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Book> searchResults = new ArrayList<>();
 
@@ -116,6 +132,9 @@ public class BookController {
      * @return filtered list of book with publisher meeting the search term
      */
     private List<Book> searchBookByPublisher(List<Book> allBooks, String sT) {
+
+        LOGGER.info("searchBookByPublisher: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Book> searchResults = new ArrayList<>();
 
@@ -136,6 +155,9 @@ public class BookController {
      * @return filtered list of book with ISBN meeting the search term
      */
     private List<Book> searchBookByIsbn(List<Book> allBooks, String sT) {
+
+        LOGGER.info("searchBookByIsbn: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
         List<Book> searchResults = new ArrayList<>();
 
@@ -162,6 +184,9 @@ public class BookController {
      * @return filtered list of book with librarySection meeting the search term
      */
     private List<Book> searchBookByLibrarySection(List<Book> allBooks, String sT) {
+
+        LOGGER.info("searchBookByLibrarySection: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Book> searchResults = new ArrayList<>();
 
@@ -189,6 +214,9 @@ public class BookController {
      * @return filtered list of book with tags meeting the search term
      */
     private List<Book> searchBookByTag(List<Book> allBooks, String sT) {
+
+        LOGGER.info("searchBookByTag: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Book> searchResults = new ArrayList<>();
 
@@ -219,6 +247,9 @@ public class BookController {
      * @return filtered list of book with its language meeting the search term
      */
     private List<Book> searchBookByLanguage(List<Book> allBooks, String sT) {
+
+        LOGGER.info("searchBookByLanguage: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Book> searchResults = new ArrayList<>();
 
@@ -239,6 +270,9 @@ public class BookController {
      */
     @GetMapping(path = "{bookId}")
     public ResponseEntity<?> getBookById(@PathVariable("bookId") Long id) {
+
+        LOGGER.info("getBookById: bookId = {}", id);
+
         List<Book> b = this.searchBookById(id);
 
         if (b == null) {
@@ -259,6 +293,9 @@ public class BookController {
      */
     @GetMapping(path = "{bookId}/tags")
     public ResponseEntity<?> getBookTags(@PathVariable("bookId") Long id) {
+
+        LOGGER.info("getBookTags: bookId = {}", id);
+
         List<Book> b = this.searchBookById(id);
 
         if (b == null) {
@@ -279,6 +316,9 @@ public class BookController {
      */
     @GetMapping(path = "{bookId}/loans")
     public ResponseEntity<?> getCurrentLoans(@PathVariable("bookId") Long id) {
+
+        LOGGER.info("getCurrentLoans: bookId = {}", id);
+
         List<Book> b = this.searchBookById(id);
 
         if (b == null) {
@@ -302,6 +342,8 @@ public class BookController {
     @GetMapping()
     public ResponseEntity<?> searchBook(@RequestParam(name = "searchBy", required = false) String searchBy,
             @RequestParam(name = "searchTerm", required = false) String searchTerm) {
+
+        LOGGER.info("searchBook: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
 
         List<Book> allBooks = this.bookRepository.findAll();
 
@@ -367,6 +409,9 @@ public class BookController {
      * @return Tag saved
      */
     private Tag findUniqueTag(Tag t) {
+
+        LOGGER.info("findUniqueTag: tag = {}", t);
+
         // reset the id to 0 to prevent overwrite
         t.setTagId(0L);
 
@@ -389,6 +434,9 @@ public class BookController {
      */
     @PostMapping
     public ResponseEntity<?> addBook(@RequestBody Book b) {
+
+        LOGGER.info("addBook: book = {}", b);
+
         // reset the id to 0 to prevent overwrite
         b.setBookId(0L);
 
@@ -404,9 +452,11 @@ public class BookController {
         List<Tag> suppliedTagList = b.getTags();
         List<Tag> uniqueTagList = new ArrayList<>();
 
-        for (Tag eachTag : suppliedTagList) {
-            Tag t = this.findUniqueTag(eachTag);
-            uniqueTagList.add(t);
+        if(suppliedTagList != null) {
+            for (Tag eachTag : suppliedTagList) {
+                Tag t = this.findUniqueTag(eachTag);
+                uniqueTagList.add(t);
+            }
         }
 
         b.setTags(uniqueTagList);
@@ -424,6 +474,9 @@ public class BookController {
      */
     @PostMapping(path = "import")
     public ResponseEntity<?> importBooks(@RequestBody List<Book> bookList) {
+
+        LOGGER.info("importBooks: bookList = {}", bookList);
+
         boolean flag = false;
         int countNotImported = 0;
         int countImported = 0;
@@ -463,6 +516,9 @@ public class BookController {
      * @return total number of outstanding copies
      */
     private int getLoanCountOfBook(Book b) {
+
+        LOGGER.info("getLoanCountOfBook: book = {}", b);
+
         List<Loan> currentLoans = b.getCurrentLoans();
 
         int count = 0;
@@ -483,6 +539,9 @@ public class BookController {
      */
     @PutMapping(path = "{bookId}")
     public ResponseEntity<?> updateBook(@RequestBody Book b, @PathVariable("bookId") Long bookId) {
+
+        LOGGER.info("updateBook: book = {}, bookId = {}", b, bookId);
+
         Optional<Book> bookOptional = this.bookRepository.findById(bookId);
 
         if (bookOptional.isPresent()) {
@@ -532,6 +591,9 @@ public class BookController {
      */
     @DeleteMapping(path = "{bookId}")
     public ResponseEntity<?> deleteBook(@PathVariable("bookId") Long bookId) {
+
+        LOGGER.info("deleteBook: bookId = {}", bookId);
+
         if (!this.bookRepository.existsById(bookId)) {
             String message = "Book not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
