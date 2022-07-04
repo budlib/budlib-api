@@ -1,11 +1,26 @@
 package com.budlib.api.model;
 
-import com.budlib.api.enums.*;
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
-import lombok.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.budlib.api.enums.TransactionType;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents a transaction
@@ -17,6 +32,9 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "transaction")
 public class Transaction implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Transaction ID
      */
@@ -57,4 +75,37 @@ public class Transaction implements Serializable {
      */
     @OneToMany(mappedBy = "transaction")
     private List<TrnQuantities> bookCopies;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return String.format("Transaction [transactionId=%d, transactionDateTime=%s, transactionType=%s, bookCopies=%s, loaner=%s, librarian=%s]",
+                this.transactionId,
+                this.transactionDateTime,
+                this.transactionType.toString(),
+                this.bookCopiesToString(),
+                this.loaner,
+                this.librarian);
+    }
+
+    /**
+     * Converts the list of transaction quantities to a string
+     *
+     * @return String of transaction quantities
+     */
+    private String bookCopiesToString() {
+        if (this.bookCopies != null) {
+            StringBuilder trnQuantitiesString = new StringBuilder();
+
+            for (int i = 0; i < this.bookCopies.size(); i++) {
+                trnQuantitiesString.append(this.bookCopies.get(i).toString());
+            }
+
+            return trnQuantitiesString.toString();
+        }
+
+        return "null";
+    }
 }

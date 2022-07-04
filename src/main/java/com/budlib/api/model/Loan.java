@@ -1,9 +1,22 @@
 package com.budlib.api.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import lombok.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Outstanding books of the Loaner
@@ -15,6 +28,9 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "loan")
 public class Loan implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Loan ID
      */
@@ -55,9 +71,16 @@ public class Loan implements Serializable {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
-        return String.format("Loan[loanId=%d, bookId=%d, copies=%d, borrowDate=%s, dueDate=%s]", loanId,
-                book.getBookId(), copies, borrowDate, dueDate);
+        return String.format("Loan [loanId=%d, bookId=%d, copies=%d, borrowDate=%s, dueDate=%s]",
+                this.loanId,
+                this.book.getBookId(),
+                this.copies,
+                this.borrowDate,
+                this.dueDate);
     }
 }

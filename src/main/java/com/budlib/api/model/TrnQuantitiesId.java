@@ -1,7 +1,11 @@
 package com.budlib.api.model;
 
 import java.io.Serializable;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents quantity of books in the transaction
@@ -11,6 +15,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrnQuantitiesId implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * The transaction ID
      */
@@ -21,22 +28,31 @@ public class TrnQuantitiesId implements Serializable {
      */
     private Long book;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
+        }
 
-        if (o == null || this.getClass() != o.getClass())
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
+        }
 
         TrnQuantitiesId that = (TrnQuantitiesId) o;
 
-        if (this.transaction != null ? !transaction.equals(that.transaction) : that.transaction != null)
+        if (this.transaction != null ? !this.transaction.equals(that.transaction) : that.transaction != null) {
             return false;
+        }
 
-        return this.book != null ? book.equals(that.book) : that.book == null;
+        return this.book != null ? this.book.equals(that.book) : that.book == null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         int result = this.transaction != null ? this.transaction.hashCode() : 0;

@@ -1,11 +1,28 @@
 package com.budlib.api.model;
 
-import com.budlib.api.enums.*;
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-import lombok.*;
-import com.fasterxml.jackson.annotation.*;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.budlib.api.enums.LibrarySection;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents a book in the library
@@ -17,6 +34,9 @@ import com.fasterxml.jackson.annotation.*;
 @AllArgsConstructor
 @Table(name = "book")
 public class Book implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Internal unique ID of the book
      */
@@ -170,5 +190,99 @@ public class Book implements Serializable {
         else {
             this.isbn_13 = isbn_13;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+
+        return String.format("Book [bookId=%d, title=\"%s\", subtitle=\"%s\", authors=\"%s\", publisher=\"%s\", edition=\"%s\","
+                + "year=\"%s\", language=\"%s\", isbn_10=\"%s\", isbn_13=\"%s\", librarySection=\"%s\", totalQty=%d, "
+                + "availableQty=%d, transactionQtys=%s, currentLoans=%s, notes=\"%s\", tags=%s, imageLink=\"%s\", "
+                + "priceRetail=%s, priceLibrary=%s]",
+                this.bookId,
+                this.title,
+                this.subtitle,
+                this.authors,
+                this.publisher,
+                this.edition,
+                this.year,
+                this.language,
+                this.isbn_10,
+                this.isbn_13,
+                this.librarySection,
+                this.totalQuantity,
+                this.availableQuantity,
+                this.trnQuantitiesToString(),
+                this.currentLoansToString(),
+                this.notes,
+                this.tagListToString(),
+                this.imageLink,
+                this.priceRetail,
+                this.priceLibrary
+                );
+    }
+
+    /**
+     * Converts the list of tags to a string
+     *
+     * @return String of tags
+     */
+    private String tagListToString() {
+        if (this.tags != null) {
+            StringBuilder tagString = new StringBuilder();
+
+            for (int i = 0; i < this.tags.size(); i++) {
+                tagString.append(this.tags.get(i).toString());
+
+                if (i != this.tags.size() - 1) {
+                    tagString.append(", ");
+                }
+            }
+
+            return tagString.toString();
+        }
+
+        return "null";
+    }
+
+    /**
+     * Converts the list of transaction quantities to a string
+     *
+     * @return String of transaction quantities
+     */
+    private String trnQuantitiesToString() {
+        if (this.trnQuantities != null) {
+            StringBuilder trnQuantitiesString = new StringBuilder();
+
+            for (int i = 0; i < this.trnQuantities.size(); i++) {
+                trnQuantitiesString.append(this.trnQuantities.get(i).toString());
+            }
+
+            return trnQuantitiesString.toString();
+        }
+
+        return "null";
+    }
+
+    /**
+     * Converts the list of currentLoans to a string
+     *
+     * @return String of currentLoans
+     */
+    private String currentLoansToString() {
+        if (this.currentLoans != null) {
+            StringBuilder currentLoansString = new StringBuilder();
+
+            for (int i = 0; i < this.currentLoans.size(); i++) {
+                currentLoansString.append(this.currentLoans.get(i).toString());
+            }
+
+            return currentLoansString.toString();
+        }
+
+        return "null";
     }
 }

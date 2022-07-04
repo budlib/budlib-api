@@ -1,10 +1,21 @@
 package com.budlib.api.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-import lombok.*;
-import com.fasterxml.jackson.annotation.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents the tags of books
@@ -15,6 +26,9 @@ import com.fasterxml.jackson.annotation.*;
 @NoArgsConstructor
 @Table(name = "tag")
 public class Tag implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Internal unique ID of the tag
      */
@@ -35,4 +49,12 @@ public class Tag implements Serializable {
     @ManyToMany(mappedBy = "tags")
     @JsonIgnore
     private List<Book> books;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return String.format("Tag [id=%d, name=\"%s\"]", this.tagId, this.tagName);
+    }
 }

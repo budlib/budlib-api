@@ -1,12 +1,25 @@
 package com.budlib.api.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
 import java.time.LocalDate;
-import lombok.*;
-import com.fasterxml.jackson.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents a loaner in the system
@@ -18,6 +31,9 @@ import com.fasterxml.jackson.annotation.*;
 @AllArgsConstructor
 @Table(name = "loaner")
 public class Loaner implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Unique ID of the loaner
      */
@@ -149,13 +165,15 @@ public class Loaner implements Serializable {
      * @return number of copies
      */
     public int findOutstandingCopiesByBook(Book returningBook) {
+        int count = 0;
+
         for (Loan eachLoan : this.currentLoans) {
             if (eachLoan.getBook().getBookId() == returningBook.getBookId()) {
-                return eachLoan.getCopies();
+                count += eachLoan.getCopies();
             }
         }
 
-        return 0;
+        return count;
     }
 
     /**
@@ -176,35 +194,36 @@ public class Loaner implements Serializable {
     /**
      * Update the loans by the user after they return a book
      *
-     * @param returningBook  the book loaner returned
-     * @param copiesReturned the copies of the book they returned
+     * @param returningBook       the book loaner returned
+     * @param totalCopiesReturned the copies of the book they returned
      * @return loans returned by the Loaner
      */
-    public List<Loan> updateLoans(Book returningBook, int copiesReturned) {
-        List<Loan> updatedLoans = new ArrayList<>();
+    public List<Loan> updateLoans(Book returningBook, int totalCopiesReturned) {
         List<Loan> settledLoans = new ArrayList<>();
+        int copiesReturned = totalCopiesReturned;
 
         for (Loan eachLoan : this.currentLoans) {
             if (returningBook.getBookId() == eachLoan.getBook().getBookId()) {
                 int copiesStillLoaned = eachLoan.getCopies() - copiesReturned;
 
-                if (copiesStillLoaned <= 0) {
+                if (copiesStillLoaned == 0) {
                     settledLoans.add(eachLoan);
+                    break;
+                }
+
+                else if (copiesStillLoaned < 0) {
+                    settledLoans.add(eachLoan);
+                    copiesReturned = copiesReturned - eachLoan.getCopies();
                     continue;
                 }
 
                 else {
                     eachLoan.setCopies(copiesStillLoaned);
-                    updatedLoans.add(eachLoan);
+                    break;
                 }
-            }
-
-            else {
-                updatedLoans.add(eachLoan);
             }
         }
 
-        this.currentLoans = updatedLoans;
         return settledLoans;
     }
 
@@ -217,8 +236,22 @@ public class Loaner implements Serializable {
         for (Loan eachLoan : this.currentLoans) {
             if (extendingBook.getBookId() == eachLoan.getBook().getBookId()) {
                 eachLoan.setDueDate(newDueDate);
-                break;
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return String.format("Loaner [loanerId=%d, schoolId=%d, isStudent=%s, fullName=\"%s\", email=\"%s\", motherName=\"%s\", fatherName=\"%s\"]",
+                this.loanerId,
+                this.schoolId,
+                this.isStudent,
+                this.getFullNameWithSalutation(),
+                this.email,
+                this.motherName,
+                this.fatherName);
     }
 }
