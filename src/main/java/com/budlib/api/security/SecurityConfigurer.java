@@ -1,6 +1,7 @@
 package com.budlib.api.security;
 
-import com.budlib.api.service.*;
+import com.budlib.api.service.LibrarianService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -16,11 +17,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private LibrarianService librarianService;
+
+    private final LibrarianService librarianService;
+    private final TokenFilter tokenFilter;
 
     @Autowired
-    private TokenFilter tokenFilter;
+    public SecurityConfigurer(final LibrarianService ls, final TokenFilter tf) {
+        this.librarianService = ls;
+        this.tokenFilter = tf;
+    }
 
     @Override
     @Bean
@@ -36,15 +41,15 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and()
-                .csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/auth").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/books/*/loans").hasAnyRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("ADMIN", "FACULTY")
-                .antMatchers("/api/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+        .csrf().disable().authorizeRequests()
+        .antMatchers(HttpMethod.POST, "/api/auth").permitAll()
+        .antMatchers(HttpMethod.GET, "/api/books/*/loans").hasAnyRole("ADMIN")
+        .antMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("ADMIN", "FACULTY")
+        .antMatchers("/api/**").hasRole("ADMIN")
+        .anyRequest().authenticated()
+        .and().sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(this.tokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

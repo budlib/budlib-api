@@ -1,22 +1,29 @@
 package com.budlib.api.service;
 
-import com.budlib.api.model.*;
-import com.budlib.api.repository.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import com.budlib.api.model.Librarian;
+import com.budlib.api.repository.LibrarianRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
 
 @Service
 public class LibrarianService implements UserDetailsService {
+
+    private final LibrarianRepository librarianRepository;
+
     @Autowired
-    private LibrarianRepository librarianRepository;
+    public LibrarianService(final LibrarianRepository lr) {
+        this.librarianRepository = lr;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
