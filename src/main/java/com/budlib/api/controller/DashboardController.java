@@ -30,6 +30,7 @@ import com.budlib.api.response.Stats;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,7 @@ public class DashboardController {
     private final LoanerRepository loanerRepository;
     private final TransactionRepository transactionRepository;
 
+    @Autowired
     public DashboardController(
             final BookRepository bookR,
             final LoanRepository loanR,
@@ -444,7 +446,7 @@ public class DashboardController {
     public ResponseEntity<?> showImportSampleBooks() {
         String[] bookHeaders = { "title", "subtitle", "authors", "publisher", "edition", "year", "language", "isbn10",
                 "isbn13", "librarySection", "totalQuantity", "availableQuantity", "notes", "imageLink", "retailPrice",
-                "libraryPrice" };
+        "libraryPrice" };
 
         try {
             Path tempPath = Files.createTempFile("sample_books_import", ".csv");
