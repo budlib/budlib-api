@@ -9,6 +9,8 @@ import com.budlib.api.model.Tag;
 import com.budlib.api.repository.TagRepository;
 import com.budlib.api.response.ErrorBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/tags")
 public class TagController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
+
     private final TagRepository tagRepository;
 
     @Autowired
     public TagController(final TagRepository tr) {
+
+        LOGGER.debug("TagController");
+
         this.tagRepository = tr;
     }
 
@@ -44,6 +51,9 @@ public class TagController {
      * @return list of tags with id; the list would have utmost one element
      */
     private List<Tag> searchTagById(Long id) {
+
+        LOGGER.info("searchTagById: tagId = {}", id);
+
         Optional<Tag> tagOptional = this.tagRepository.findById(id);
 
         if (tagOptional.isPresent()) {
@@ -65,6 +75,9 @@ public class TagController {
      * @return filtered list of tags with name meeting the search term
      */
     private List<Tag> searchTagByName(List<Tag> allTags, String sT) {
+
+        LOGGER.info("searchTagByName: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Tag> searchResults = new ArrayList<>();
 
@@ -85,6 +98,9 @@ public class TagController {
      */
     @GetMapping(path = "{tagId}")
     public ResponseEntity<?> getTagById(@PathVariable("tagId") Long id) {
+
+        LOGGER.info("getTagById: tagId = {}", id);
+
         List<Tag> t = this.searchTagById(id);
 
         if (t == null) {
@@ -107,6 +123,8 @@ public class TagController {
     @GetMapping()
     public ResponseEntity<?> searchTag(@RequestParam(name = "searchBy", required = false) String searchBy,
             @RequestParam(name = "searchTerm", required = false) String searchTerm) {
+
+        LOGGER.info("searchTag: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
 
         List<Tag> allTags = this.tagRepository.findAll();
 
@@ -148,6 +166,9 @@ public class TagController {
      */
     @PostMapping
     public ResponseEntity<?> addTag(@RequestBody Tag t) {
+
+        LOGGER.info("addTag: tag = {}", t);
+
         // reset the id to 0 to prevent overwrite
         t.setTagId(0L);
 
@@ -173,6 +194,9 @@ public class TagController {
      */
     @DeleteMapping(path = "cleanup")
     public ResponseEntity<?> deleteUnusedTags() {
+
+        LOGGER.info("deleteUnusedTags");
+
         List<Tag> allTags = this.tagRepository.findAll();
 
         int count = 0;

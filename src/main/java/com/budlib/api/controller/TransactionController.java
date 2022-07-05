@@ -25,6 +25,8 @@ import com.budlib.api.repository.TransactionRepository;
 import com.budlib.api.repository.TrnQuantitiesRepository;
 import com.budlib.api.response.ErrorBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/transactions")
 public class TransactionController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionController.class);
+
     private final BookRepository bookRepository;
     private final TransactionRepository transactionRepository;
     private final TrnQuantitiesRepository trnQuantitiesRepository;
@@ -62,6 +66,8 @@ public class TransactionController {
             final LoanerRepository loanerR,
             final LoanRepository loanR) {
 
+        LOGGER.debug("TransactionController");
+
         this.bookRepository = bookR;
         this.transactionRepository = transactionR;
         this.trnQuantitiesRepository = trnQuantitiesR;
@@ -77,6 +83,9 @@ public class TransactionController {
      * @return list of transaction with id; the list would have utmost one element
      */
     private List<Transaction> searchTransactionById(Long id) {
+
+        LOGGER.info("searchTransactionById: transactionId = {}", id);
+
         Optional<Transaction> transactionOptional = this.transactionRepository.findById(id);
 
         if (transactionOptional.isPresent()) {
@@ -98,6 +107,9 @@ public class TransactionController {
      * @return filtered list of transaction with loaner meeting the search term
      */
     private List<Transaction> searchTransactionByLoaner(List<Transaction> allTransactions, String sT) {
+
+        LOGGER.info("searchTransactionByLoaner: searchTerm = {}", sT);
+
         List<Transaction> searchResults = new ArrayList<>();
 
         try {
@@ -125,6 +137,9 @@ public class TransactionController {
      * @return filtered list of transaction with librarian meeting the search term
      */
     private List<Transaction> searchTransactionByLibrarian(List<Transaction> allTransactions, String sT) {
+
+        LOGGER.info("searchTransactionByLibrarian: searchTerm = {}", sT);
+
         List<Transaction> searchResults = new ArrayList<>();
 
         try {
@@ -153,6 +168,9 @@ public class TransactionController {
      * @return filtered list of transactions with type meeting the search term
      */
     private List<Transaction> searchTransactionByType(List<Transaction> allTransactions, String sT) {
+
+        LOGGER.info("searchTransactionByType: searchTerm = {}", sT);
+
         List<Transaction> searchResults = new ArrayList<>();
 
         try {
@@ -180,6 +198,9 @@ public class TransactionController {
      */
     @GetMapping(path = "{transactionId}")
     public ResponseEntity<?> getTransactionById(@PathVariable("transactionId") Long id) {
+
+        LOGGER.info("getTransactionById: transactionId = {}", id);
+
         List<Transaction> t = this.searchTransactionById(id);
 
         if (t == null) {
@@ -202,6 +223,8 @@ public class TransactionController {
     @GetMapping()
     public ResponseEntity<?> searchTransactions(@RequestParam(name = "searchBy", required = false) String searchBy,
             @RequestParam(name = "searchTerm", required = false) String searchTerm) {
+
+        LOGGER.info("searchTransactions: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
 
         List<Transaction> allTransactions = this.transactionRepository.findAll();
 
@@ -256,6 +279,9 @@ public class TransactionController {
      */
     @SuppressWarnings("unused")
     private boolean checkLoanerUniqueness(Loaner l) {
+
+        LOGGER.info("checkLoanerUniqueness: loaner = {}", l);
+
         if (l.getSchoolId() == null || l.getSchoolId().equals("")) {
             return true;
         }
@@ -286,6 +312,8 @@ public class TransactionController {
             @RequestBody Transaction t,
             @RequestParam(name = "borrowDate", required = false) String suppliedBorrowDateString,
             @RequestParam(name = "dueDate", required = false) String suppliedDueDateString) {
+
+        LOGGER.info("addTransaction: transaction = {}, borrowDate = {}, dueDate = {}", t.toStringCompact(), suppliedBorrowDateString, suppliedDueDateString);
 
         // reset the id to 0 to prevent overwrite
         t.setTransactionId(0L);

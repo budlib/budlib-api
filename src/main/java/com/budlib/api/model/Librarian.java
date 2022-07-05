@@ -131,6 +131,6 @@ public class Librarian implements Serializable {
                 this.userName,
                 this.getFullName(),
                 this.email,
-                this.role.toString());
+                this.role == null ? "null" : this.role.toString());
     }
 }

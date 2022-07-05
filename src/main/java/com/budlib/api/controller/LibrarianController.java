@@ -11,6 +11,8 @@ import com.budlib.api.repository.LibrarianRepository;
 import com.budlib.api.repository.TransactionRepository;
 import com.budlib.api.response.ErrorBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +36,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/librarian")
 public class LibrarianController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LibrarianController.class);
+
     private final LibrarianRepository librarianRepository;
     private final TransactionRepository transactionRepository;
 
     @Autowired
     public LibrarianController(final LibrarianRepository lr, final TransactionRepository tr) {
+
+        LOGGER.debug("LibrarianController");
+
         this.librarianRepository = lr;
         this.transactionRepository = tr;
     }
@@ -50,6 +57,9 @@ public class LibrarianController {
      * @return list of librarians with id; the list would have utmost one element
      */
     private List<Librarian> searchLibrarianById(Long id) {
+
+        LOGGER.info("searchLibrarianById: librarianId = {}", id);
+
         Optional<Librarian> librarianOptional = this.librarianRepository.findById(id);
 
         if (librarianOptional.isPresent()) {
@@ -71,6 +81,9 @@ public class LibrarianController {
      * @return filtered list of librarian with email meeting the search term
      */
     private List<Librarian> searchLibrarianByEmail(List<Librarian> allLibrarians, String sT) {
+
+        LOGGER.info("searchLibrarianByEmail: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Librarian> searchResults = new ArrayList<>();
 
@@ -91,6 +104,9 @@ public class LibrarianController {
      * @return filtered list of librarian with username meeting the search term
      */
     private List<Librarian> searchLibrarianByUsername(List<Librarian> allLibrarians, String sT) {
+
+        LOGGER.info("searchLibrarianByUsername: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Librarian> searchResults = new ArrayList<>();
 
@@ -111,6 +127,9 @@ public class LibrarianController {
      */
     @GetMapping(path = "{librarianId}")
     public ResponseEntity<?> getLibrarianById(@PathVariable("librarianId") Long id) {
+
+        LOGGER.info("getLibrarianById: librarianId = {}", id);
+
         List<Librarian> l = this.searchLibrarianById(id);
 
         if (l == null) {
@@ -131,6 +150,9 @@ public class LibrarianController {
      */
     @GetMapping(path = "{librarianId}/history")
     public ResponseEntity<?> getCoordinationHistory(@PathVariable("librarianId") Long id) {
+
+        LOGGER.info("getCoordinationHistory: librarianId = {}", id);
+
         List<Librarian> l = this.searchLibrarianById(id);
 
         if (l == null) {
@@ -154,6 +176,8 @@ public class LibrarianController {
     @GetMapping()
     public ResponseEntity<?> searchLibrarian(@RequestParam(name = "searchBy", required = false) String searchBy,
             @RequestParam(name = "searchTerm", required = false) String searchTerm) {
+
+        LOGGER.info("searchLibrarian: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
 
         List<Librarian> allLibrarians = this.librarianRepository.findAll();
 
@@ -201,6 +225,9 @@ public class LibrarianController {
      *         are incorrect. [1] contains reason for incorrect details
      */
     private String[] checkSuppliedDetails(Librarian l) {
+
+        LOGGER.info("checkSuppliedDetails: librarian = {}", l);
+
         String[] response = new String[2];
 
         // these values will change in case of error
@@ -268,6 +295,9 @@ public class LibrarianController {
      */
     @PostMapping
     public ResponseEntity<?> addLibrarian(@RequestBody Librarian l) {
+
+        LOGGER.info("addLibrarian: librarian = {}", l);
+
         // reset the id to 0 to prevent overwrite
         l.setLibrarianId(0L);
 
@@ -297,6 +327,9 @@ public class LibrarianController {
      */
     @PutMapping(path = "{librarianId}")
     public ResponseEntity<?> updateLibrarian(@RequestBody Librarian l, @PathVariable("librarianId") Long librarianId) {
+
+        LOGGER.info("updateLibrarian: librarian = {}, librarianId = {}", l, librarianId);
+
         Optional<Librarian> librarianOptional = this.librarianRepository.findById(librarianId);
 
         if (librarianOptional.isPresent()) {
@@ -333,6 +366,9 @@ public class LibrarianController {
      */
     @PutMapping(path = "{librarianId}/changepassword")
     public ResponseEntity<?> changePassword(@RequestBody Librarian l, @PathVariable("librarianId") Long librarianId) {
+
+        LOGGER.info("changePassword: librarian = {}, librarianId = {}", l, librarianId);
+
         Optional<Librarian> librarianOptional = this.librarianRepository.findById(librarianId);
 
         if (librarianOptional.isPresent()) {
@@ -372,6 +408,9 @@ public class LibrarianController {
      */
     @SuppressWarnings("unused")
     private int getAdminCount() {
+
+        LOGGER.info("getAdminCount");
+
         int count = 0;
 
         List<Librarian> allLibrarians = this.librarianRepository.findAll();
@@ -393,6 +432,8 @@ public class LibrarianController {
     @DeleteMapping(path = "{librarianId}")
     public ResponseEntity<?> deleteLibrarian(@PathVariable("librarianId") Long librarianId,
             @RequestParam(name = "deleteBy", required = true) Long deleterId) {
+
+        LOGGER.info("deleteLibrarian: librarianId = {}", librarianId);
 
         if (librarianId == deleterId) {
             String message = "You cannot delete your own account";

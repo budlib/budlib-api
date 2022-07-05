@@ -7,6 +7,8 @@ import com.budlib.api.response.AuthResponse;
 import com.budlib.api.security.Token;
 import com.budlib.api.service.LibrarianService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/auth")
 public class AuthenticationController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationController.class);
+
     private final AuthenticationManager authenticationManager;
     private final LibrarianService librarianService;
     private final Token token;
@@ -39,6 +43,8 @@ public class AuthenticationController {
             final LibrarianService ls,
             final Token t) {
 
+        LOGGER.debug("AuthenticationController");
+
         this.authenticationManager = am;
         this.librarianService = ls;
         this.token = t;
@@ -46,6 +52,9 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<?> createAuthToken(@RequestBody Librarian l) {
+
+        LOGGER.info("createAuthToken: librarian = {}", l);
+
         try {
             this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(l.getEmail(), l.getPassword()));
         }

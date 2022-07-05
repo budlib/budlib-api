@@ -11,6 +11,8 @@ import com.budlib.api.repository.LoanerRepository;
 import com.budlib.api.repository.TransactionRepository;
 import com.budlib.api.response.ErrorBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,11 +35,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/loaners")
 public class LoanerController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoanerController.class);
+
     private final LoanerRepository loanerRepository;
     private final TransactionRepository transactionRepository;
 
     @Autowired
     public LoanerController(final LoanerRepository lr, final TransactionRepository tr) {
+
+        LOGGER.debug("LoanerController");
+
         this.loanerRepository = lr;
         this.transactionRepository = tr;
     }
@@ -49,6 +56,9 @@ public class LoanerController {
      * @return list of loaners with id; the list would have utmost one element
      */
     private List<Loaner> searchLoanerById(Long id) {
+
+        LOGGER.info("searchLoanerById: loanerId = {}", id);
+
         Optional<Loaner> loanerOptional = this.loanerRepository.findById(id);
 
         if (loanerOptional.isPresent()) {
@@ -70,6 +80,9 @@ public class LoanerController {
      * @return filtered list of loaner with name meeting the search term
      */
     private List<Loaner> searchLoanerBySchoolId(List<Loaner> allLoaners, String sT) {
+
+        LOGGER.info("searchLoanerBySchoolId: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Loaner> searchResults = new ArrayList<>();
 
@@ -90,6 +103,9 @@ public class LoanerController {
      * @return filtered list of loaner with name meeting the search term
      */
     private List<Loaner> searchLoanerByName(List<Loaner> allLoaners, String sT) {
+
+        LOGGER.info("searchLoanerByName: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Loaner> searchResults = new ArrayList<>();
 
@@ -110,6 +126,9 @@ public class LoanerController {
      * @return filtered list of students with parent's name meeting the search term
      */
     private List<Loaner> searchStudentByParentName(List<Loaner> allLoaners, String sT) {
+
+        LOGGER.info("searchStudentByParentName: searchTerm = {}", sT);
+
         String searchTerm = sT.toLowerCase();
         List<Loaner> searchResults = new ArrayList<>();
 
@@ -135,6 +154,9 @@ public class LoanerController {
      */
     @GetMapping(path = "{loanerId}")
     public ResponseEntity<?> getLoanerById(@PathVariable("loanerId") Long id) {
+
+        LOGGER.info("getLoanerById: loanerId = {}", id);
+
         List<Loaner> s = this.searchLoanerById(id);
 
         if (s == null) {
@@ -155,6 +177,9 @@ public class LoanerController {
      */
     @GetMapping(path = "{loanerId}/history")
     public ResponseEntity<?> getTransactionHistory(@PathVariable("loanerId") Long id) {
+
+        LOGGER.info("getTransactionHistory: loanerId = {}", id);
+
         List<Loaner> l = this.searchLoanerById(id);
 
         if (l == null) {
@@ -176,6 +201,9 @@ public class LoanerController {
      */
     @GetMapping(path = "{loanerId}/loans")
     public ResponseEntity<?> getCurrentLoans(@PathVariable("loanerId") Long id) {
+
+        LOGGER.info("getCurrentLoans: loanerId = {}", id);
+
         List<Loaner> l = this.searchLoanerById(id);
 
         if (l == null) {
@@ -199,6 +227,8 @@ public class LoanerController {
     @GetMapping()
     public ResponseEntity<?> searchLoaner(@RequestParam(name = "searchBy", required = false) String searchBy,
             @RequestParam(name = "searchTerm", required = false) String searchTerm) {
+
+        LOGGER.info("searchLoaner: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
 
         List<Loaner> allLoaners = this.loanerRepository.findAll();
 
@@ -249,6 +279,9 @@ public class LoanerController {
      * @return true if unique, false otherwise
      */
     private boolean checkLoanerUniqueness(Loaner l) {
+
+        LOGGER.info("checkLoanerUniqueness: loaner = {}", l);
+
         if (l.getSchoolId() == null || l.getSchoolId().equals("")) {
             return true;
         }
@@ -276,6 +309,9 @@ public class LoanerController {
      */
     @PostMapping
     public ResponseEntity<?> addLoaner(@RequestBody Loaner l) {
+
+        LOGGER.info("addLoaner: loaner = {}", l);
+
         // reset the id to 0 to prevent overwrite
         l.setLoanerId(0L);
 
@@ -299,6 +335,9 @@ public class LoanerController {
      */
     @PostMapping(path = "import")
     public ResponseEntity<?> importLoaners(@RequestBody List<Loaner> loanerList) {
+
+        LOGGER.info("importLoaners: loanerList = {}", loanerList);
+
         boolean flag = false;
         int countNotImported = 0;
         int countImported = 0;
@@ -336,6 +375,9 @@ public class LoanerController {
      */
     @PutMapping(path = "{loanerId}")
     public ResponseEntity<?> updateLoaner(@RequestBody Loaner l, @PathVariable("loanerId") Long loanerId) {
+
+        LOGGER.info("updateLoaner: loaner = {}, loanerId = {}", l, loanerId);
+
         Optional<Loaner> loanerOptional = this.loanerRepository.findById(loanerId);
 
         if (loanerOptional.isPresent()) {
@@ -367,6 +409,9 @@ public class LoanerController {
      */
     @DeleteMapping(path = "{loanerId}")
     public ResponseEntity<?> deleteLoaner(@PathVariable("loanerId") Long loanerId) {
+
+        LOGGER.info("deleteLoaner: loanerId = {}", loanerId);
+
         if (!this.loanerRepository.existsById(loanerId)) {
             String message = "Loaner not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));

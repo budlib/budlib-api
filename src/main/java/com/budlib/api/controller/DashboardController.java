@@ -30,6 +30,8 @@ import com.budlib.api.response.Stats;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +51,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/dashboard")
 public class DashboardController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
+
     private final BookRepository bookRepository;
     private final LoanRepository loanRepository;
     private final LoanerRepository loanerRepository;
@@ -60,6 +64,8 @@ public class DashboardController {
             final LoanRepository loanR,
             final LoanerRepository loanerR,
             final TransactionRepository transactionR) {
+
+        LOGGER.debug("DashboardController");
 
         this.bookRepository = bookR;
         this.loanRepository = loanR;
@@ -75,6 +81,9 @@ public class DashboardController {
      */
     @GetMapping(path = "stats")
     public ResponseEntity<?> getStats() {
+
+        LOGGER.info("getStats");
+
         Stats currentStats = new Stats();
 
         currentStats.setUniqueTitles(this.bookRepository.count());
@@ -108,6 +117,9 @@ public class DashboardController {
      */
     @GetMapping(path = "overdue")
     public ResponseEntity<?> getOverdueList() {
+
+        LOGGER.info("getOverdueList");
+
         List<Loan> allLoans = this.loanRepository.findAll();
 
         List<Loan> overdueLoans = new ArrayList<>();
@@ -129,6 +141,9 @@ public class DashboardController {
      */
     @GetMapping(path = "upcomingdue")
     public ResponseEntity<?> getUpcomingDueList() {
+
+        LOGGER.info("getUpcomingDueList");
+
         List<Loan> allLoans = this.loanRepository.findAll();
 
         List<Loan> upcomingDueLoans = new ArrayList<>();
@@ -152,6 +167,9 @@ public class DashboardController {
      * @return the file to download via API call
      */
     private ResponseEntity<?> fileDownloader(String fileName) {
+
+        LOGGER.info("fileDownloader: fileName = {}", fileName);
+
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -188,6 +206,8 @@ public class DashboardController {
         String[] bookHeaders = { "bookId", "title", "subtitle", "authors", "publisher", "edition", "year", "language",
                 "isbn10", "isbn13", "librarySection", "totalQuantity", "availableQuantity", "notes", "imageLink",
                 "retailPrice", "libraryPrice", "tags" };
+
+        LOGGER.info("exportBooks");
 
         List<Book> allBooks = this.bookRepository.findAll();
 
@@ -256,6 +276,8 @@ public class DashboardController {
         String[] loanerHeaders = { "loanerId", "schoolId", "isStudent", "email", "salutation", "first_name",
                 "middle_name", "last_name", "mother_name", "father_name" };
 
+        LOGGER.info("exportLoaners");
+
         List<Loaner> allLoaners = this.loanerRepository.findAll();
 
         try {
@@ -305,6 +327,8 @@ public class DashboardController {
     public ResponseEntity<?> exportOutstandingLoans() {
         String[] loanHeaders = { "loanId", "loanerId", "loanerSchoolId", "loanerEmail", "loanerFullName", "bookId",
                 "bookIsbn10", "bookIsbn13", "bookTitle", "loanedCopies", "borrowDate", "dueDate" };
+
+        LOGGER.info("exportOutstandingLoans");
 
         List<Loan> allLoans = this.loanRepository.findAll();
 
@@ -361,6 +385,8 @@ public class DashboardController {
         String[] trnHeaders = { "trnId", "trnDateTime", "trnType", "facilitatorId", "facilitatorFullName",
                 "facilitatorEmail", "loanerId", "loanerSchoolId", "loanerFullName", "loanerEmail", "bookId",
                 "bookIsbn10", "bookIsbn13", "bookTitle", "loanedCopies" };
+
+        LOGGER.info("exportTransactions");
 
         List<Transaction> allTrns = this.transactionRepository.findAll();
 
@@ -447,6 +473,8 @@ public class DashboardController {
         String[] bookHeaders = { "title", "subtitle", "authors", "publisher", "edition", "year", "language", "isbn10",
                 "isbn13", "librarySection", "totalQuantity", "availableQuantity", "notes", "imageLink", "retailPrice",
         "libraryPrice" };
+
+        LOGGER.info("showImportSampleBooks");
 
         try {
             Path tempPath = Files.createTempFile("sample_books_import", ".csv");
@@ -549,6 +577,8 @@ public class DashboardController {
     public ResponseEntity<?> showImportSampleLoaners() {
         String[] loanerHeaders = { "schoolId", "isStudent", "email", "salutation", "first_name", "middle_name",
                 "last_name", "mother_name", "father_name" };
+
+        LOGGER.info("showImportSampleLoaners");
 
         try {
             Path tempPath = Files.createTempFile("sample_loaners_import", ".csv");

@@ -91,6 +91,17 @@ public class Transaction implements Serializable {
     }
 
     /**
+     * Prints the transaction in brief
+     */
+    public String toStringCompact() {
+        return String.format("Transaction [transactionType=%s, loanerId=%d, librarianId=%d, bookCopies=%s]",
+                this.transactionType.toString(),
+                this.loaner.getLoanerId(),
+                this.librarian.getLibrarianId(),
+                this.bookCopiesToString());
+    }
+
+    /**
      * Converts the list of transaction quantities to a string
      *
      * @return String of transaction quantities
