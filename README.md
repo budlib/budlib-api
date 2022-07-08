@@ -27,7 +27,7 @@ Check the [wiki](https://github.com/budlib/budlib-api/wiki) for deployment instr
 5. Run the below scripts on the MySQL server in the given order using `root`. These scripts will create a schema `buddb`, a user `budapp` with password `budpassword`, create all necessary tables and load them with some dummy data.
 
    1. [01_init.sql](sql/01_init.sql)
-   2. [02_tables.sql](sql/02_dummy_data.sql)
+   2. [02_dummy_data.sql](sql/02_dummy_data.sql)
 
 6. Running the below command from the repository's root directory will get the backend server running.
 
