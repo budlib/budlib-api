@@ -2,17 +2,22 @@ package com.budlib.api.controller;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import com.budlib.api.model.Book;
 import com.budlib.api.model.Librarian;
@@ -29,7 +34,9 @@ import com.budlib.api.response.ErrorBody;
 import com.budlib.api.response.Stats;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +47,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Controller for dashboard
@@ -158,6 +168,81 @@ public class DashboardController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(upcomingDueLoans);
+    }
+
+    /**
+     * Generates a random string of length 20
+     */
+    @SuppressWarnings("unused")
+    private String generateRandomName() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 20;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+
+        return generatedString;
+    }
+
+    /**
+     * Uploads the CSV file to a temporary directory, and returns the header of the
+     * CSV along with the file name
+     *
+     * @param file the CSV file received
+     * @return Map containing CSV headers and file name
+     */
+    @PostMapping("upload")
+    public ResponseEntity<?> fileUploader(@RequestParam(name = "file") MultipartFile file) {
+
+        LOGGER.info("fileUploader: file = {}", file.getOriginalFilename());
+
+        // check if file is empty
+        if (file.isEmpty()) {
+            String message = "Cannot process empty file";
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            // create a temporary name
+            Path tempDestinationPath = Files.createTempFile("upload_", ".csv");
+
+            // store the file on the server
+            Files.copy(inputStream, tempDestinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+            CSVFormat csvFormat = CSVFormat.DEFAULT;
+
+            // File tempFile = tempDestinationPath.toFile();
+            FileReader fileReader = new FileReader(tempDestinationPath.toFile());
+
+            CSVParser csvParser = new CSVParser(fileReader, csvFormat);
+            CSVRecord header = csvParser.iterator().next();
+
+            HashMap<String, String> fields = new HashMap<>();
+
+            for (int i = 0; i < header.size(); i++) {
+                fields.put("field_" + String.valueOf(i), header.get(i));
+            }
+
+            LOGGER.debug("fileUploader: Found headers = {}", fields.values().toString());
+
+            // TODO: sending location of file on the server is probably not safe
+            fields.put("filename", tempDestinationPath.toString());
+
+            csvParser.close();
+
+            return ResponseEntity.status(HttpStatus.OK).body(fields);
+        }
+
+        catch (Exception e) {
+            String message = "Some error occurred during processing of the file";
+            LOGGER.error(message, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
+        }
     }
 
     /**
