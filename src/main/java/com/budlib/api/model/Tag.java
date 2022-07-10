@@ -29,6 +29,10 @@ public class Tag implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public Tag(String tagname) {
+        this.tagName = tagname;
+    }
+
     /**
      * Internal unique ID of the tag
      */

@@ -1,6 +1,10 @@
 package com.budlib.api.controller;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +17,9 @@ import com.budlib.api.repository.BookRepository;
 import com.budlib.api.repository.TagRepository;
 import com.budlib.api.response.ErrorBody;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,6 +208,7 @@ public class BookController {
             return searchResults;
         }
 
+        // TODO: not actually thrown, cleanup required
         catch (IllegalArgumentException e) {
             return searchResults;
         }
@@ -452,7 +460,7 @@ public class BookController {
         List<Tag> suppliedTagList = b.getTags();
         List<Tag> uniqueTagList = new ArrayList<>();
 
-        if(suppliedTagList != null) {
+        if (suppliedTagList != null) {
             for (Tag eachTag : suppliedTagList) {
                 Tag t = this.findUniqueTag(eachTag);
                 uniqueTagList.add(t);
@@ -507,6 +515,269 @@ public class BookController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+    }
+
+    private boolean checkEmptyRecord(CSVRecord record) {
+
+        LOGGER.info("checkEmptyRecord: record = {}", record);
+
+        Iterator<String> itr = record.iterator();
+
+        while (itr.hasNext()) {
+            String str = itr.next();
+
+            if (str != null && str.length() != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Converts CSV record to Book object, with the field mapping provided by
+     * bookCsv
+     *
+     * @param record  The CSV Record fetched from the CSV file
+     * @param bookCsv
+     * @return
+     * @throws NumberFormatException
+     * @throws NullPointerException
+     */
+    private Book csvRecordToBook(final CSVRecord record, HashMap<String, String> bookCsv)
+            throws NumberFormatException, NullPointerException {
+
+        LOGGER.info("csvRecordToBook: record = {}, bookCsv map = {}", record, bookCsv);
+
+        if (this.checkEmptyRecord(record)) {
+            return null;
+        }
+
+        Book b = new Book();
+        b.setBookId(0);
+
+        // all the below are actually integers in String format
+        String title = bookCsv.get("title");
+        String subtitle = bookCsv.get("subtitle");
+        String authors = bookCsv.get("authors");
+        String publisher = bookCsv.get("publisher");
+        String edition = bookCsv.get("edition");
+        String year = bookCsv.get("year");
+        String language = bookCsv.get("language");
+        String isbn_10 = bookCsv.get("isbn_10");
+        String isbn_13 = bookCsv.get("isbn_13");
+        String librarySection = bookCsv.get("librarySection");
+        String totalQuantity = bookCsv.get("totalQuantity");
+        String notes = bookCsv.get("notes");
+        String tags = bookCsv.get("tags");
+        String imageLink = bookCsv.get("imageLink");
+        String priceRetail = bookCsv.get("priceRetail");
+        String priceLibrary = bookCsv.get("priceLibrary");
+
+        // set title
+        if (title != null) {
+            b.setTitle(record.get(Integer.parseInt(title)));
+        }
+
+        // set subtitle
+        if(subtitle != null) {
+            b.setSubtitle(record.get(Integer.parseInt(subtitle)));
+        }
+
+        // set authors
+        if (authors != null) {
+            b.setAuthors(record.get(Integer.parseInt(authors)));
+        }
+
+        // set publisher
+        if (publisher != null) {
+            b.setPublisher(record.get(Integer.parseInt(publisher)));
+        }
+
+        // set edition
+        if (edition != null) {
+            b.setEdition(record.get(Integer.parseInt(edition)));
+        }
+
+        // set year
+        if (year != null) {
+            b.setYear(record.get(Integer.parseInt(year)));
+        }
+
+        // set language
+        if (language != null) {
+            b.setLanguage(record.get(Integer.parseInt(language)));
+        }
+
+        // set ISBN
+        if (isbn_10 != null) {
+            if (Book.cleanIsbn(record.get(Integer.parseInt(isbn_10))).length() > 10) {
+                b.setIsbn_13(record.get(Integer.parseInt(isbn_10)));
+            }
+
+            else {
+                b.setIsbn_10(record.get(Integer.parseInt(isbn_10)));
+            }
+        }
+
+        if (isbn_13 != null) {
+            if (Book.cleanIsbn(record.get(Integer.parseInt(isbn_13))).length() > 10) {
+                b.setIsbn_13(record.get(Integer.parseInt(isbn_13)));
+            }
+
+            else {
+                b.setIsbn_10(record.get(Integer.parseInt(isbn_13)));
+            }
+        }
+
+        // set library section
+        if (librarySection == null) {
+            b.setLibrarySection(LibrarySection.CHILDREN_LIBRARY);
+        }
+
+        else {
+            try {
+                b.setLibrarySection(LibrarySection.valueOf(record.get(librarySection)));
+            }
+
+            catch (IllegalArgumentException e) {
+                LOGGER.debug("csvRecordToBook: provided library section = {}", record.get(librarySection));
+                LOGGER.warn("csvRecordToBook: Could not set library section. Defaulting to CHILDREN_LIBRARY");
+                b.setLibrarySection(LibrarySection.CHILDREN_LIBRARY);
+            }
+        }
+
+        // set total quantity
+        if (totalQuantity == null) {
+            LOGGER.warn("csvRecordToBook: Value not provided. Defaulting quantity to 1");
+            b.setTotalQuantity(1);
+            b.setAvailableQuantity(1);
+        }
+
+        else {
+            b.setTotalQuantity(Integer.parseInt(record.get(Integer.parseInt(totalQuantity))));
+            b.setAvailableQuantity(b.getTotalQuantity());
+        }
+
+        // set notes
+        if (notes != null) {
+            b.setNotes(record.get(Integer.parseInt(notes)));
+        }
+
+        // set the tags
+        if (tags != null) {
+            String[] tagStrings = record.get(Integer.parseInt(tags)).split(",");
+            List<Tag> suppliedTagList = new ArrayList<>();
+
+            for (String ts : tagStrings) {
+                suppliedTagList.add(new Tag(ts.trim()));
+            }
+
+            List<Tag> uniqueTagList = new ArrayList<>();
+
+            if (suppliedTagList.size() != 0) {
+                for (Tag eachTag : suppliedTagList) {
+                    Tag t = this.findUniqueTag(eachTag);
+                    uniqueTagList.add(t);
+                }
+            }
+
+            b.setTags(uniqueTagList);
+        }
+
+        // set image link
+        if (imageLink != null) {
+            b.setImageLink(record.get(Integer.parseInt(imageLink)));
+        }
+
+        // set retail price
+        if (priceRetail != null) {
+            b.setPriceRetail(Double.parseDouble(record.get(Integer.parseInt(priceRetail))));
+        }
+
+        // set library price
+        if (priceLibrary != null) {
+            b.setPriceLibrary(Double.parseDouble(record.get(Integer.parseInt(priceLibrary))));
+        }
+
+        return b;
+    }
+
+    @PostMapping(path = "importUpdated")
+    public ResponseEntity<?> importBooksUpdated(@RequestBody HashMap<String, String> bookCsv) {
+
+        LOGGER.info("csvRecordToBook: bookCsv map = {}", bookCsv);
+
+        int countImported = 0;
+        final String uploadCSVFilePath = bookCsv.get("filename");
+
+        // remove the filename as its not needed anymore, and to prevent hindrance
+        bookCsv.remove("filename");
+
+        try {
+            FileReader fileReader = new FileReader(uploadCSVFilePath);
+
+            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader();
+
+            CSVParser csvParser = new CSVParser(fileReader, csvFormat);
+            Iterator<CSVRecord> itr = csvParser.iterator();
+
+            while (itr.hasNext()) {
+                CSVRecord record = itr.next();
+
+                Book b = this.csvRecordToBook(record, bookCsv);
+
+                if (b == null) {
+                    continue;
+                }
+
+                else {
+                    this.bookRepository.save(b);
+                    countImported++;
+                }
+            }
+
+            csvParser.close();
+
+            String message = String.format("%d books imported successfully", countImported);
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+
+        }
+
+        catch (FileNotFoundException e) {
+            String message = "Error in retrieving uploaded file";
+            LOGGER.error(message, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
+        }
+
+        catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            String message = "React Coding issue: Incorrect mapping provided";
+            LOGGER.error(message, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
+        }
+
+        catch (IOException e) {
+            String message = "Error in parsing uploaded file";
+            LOGGER.error(message, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
+        }
+
+        catch (NullPointerException e) {
+            String message = "Coding issue: All nulls are not handled";
+            LOGGER.error(message, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
+        }
+
+        catch (Exception e) {
+            String message = "Something unexpected happened";
+            LOGGER.error(message, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
+        }
     }
 
     /**
