@@ -163,13 +163,23 @@ public class Book implements Serializable {
     private Double priceLibrary;
 
     /**
+     * Removes special characters from ISBN like dashes/hyphens
+     *
+     * @param rawIsbn The way ISBN is usually written
+     * @return ISBN with just alphanumeric characters
+     */
+    public static String cleanIsbn(String rawIsbn) {
+        return rawIsbn.toUpperCase().replaceAll("[^a-zA-Z0-9]", "");
+    }
+
+    /**
      * Setter for ISBN 10 by removing special characters like dashes/hyphens
      *
      * @param isbn_10 ISBN 10 of the book
      */
     public void setIsbn_10(String isbn_10) {
         if (isbn_10 != null) {
-            this.isbn_10 = isbn_10.toUpperCase().replaceAll("[^a-zA-Z0-9]", "");
+            this.isbn_10 = Book.cleanIsbn(isbn_10);
         }
 
         else {
@@ -184,7 +194,7 @@ public class Book implements Serializable {
      */
     public void setIsbn_13(String isbn_13) {
         if (isbn_13 != null) {
-            this.isbn_13 = isbn_13.toUpperCase().replaceAll("[^a-zA-Z0-9]", "");
+            this.isbn_13 = Book.cleanIsbn(isbn_13);
         }
 
         else {
