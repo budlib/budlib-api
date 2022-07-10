@@ -224,7 +224,7 @@ public class DashboardController {
             HashMap<String, String> fields = new HashMap<>();
 
             for (int i = 0; i < header.size(); i++) {
-                fields.put("field_" + String.valueOf(i), header.get(i));
+                fields.put(String.valueOf(i), header.get(i));
             }
 
             LOGGER.debug("fileUploader: Found headers = {}", fields.values().toString());
