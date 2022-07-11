@@ -245,7 +245,8 @@ public class Loaner implements Serializable {
      */
     @Override
     public String toString() {
-        return String.format("Loaner [loanerId=%d, schoolId=%d, isStudent=%s, fullName=\"%s\", email=\"%s\", motherName=\"%s\", fatherName=\"%s\"]",
+        return String.format(
+                "Loaner [loanerId=%d, schoolId=%s, isStudent=%s, fullName=\"%s\", email=\"%s\", motherName=\"%s\", fatherName=\"%s\"]",
                 this.loanerId,
                 this.schoolId,
                 this.isStudent,
