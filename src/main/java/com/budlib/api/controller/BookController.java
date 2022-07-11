@@ -677,7 +677,7 @@ public class BookController {
     @PostMapping(path = "import")
     public ResponseEntity<?> importBooks(@RequestBody HashMap<String, String> bookCsv) {
 
-        LOGGER.info("csvRecordToBook: bookCsv map = {}", bookCsv);
+        LOGGER.info("importBooks: bookCsv map = {}", bookCsv);
 
         int countImported = 0;
         final String uploadCSVFilePath = bookCsv.get("filename");
