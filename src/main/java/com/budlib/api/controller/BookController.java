@@ -475,48 +475,12 @@ public class BookController {
     }
 
     /**
-     * Endpoint for POST - import multiple books in db
+     * Verifies if the CSV record if empty or not. A record is empty when all the
+     * intended details are blank.
      *
-     * @param bookList list of book details in json
-     * @return the message
+     * @param record The CSV record to check for emptiness
+     * @return {@code true} if empty, {@code false} false otherwise
      */
-    @PostMapping(path = "import")
-    public ResponseEntity<?> importBooks(@RequestBody List<Book> bookList) {
-
-        LOGGER.info("importBooks: bookList = {}", bookList);
-
-        boolean flag = false;
-        int countNotImported = 0;
-        int countImported = 0;
-
-        for (Book eachBook : bookList) {
-            // reset the id to 0 to prevent overwrite
-            eachBook.setBookId(0L);
-
-            if (eachBook.getLibrarySection() == null) {
-                eachBook.setLibrarySection(LibrarySection.CHILDREN_LIBRARY);
-            }
-
-            if (eachBook.getTotalQuantity() != eachBook.getAvailableQuantity()) {
-                flag = true;
-                countNotImported++;
-            }
-
-            else {
-                this.bookRepository.save(eachBook);
-                countImported++;
-            }
-        }
-
-        String message = String.format("%d books imported successfully.", countImported);
-
-        if (flag) {
-            message += String.format("\n%d books not imported.", countNotImported);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-    }
-
     private boolean checkEmptyRecord(CSVRecord record) {
 
         LOGGER.info("checkEmptyRecord: record = {}", record);
@@ -540,7 +504,7 @@ public class BookController {
      *
      * @param record  The CSV Record fetched from the CSV file
      * @param bookCsv
-     * @return
+     * @return book object
      * @throws NumberFormatException
      * @throws NullPointerException
      */
@@ -703,8 +667,15 @@ public class BookController {
         return b;
     }
 
-    @PostMapping(path = "importUpdated")
-    public ResponseEntity<?> importBooksUpdated(@RequestBody HashMap<String, String> bookCsv) {
+    /**
+     * Import the CSV file that was uploaded, with the help of fields mapping
+     * provided
+     *
+     * @param bookCsv the fields mapping
+     * @return message
+     */
+    @PostMapping(path = "import")
+    public ResponseEntity<?> importBooks(@RequestBody HashMap<String, String> bookCsv) {
 
         LOGGER.info("csvRecordToBook: bookCsv map = {}", bookCsv);
 
