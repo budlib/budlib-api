@@ -1,13 +1,8 @@
 package com.budlib.api.controller;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
 import com.budlib.api.model.Tag;
-import com.budlib.api.repository.TagRepository;
 import com.budlib.api.response.ErrorBody;
+import com.budlib.api.service.TagService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,60 +29,14 @@ public class TagController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
 
-    private final TagRepository tagRepository;
+    private final TagService tagService;
 
     @Autowired
-    public TagController(final TagRepository tr) {
+    public TagController(final TagService ts) {
 
         LOGGER.debug("TagController");
 
-        this.tagRepository = tr;
-    }
-
-    /**
-     * Search the tags by id
-     *
-     * @param id tag id
-     * @return list of tags with id; the list would have utmost one element
-     */
-    private List<Tag> searchTagById(Long id) {
-
-        LOGGER.info("searchTagById: tagId = {}", id);
-
-        Optional<Tag> tagOptional = this.tagRepository.findById(id);
-
-        if (tagOptional.isPresent()) {
-            List<Tag> searchResults = new ArrayList<>();
-            searchResults.add(tagOptional.get());
-            return searchResults;
-        }
-
-        else {
-            return null;
-        }
-    }
-
-    /**
-     * Search tags by tag name
-     *
-     * @param allTags list of all tags
-     * @param sT      search term
-     * @return filtered list of tags with name meeting the search term
-     */
-    private List<Tag> searchTagByName(List<Tag> allTags, String sT) {
-
-        LOGGER.info("searchTagByName: searchTerm = {}", sT);
-
-        String searchTerm = sT.toLowerCase();
-        List<Tag> searchResults = new ArrayList<>();
-
-        for (Tag eachTag : allTags) {
-            if (eachTag.getTagName() != null && eachTag.getTagName().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachTag);
-            }
-        }
-
-        return searchResults;
+        this.tagService = ts;
     }
 
     /**
@@ -101,7 +50,7 @@ public class TagController {
 
         LOGGER.info("getTagById: tagId = {}", id);
 
-        List<Tag> t = this.searchTagById(id);
+        Tag t = this.tagService.getTagById(id);
 
         if (t == null) {
             String message = "Tag not found";
@@ -109,7 +58,7 @@ public class TagController {
         }
 
         else {
-            return ResponseEntity.status(HttpStatus.OK).body(t.get(0));
+            return ResponseEntity.status(HttpStatus.OK).body(t);
         }
     }
 
@@ -126,36 +75,7 @@ public class TagController {
 
         LOGGER.info("searchTag: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
 
-        List<Tag> allTags = this.tagRepository.findAll();
-
-        try {
-            if (searchBy == null || searchTerm == null) {
-                return ResponseEntity.status(HttpStatus.OK).body(allTags);
-            }
-
-            else if (searchBy.equals("") || searchTerm.equals("")) {
-                return ResponseEntity.status(HttpStatus.OK).body(allTags);
-            }
-
-            else if (searchBy.equalsIgnoreCase("id")) {
-                return ResponseEntity.status(HttpStatus.OK).body(this.searchTagById(Long.valueOf(searchTerm)));
-            }
-
-            else if (searchBy.equalsIgnoreCase("name")) {
-                return ResponseEntity.status(HttpStatus.OK).body(this.searchTagByName(allTags, searchTerm));
-            }
-
-            else {
-                // String message = "Invalid tag search operation";
-                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-                return ResponseEntity.status(HttpStatus.OK).body(allTags);
-            }
-        }
-
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body(allTags);
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(this.tagService.searchTag(searchBy, searchTerm));
     }
 
     /**
@@ -169,19 +89,7 @@ public class TagController {
 
         LOGGER.info("addTag: tag = {}", t);
 
-        // reset the id to 0 to prevent overwrite
-        t.setTagId(0L);
-
-        Iterator<Tag> i = this.tagRepository.findAll().listIterator();
-
-        while (i.hasNext()) {
-            if (t.getTagName().equalsIgnoreCase((i.next().getTagName()))) {
-                String message = "Tag already exists";
-                return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-            }
-        }
-
-        this.tagRepository.save(t);
+        this.tagService.addTag(t);
 
         String message = "Tag added successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
@@ -193,28 +101,13 @@ public class TagController {
      * @param bookId book id
      */
     @DeleteMapping(path = "cleanup")
-    public ResponseEntity<?> deleteUnusedTags() {
+    public ResponseEntity<?> removeUnusedTags() {
 
-        LOGGER.info("deleteUnusedTags");
+        LOGGER.info("removeUnusedTags");
 
-        List<Tag> allTags = this.tagRepository.findAll();
+        int deleteCount = this.tagService.removeUnusedTags();
 
-        int count = 0;
-
-        for (int i = 0; i < allTags.size(); i++) {
-            Tag t = allTags.get(i);
-
-            int size = t.getBooks().size();
-            System.out.printf("Tag %s used by %d books %n", t.getTagName(), size);
-
-            if (size == 0) {
-                this.tagRepository.delete(t);
-
-                count++;
-            }
-        }
-
-        String message = String.format("Tags cleaned up successfully. %d tags removed.", count);
+        String message = String.format("Tags cleaned up successfully. %d tags removed.", deleteCount);
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
 }

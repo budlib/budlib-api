@@ -61,4 +61,32 @@ public class Tag implements Serializable {
     public String toString() {
         return String.format("Tag [id=%d, name=\"%s\"]", this.tagId, this.tagName);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Tag that = (Tag) obj;
+
+        return this.tagName.equalsIgnoreCase(that.tagName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        int result = this.tagName != null ? this.tagName.hashCode() : 0;
+        return result;
+    }
 }
