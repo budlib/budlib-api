@@ -1,5 +1,9 @@
 package com.budlib.api.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.budlib.api.model.Book;
 import com.budlib.api.model.Tag;
 import com.budlib.api.response.ErrorBody;
 import com.budlib.api.service.TagService;
@@ -27,30 +31,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/tags")
 public class TagController {
 
+    /**
+     * Logger for logging
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
 
+    /**
+     * {@link TagService} for interacting with Tags
+     */
     private final TagService tagService;
 
+    /**
+     * Constructor
+     *
+     * @param ts {@code TagService} for interaction with Tags
+     */
     @Autowired
     public TagController(final TagService ts) {
 
-        LOGGER.debug("TagController");
+        LOGGER.debug("TagController: injected TagService");
 
         this.tagService = ts;
     }
 
     /**
-     * Endpoint for GET - fetch tag by id
+     * Get the {@link Tag} by ID
      *
-     * @param id tag id
-     * @return tag
+     * @param tagId ID of the Tag
+     * @return Tag
      */
     @GetMapping(path = "{tagId}")
-    public ResponseEntity<?> getTagById(@PathVariable("tagId") Long id) {
+    public ResponseEntity<?> getTagById(@PathVariable("tagId") Long tagId) {
 
-        LOGGER.info("getTagById: tagId = {}", id);
+        LOGGER.info("getTagById: tagId = {}", tagId);
 
-        Tag t = this.tagService.getTagById(id);
+        Tag t = this.tagService.getTagById(tagId);
 
         if (t == null) {
             String message = "Tag not found";
@@ -63,42 +78,47 @@ public class TagController {
     }
 
     /**
-     * Endpoint for GET - search and fetch all tags meeting search criteria
+     * Search {@link Tag} in the database
      *
-     * @param searchBy   where to search
-     * @param searchTerm what to search
-     * @return list of tags meeting search criteria
+     * @param tagName name of the Tag
+     * @return list of Tags that match the filters
      */
     @GetMapping()
-    public ResponseEntity<?> searchTag(@RequestParam(name = "searchBy", required = false) String searchBy,
-            @RequestParam(name = "searchTerm", required = false) String searchTerm) {
+    public ResponseEntity<?> searchTag(@RequestParam(name = "tagname", required = false) String tagName) {
 
-        LOGGER.info("searchTag: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
+        LOGGER.info("searchBook: parameters = tagName = {}", tagName);
 
-        return ResponseEntity.status(HttpStatus.OK).body(this.tagService.searchTag(searchBy, searchTerm));
+        Map<String, String> parameters = new HashMap<>();
+
+        if (tagName != null) {
+            parameters.put("tagname", tagName);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.tagService.searchTag(parameters));
     }
 
     /**
-     * Endpoint for POST - save the tag in db
+     * Save the {@link Tag} in the database
      *
-     * @param t tag details in json
+     * @param tag Tag details
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addTag(@RequestBody Tag t) {
+    public ResponseEntity<?> addTag(@RequestBody Tag tag) {
 
-        LOGGER.info("addTag: tag = {}", t);
+        LOGGER.info("addTag: tag = {}", tag);
 
-        this.tagService.addTag(t);
+        this.tagService.addTag(tag);
 
         String message = "Tag added successfully";
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
     }
 
     /**
-     * Endpoint for DELETE - delete all unused tags from db
+     * Remove all unused tags from the database. Unused tags are the ones that no
+     * {@link Book} is referring to
      *
-     * @param bookId book id
+     * @return the message
      */
     @DeleteMapping(path = "cleanup")
     public ResponseEntity<?> removeUnusedTags() {

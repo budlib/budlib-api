@@ -3,8 +3,11 @@ package com.budlib.api.service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import com.budlib.api.model.Book;
 import com.budlib.api.model.Tag;
 import com.budlib.api.repository.TagRepository;
 
@@ -43,10 +46,32 @@ public class TagService {
     }
 
     /**
-     * Saves the {@link Tag} to the database if its doesn't already exists.
+     * Get the {@link Tag} by ID
      *
-     * @param t The {@link Tag} be saved to the database
-     * @return saved {@link Tag}
+     * @param tagId ID of the Tag
+     * @return Tag
+     */
+    public Tag getTagById(final Long tagId) {
+
+        LOGGER.info("getTagById: tagId = {}", tagId);
+
+        Optional<Tag> tagOptional = this.tagRepository.findById(tagId);
+
+        if (tagOptional.isPresent()) {
+            return tagOptional.get();
+        }
+
+        else {
+            LOGGER.warn("Tag with ID={} not found", tagId);
+            return null;
+        }
+    }
+
+    /**
+     * Save the {@link Tag} to the database if its doesn't already exist
+     *
+     * @param t Tag details
+     * @return saved Tag
      */
     public Tag addTag(final Tag t) {
 
@@ -69,86 +94,49 @@ public class TagService {
     }
 
     /**
-     * Get the {@link Tag} by its ID
+     * Search {@link Tag} in the database
      *
-     * @param id ID of the {@link Tag}
-     * @return {@link Tag}
+     * @param searchParameters parameters to filter the search
+     * @return list of Tags that match the search parameters
      */
-    public Tag getTagById(final Long id) {
+    public List<Tag> searchTag(final Map<String, String> searchParameters) {
 
-        LOGGER.info("getTagById: tagId = {}", id);
+        LOGGER.info("searchTag");
 
-        Optional<Tag> tagOptional = this.tagRepository.findById(id);
+        StringBuilder sb = new StringBuilder();
+        searchParameters.forEach((k, v) -> sb.append(k + "=" + v + ", "));
 
-        if (tagOptional.isPresent()) {
-            return tagOptional.get();
+        LOGGER.info("searchTag: parameters = {}", sb.toString());
+
+        List<Tag> allTags = this.getAllTags();
+
+        if (searchParameters.isEmpty()) {
+            LOGGER.debug("No search parameters to filter tags");
+            return allTags;
         }
 
-        return null;
-    }
+        Set<String> suppliedKeys = searchParameters.keySet();
+        LOGGER.debug("{} number of parameters supplied for filtering", suppliedKeys.size());
 
-    /**
-     * Search the {@link Tag} by tag name.
-     *
-     * @param allTags list of all tags
-     * @param sT      search term
-     * @return filtered list of tags with name meeting the search term
-     */
-    private List<Tag> searchTagByName(List<Tag> allTags, String sT) {
+        Iterator<String> itr = suppliedKeys.iterator();
 
-        LOGGER.info("searchTagByName: searchTerm = {}", sT);
+        while (itr.hasNext()) {
+            String key = itr.next();
 
-        String searchTerm = sT.toLowerCase();
-        List<Tag> searchResults = new ArrayList<>();
-
-        for (Tag eachTag : allTags) {
-            if (eachTag.getTagName() != null && eachTag.getTagName().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachTag);
+            switch (key) {
+                case "tagname":
+                    LOGGER.debug("Filtering by tagname");
+                    allTags = this.filterTagsByTagName(allTags, searchParameters.get(key));
+                    break;
             }
         }
 
-        return searchResults;
-    }
-
-    /**
-     * Search and fetch all tags meeting search criteria
-     *
-     * @param searchBy   where to search
-     * @param searchTerm what to search
-     * @return list of tags meeting search criteria
-     */
-    public List<Tag> searchTag(final String searchBy, final String searchTerm) {
-
-        LOGGER.info("searchTag: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
-
-        List<Tag> allTags = this.tagRepository.findAll();
-        List<Tag> noTags = new ArrayList<>();
-
-        try {
-            if (searchBy == null || searchTerm == null || searchBy.equals("") || searchTerm.equals("")) {
-                LOGGER.debug("searchTag: no parameters found, fetching all tags");
-                return allTags;
-            }
-
-            else if (searchBy.equalsIgnoreCase("tagname")) {
-                return this.searchTagByName(allTags, searchTerm);
-            }
-
-            else {
-                LOGGER.debug("searchTag: invalid parameters, result will be empty");
-                return noTags;
-            }
-        }
-
-        catch (Exception e) {
-            LOGGER.warn("searchTag: invalid parameters, result will be empty");
-            return noTags;
-        }
+        return allTags;
     }
 
     /**
      * Remove all unused tags from the database. Unused tags are the ones that no
-     * {@link Book} is referring to.
+     * {@link Book} is referring to
      *
      * @return number of tags removed
      */
@@ -166,7 +154,7 @@ public class TagService {
             int size = t.getBooks().size();
 
             if (size == 0) {
-                LOGGER.debug("removeUnusedTags: Removing tag = {}", t.toString());
+                LOGGER.debug("Removing tag = {}", t.toString());
                 this.tagRepository.delete(t);
 
                 deleteCount++;
@@ -174,5 +162,38 @@ public class TagService {
         }
 
         return deleteCount;
+    }
+
+    /**
+     * Get the list of all {@link Tag} in the database
+     *
+     * @return list of all Tags
+     */
+    private List<Tag> getAllTags() {
+        LOGGER.debug("getAllTags");
+        return this.tagRepository.findAll();
+    }
+
+    /**
+     * Search the {@link Tag} by tag name.
+     *
+     * @param allTags list of all tags
+     * @param sT      search term
+     * @return filtered list of tags with name meeting the search term
+     */
+    private List<Tag> filterTagsByTagName(final List<Tag> allTags, final String sT) {
+
+        LOGGER.info("searchTagByName: searchTerm = {}", sT);
+
+        String searchTerm = sT.toLowerCase();
+        List<Tag> searchResults = new ArrayList<>();
+
+        for (Tag eachTag : allTags) {
+            if (eachTag.getTagName() != null && eachTag.getTagName().toLowerCase().contains(searchTerm)) {
+                searchResults.add(eachTag);
+            }
+        }
+
+        return searchResults;
     }
 }
