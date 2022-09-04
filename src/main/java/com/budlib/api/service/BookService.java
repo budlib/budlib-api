@@ -319,12 +319,12 @@ public class BookService {
             throw new NotFoundException(String.format("Book with ID=%d not found", bookId));
         }
 
-        else {
-            if (toBeDeleted.getCurrentLoans().size() != 0) {
-                LOGGER.error("Cannot delete book with outstanding loans");
-                throw new UserInputException("Cannot delete book with outstanding loans");
-            }
+        else if (toBeDeleted.getCurrentLoans().size() != 0) {
+            LOGGER.error("Cannot delete book with outstanding loans");
+            throw new UserInputException("Cannot delete book with outstanding loans");
+        }
 
+        else {
             this.bookRepository.deleteById(bookId);
         }
     }
@@ -644,12 +644,12 @@ public class BookService {
     }
 
     /**
-     * Converts CSV record to Book object, with the field mapping provided by
+     * Converts CSV record to {@link Book}, with the field mapping provided by
      * bookCsv
      *
      * @param record  The CSV Record fetched from the CSV file
-     * @param bookCsv
-     * @return book object
+     * @param bookCsv Map of fields
+     * @return Book object
      * @throws NumberFormatException
      * @throws NullPointerException
      */

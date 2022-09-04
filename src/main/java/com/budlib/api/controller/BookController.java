@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for books
+ * Controller for Books
  */
 @CrossOrigin
 @RestController
@@ -63,7 +63,7 @@ public class BookController {
      * Get {@link Book} by ID
      *
      * @param bookId ID of the Book
-     * @return book
+     * @return Book
      */
     @GetMapping(path = "{bookId}")
     public ResponseEntity<?> getBookById(final @PathVariable("bookId") Long bookId) {
@@ -89,7 +89,7 @@ public class BookController {
      * @return list of Tags
      */
     @GetMapping(path = "{bookId}/tags")
-    public ResponseEntity<?> getBookTags(@PathVariable("bookId") Long bookId) {
+    public ResponseEntity<?> getBookTags(final @PathVariable("bookId") Long bookId) {
 
         LOGGER.info("getBookTags: bookId = {}", bookId);
 
@@ -111,7 +111,7 @@ public class BookController {
      * @return list of Loans
      */
     @GetMapping(path = "{bookId}/loans")
-    public ResponseEntity<?> getCurrentLoans(@PathVariable("bookId") Long bookId) {
+    public ResponseEntity<?> getCurrentLoans(final @PathVariable("bookId") Long bookId) {
 
         LOGGER.info("getCurrentLoans: bookId = {}", bookId);
 
@@ -140,14 +140,14 @@ public class BookController {
      * @return list of Books that match the filters
      */
     @GetMapping()
-    public ResponseEntity<?> searchBook(@RequestParam(name = "title", required = false) String title,
-            @RequestParam(name = "subtitle", required = false) String subtitle,
-            @RequestParam(name = "author", required = false) String author,
-            @RequestParam(name = "publisher", required = false) String publisher,
-            @RequestParam(name = "isbn", required = false) String isbn,
-            @RequestParam(name = "librarysection", required = false) String librarySection,
-            @RequestParam(name = "tags", required = false) String tags,
-            @RequestParam(name = "language", required = false) String language) {
+    public ResponseEntity<?> searchBook(final @RequestParam(name = "title", required = false) String title,
+            final @RequestParam(name = "subtitle", required = false) String subtitle,
+            final @RequestParam(name = "author", required = false) String author,
+            final @RequestParam(name = "publisher", required = false) String publisher,
+            final @RequestParam(name = "isbn", required = false) String isbn,
+            final @RequestParam(name = "librarysection", required = false) String librarySection,
+            final @RequestParam(name = "tags", required = false) String tags,
+            final @RequestParam(name = "language", required = false) String language) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("title = ").append(title).append(", ");
@@ -205,7 +205,7 @@ public class BookController {
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addBook(@RequestBody Book book) {
+    public ResponseEntity<?> addBook(final @RequestBody Book book) {
 
         LOGGER.info("addBook: book = {}", book);
 
@@ -230,7 +230,7 @@ public class BookController {
      * @return the message
      */
     @PutMapping(path = "{bookId}")
-    public ResponseEntity<?> updateBook(@RequestBody Book b, @PathVariable("bookId") Long bookId) {
+    public ResponseEntity<?> updateBook(final @RequestBody Book b, final @PathVariable("bookId") Long bookId) {
 
         LOGGER.info("updateBook: book = {}, bookId = {}", b, bookId);
 
@@ -254,7 +254,7 @@ public class BookController {
      * @return the message
      */
     @DeleteMapping(path = "{bookId}")
-    public ResponseEntity<?> deleteBook(@PathVariable("bookId") Long bookId) {
+    public ResponseEntity<?> deleteBook(final @PathVariable("bookId") Long bookId) {
 
         LOGGER.info("deleteBook: bookId = {}", bookId);
 
@@ -279,7 +279,7 @@ public class BookController {
      * @return the message
      */
     @PostMapping(path = "import")
-    public ResponseEntity<?> importBooks(@RequestBody Map<String, String> bookCsv) {
+    public ResponseEntity<?> importBooks(final @RequestBody Map<String, String> bookCsv) {
 
         LOGGER.info("importBooks: bookCsv map = {}", bookCsv);
 
