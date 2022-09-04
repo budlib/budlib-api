@@ -1,24 +1,17 @@
 package com.budlib.api.controller;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
+import com.budlib.api.exception.NotFoundException;
+import com.budlib.api.exception.UserInputException;
 import com.budlib.api.model.Loan;
 import com.budlib.api.model.Loaner;
 import com.budlib.api.model.Transaction;
-import com.budlib.api.repository.LoanerRepository;
-import com.budlib.api.repository.TransactionRepository;
 import com.budlib.api.response.ErrorBody;
+import com.budlib.api.service.LoanerService;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,401 +36,206 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/loaners")
 public class LoanerController {
 
+    /**
+     * Logger for logging
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(LoanerController.class);
 
-    private final LoanerRepository loanerRepository;
-    private final TransactionRepository transactionRepository;
+    /**
+     * {@link LoanerService} for interacting with Loaners
+     */
+    private final LoanerService loanerService;
 
+    /**
+     * Constructor
+     *
+     * @param ls {@code LoanerService} for interaction with Loaners
+     */
     @Autowired
-    public LoanerController(final LoanerRepository lr, final TransactionRepository tr) {
+    public LoanerController(final LoanerService ls) {
 
-        LOGGER.debug("LoanerController");
+        LOGGER.debug("LoanerController: injected LoanerService");
 
-        this.loanerRepository = lr;
-        this.transactionRepository = tr;
+        this.loanerService = ls;
     }
 
     /**
-     * Search the loaner by id
+     * Get {@link Loaner} by ID
      *
-     * @param id loaner id
-     * @return list of loaners with id; the list would have utmost one element
-     */
-    private List<Loaner> searchLoanerById(Long id) {
-
-        LOGGER.info("searchLoanerById: loanerId = {}", id);
-
-        Optional<Loaner> loanerOptional = this.loanerRepository.findById(id);
-
-        if (loanerOptional.isPresent()) {
-            List<Loaner> searchResults = new ArrayList<>();
-            searchResults.add(loanerOptional.get());
-            return searchResults;
-        }
-
-        else {
-            return null;
-        }
-    }
-
-    /**
-     * Search the loaners by their school id
-     *
-     * @param allloaners list of all loaners
-     * @param sT         search term
-     * @return filtered list of loaner with name meeting the search term
-     */
-    private List<Loaner> searchLoanerBySchoolId(List<Loaner> allLoaners, String sT) {
-
-        LOGGER.info("searchLoanerBySchoolId: searchTerm = {}", sT);
-
-        String searchTerm = sT.toLowerCase();
-        List<Loaner> searchResults = new ArrayList<>();
-
-        for (Loaner eachLoaner : allLoaners) {
-            if (eachLoaner.getSchoolId() != null && eachLoaner.getSchoolId().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachLoaner);
-            }
-        }
-
-        return searchResults;
-    }
-
-    /**
-     * Search the loaners by their name
-     *
-     * @param allloaners list of all loaners
-     * @param sT         search term
-     * @return filtered list of loaner with name meeting the search term
-     */
-    private List<Loaner> searchLoanerByName(List<Loaner> allLoaners, String sT) {
-
-        LOGGER.info("searchLoanerByName: searchTerm = {}", sT);
-
-        String searchTerm = sT.toLowerCase();
-        List<Loaner> searchResults = new ArrayList<>();
-
-        for (Loaner eachLoaner : allLoaners) {
-            if (eachLoaner.getFullName() != null && eachLoaner.getFullName().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachLoaner);
-            }
-        }
-
-        return searchResults;
-    }
-
-    /**
-     * Search the loaner by their parent's name
-     *
-     * @param allLoaners list of all loaners
-     * @param sT         search term
-     * @return filtered list of students with parent's name meeting the search term
-     */
-    private List<Loaner> searchStudentByParentName(List<Loaner> allLoaners, String sT) {
-
-        LOGGER.info("searchStudentByParentName: searchTerm = {}", sT);
-
-        String searchTerm = sT.toLowerCase();
-        List<Loaner> searchResults = new ArrayList<>();
-
-        for (Loaner eachLoaner : allLoaners) {
-            if (eachLoaner.getMotherName() != null && eachLoaner.getFullName().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachLoaner);
-            }
-
-            else if (eachLoaner.getFatherName() != null
-                    && eachLoaner.getFullName().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachLoaner);
-            }
-        }
-
-        return searchResults;
-    }
-
-    /**
-     * Endpoint for GET - fetch loaner by id
-     *
-     * @param id loaner id
-     * @return loaner
+     * @param loanerId ID of the Loaner
+     * @return Loaner
      */
     @GetMapping(path = "{loanerId}")
-    public ResponseEntity<?> getLoanerById(@PathVariable("loanerId") Long id) {
+    public ResponseEntity<?> getLoanerById(final @PathVariable("loanerId") Long loanerId) {
 
-        LOGGER.info("getLoanerById: loanerId = {}", id);
+        LOGGER.info("getLoanerById: loanerId = {}", loanerId);
 
-        List<Loaner> s = this.searchLoanerById(id);
+        Loaner l = this.loanerService.getLoanerById(loanerId);
 
-        if (s == null) {
+        if (l == null) {
             String message = "Loaner not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
         else {
-            return ResponseEntity.status(HttpStatus.OK).body(s.get(0));
+            return ResponseEntity.status(HttpStatus.OK).body(l);
         }
     }
 
     /**
-     * Endpoint for GET - fetch the transaction history of the Loaner
+     * Get list of {@link Transaction} history of the {@link Loaner}
      *
-     * @param id Loaner ID whose transaction history is required
-     * @return list of transactions
+     * @param loanerId Loaner ID whose transaction history is required
+     * @return list of Transactions of the Loaner
      */
     @GetMapping(path = "{loanerId}/history")
-    public ResponseEntity<?> getTransactionHistory(@PathVariable("loanerId") Long id) {
+    public ResponseEntity<?> getTransactionHistory(final @PathVariable("loanerId") Long loanerId) {
 
-        LOGGER.info("getTransactionHistory: loanerId = {}", id);
-
-        List<Loaner> l = this.searchLoanerById(id);
-
-        if (l == null) {
-            String message = "Loaner not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-
-        else {
-            List<Transaction> trnHistory = l.get(0).getTransactionHistory();
-            return ResponseEntity.status(HttpStatus.OK).body(trnHistory);
-        }
-    }
-
-    /**
-     * Endpoint for GET - fetch the current outstanding books of the loaner
-     *
-     * @param id Loaner ID whose current loans is required
-     * @return list of loans
-     */
-    @GetMapping(path = "{loanerId}/loans")
-    public ResponseEntity<?> getCurrentLoans(@PathVariable("loanerId") Long id) {
-
-        LOGGER.info("getCurrentLoans: loanerId = {}", id);
-
-        List<Loaner> l = this.searchLoanerById(id);
-
-        if (l == null) {
-            String message = "Loaner not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-
-        else {
-            List<Loan> currentLoans = l.get(0).getCurrentLoans();
-            return ResponseEntity.status(HttpStatus.OK).body(currentLoans);
-        }
-    }
-
-    /**
-     * Endpoint for GET - search and fetch all loaners meeting search criteria
-     *
-     * @param searchBy   where to search
-     * @param searchTerm what to search
-     * @return list of loaners meeting search criteria
-     */
-    @GetMapping()
-    public ResponseEntity<?> searchLoaner(@RequestParam(name = "searchBy", required = false) String searchBy,
-            @RequestParam(name = "searchTerm", required = false) String searchTerm) {
-
-        LOGGER.info("searchLoaner: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
-
-        List<Loaner> allLoaners = this.loanerRepository.findAll();
+        LOGGER.info("getTransactionHistory: loanerId = {}", loanerId);
 
         try {
-            if (searchBy == null || searchTerm == null) {
-                return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
-            }
-
-            else if (searchBy.equals("") || searchTerm.equals("")) {
-                return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
-            }
-
-            else if (searchBy.equalsIgnoreCase("id")) {
-                return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerById(Long.valueOf(searchTerm)));
-            }
-
-            else if (searchBy.equalsIgnoreCase("schoolId")) {
-                return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerBySchoolId(allLoaners, searchTerm));
-            }
-
-            else if (searchBy.equalsIgnoreCase("name")) {
-                return ResponseEntity.status(HttpStatus.OK).body(this.searchLoanerByName(allLoaners, searchTerm));
-            }
-
-            else if (searchBy.equalsIgnoreCase("parentName")) {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(this.searchStudentByParentName(allLoaners, searchTerm));
-            }
-
-            else {
-                // String message = "Invalid loaner search operation";
-                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-                return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
-            }
+            List<Transaction> trnList = this.loanerService.getTransactionHistory(loanerId);
+            return ResponseEntity.status(HttpStatus.OK).body(trnList);
         }
 
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body(allLoaners);
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 
     /**
-     * Check if the loaner exists in the system. Works only if Loaner.schoolId is
-     * not null or empty. This method exists in TransactionController as well.
+     * Get list of {@link Transaction} history of the {@link Loaner}
      *
-     * @param l Loaner to be added or updated
-     * @return true if unique, false otherwise
+     * @param loanerId Loaner ID whose transaction history is required
+     * @return list of Transactions of the Loaner
      */
-    private boolean checkLoanerUniqueness(Loaner l) {
+    @GetMapping(path = "{loanerId}/loans")
+    public ResponseEntity<?> getCurrentLoans(final @PathVariable("loanerId") Long loanerId) {
 
-        LOGGER.info("checkLoanerUniqueness: loaner = {}", l);
+        LOGGER.info("getCurrentLoans: loanerId = {}", loanerId);
 
-        if (l.getSchoolId() == null || l.getSchoolId().equals("")) {
-            return true;
+        try {
+            List<Loan> loanList = this.loanerService.getCurrentLoans(loanerId);
+            return ResponseEntity.status(HttpStatus.OK).body(loanList);
         }
 
-        List<Loaner> allLoaners = this.loanerRepository.findAll();
-
-        for (Loaner eachLoaner : allLoaners) {
-            if (eachLoaner.getLoanerId() == l.getLoanerId()) {
-                continue;
-            }
-
-            if (eachLoaner.getSchoolId() != null && eachLoaner.getSchoolId().equalsIgnoreCase(l.getSchoolId())) {
-                return false;
-            }
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
-
-        return true;
     }
 
     /**
-     * Endpoint for POST - save the loaner in db
+     * Search {@link Loaner} in the database
      *
-     * @param l loaner details in json
+     * @param schoolId   school ID of the Loaner
+     * @param name       name of the Loaner
+     * @param parentName parent's name of the Loaner
+     * @return list of Loaners that match the search parameters
+     */
+    @GetMapping()
+    public ResponseEntity<?> searchLoaner(final @RequestParam(name = "schoolid", required = false) String schoolId,
+            final @RequestParam(name = "name", required = false) String name,
+            final @RequestParam(name = "parentname", required = false) String parentName) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("schoolid = ").append(schoolId).append(", ");
+        sb.append("name = ").append(name).append(", ");
+        sb.append("parentname = ").append(parentName).append(", ");
+
+        LOGGER.info("searchLoaner: parameters = {}", sb.toString());
+
+        Map<String, String> parameters = new HashMap<>();
+
+        if (schoolId != null) {
+            parameters.put("schoolid", schoolId);
+        }
+
+        if (name != null) {
+            parameters.put("name", name);
+        }
+
+        if (parentName != null) {
+            parameters.put("parentname", parentName);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.loanerService.searchLoaner(parameters));
+
+    }
+
+    /**
+     * Save the {@link Loaner} in the database
+     *
+     * @param loaner Loaner details
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addLoaner(@RequestBody Loaner l) {
+    public ResponseEntity<?> addLoaner(final @RequestBody Loaner loaner) {
 
-        LOGGER.info("addLoaner: loaner = {}", l);
+        LOGGER.info("addLoaner: loaner = {}", loaner);
 
-        // reset the id to 0 to prevent overwrite
-        l.setLoanerId(0L);
+        try {
+            this.loanerService.addLoaner(loaner);
 
-        if (this.checkLoanerUniqueness(l)) {
-            this.loanerRepository.save(l);
             String message = "Loaner added successfully";
             return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
         }
 
-        else {
-            String message = "Loaner already exists";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        catch (UserInputException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 
     /**
-     * Verifies if the CSV record if empty or not. A record is empty when all the
-     * intended details are blank.
+     * Update the {@link Loaner} in the database
      *
-     * @param record The CSV record to check for emptiness
-     * @return {@code true} if empty, {@code false} false otherwise
+     * @param loaner   Loaner details
+     * @param loanerId ID of the Loaner to be updated
+     * @return the message
      */
-    private boolean checkEmptyRecord(CSVRecord record) {
+    @PutMapping(path = "{loanerId}")
+    public ResponseEntity<?> updateLoaner(final @RequestBody Loaner l, final @PathVariable("loanerId") Long loanerId) {
 
-        LOGGER.info("checkEmptyRecord: record = {}", record);
+        LOGGER.info("updateLoaner: loaner = {}, loanerId = {}", l, loanerId);
 
-        Iterator<String> itr = record.iterator();
+        try {
+            this.loanerService.updateLoaner(l, loanerId);
 
-        while (itr.hasNext()) {
-            String str = itr.next();
-
-            if (str != null && str.length() != 0) {
-                return false;
-            }
+            String message = "Loaner updated successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
         }
 
-        return true;
+        catch (UserInputException | NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
+        }
     }
 
     /**
-     * Converts CSV record to Loaner object, with the field mapping provided by
-     * loanerCsv
+     * Delete {@link Loaner} from the database and reset its associated
+     * {@link Transaction}s
      *
-     * @param record    The CSV Record fetched from the CSV file
-     * @param loanerCsv
-     * @return book object
-     * @throws NumberFormatException
-     * @throws NullPointerException
+     * @param loanerId ID of the Loaner to be deleted
+     * @return the message
      */
-    private Loaner csvRecordToLoaner(final CSVRecord record, HashMap<String, String> loanerCsv)
-            throws NumberFormatException, NullPointerException {
+    @DeleteMapping(path = "{loanerId}")
+    public ResponseEntity<?> deleteLoaner(final @PathVariable("loanerId") Long loanerId) {
 
-        LOGGER.info("csvRecordToLoaner: record = {}, loanerCsv map = {}", record, loanerCsv);
+        LOGGER.info("deleteLoaner: loanerId = {}", loanerId);
 
-        if (this.checkEmptyRecord(record)) {
-            return null;
+        try {
+            this.loanerService.deleteLoaner(loanerId);
+
+            String message = "Loaner deleted successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
         }
 
-        Loaner l = new Loaner();
-        l.setLoanerId(0);
-
-        // all the below are actually integers in String format
-        String schoolId = loanerCsv.get("schoolId");
-        String isStudent = loanerCsv.get("isStudent");
-        String email = loanerCsv.get("email");
-        String salutation = loanerCsv.get("salutation");
-        String firstName = loanerCsv.get("first_name");
-        String middleName = loanerCsv.get("middle_name");
-        String lastName = loanerCsv.get("last_name");
-        String motherName = loanerCsv.get("mother_name");
-        String fatherName = loanerCsv.get("father_name");
-
-        // set school ID
-        if (schoolId != null) {
-            l.setSchoolId(record.get(Integer.parseInt(schoolId)));
+        catch (UserInputException | NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
-
-        // set isStudent
-        if (isStudent != null) {
-            l.setStudent(Boolean.valueOf(record.get(Integer.parseInt(isStudent))));
-        }
-
-        // set email
-        if (email != null) {
-            l.setEmail(record.get(Integer.parseInt(email)));
-        }
-
-        // set salutation
-        if (salutation != null) {
-            l.setSalutation(record.get(Integer.parseInt(salutation)));
-        }
-
-        // set first name
-        if (firstName != null) {
-            l.setFirstName(record.get(Integer.parseInt(firstName)));
-        }
-
-        // set middle name
-        if (middleName != null) {
-            l.setMiddleName(record.get(Integer.parseInt(middleName)));
-        }
-
-        // set last name
-        if (lastName != null) {
-            l.setLastName(record.get(Integer.parseInt(lastName)));
-        }
-
-        // set mother name
-        if (motherName != null) {
-            l.setMotherName(record.get(Integer.parseInt(motherName)));
-        }
-
-        // set father name
-        if (fatherName != null) {
-            l.setFatherName(record.get(Integer.parseInt(fatherName)));
-        }
-
-        return l;
     }
 
     /**
@@ -445,162 +243,23 @@ public class LoanerController {
      * provided
      *
      * @param loanerCsv the fields mapping
-     * @return message
+     * @return the message
      */
     @PostMapping(path = "import")
-    public ResponseEntity<?> importLoaners(@RequestBody HashMap<String, String> loanerCsv) {
+    public ResponseEntity<?> importLoaners(@RequestBody Map<String, String> loanerCsv) {
 
         LOGGER.info("importLoaners: loanerCsv map = {}", loanerCsv);
 
-        int countImported = 0;
-        final String uploadCSVFilePath = loanerCsv.get("filename");
-
-        // remove the filename as its not needed anymore, and to prevent hindrance
-        loanerCsv.remove("filename");
-
         try {
-            FileReader fileReader = new FileReader(uploadCSVFilePath);
+            int importedLoaners = this.loanerService.importLoaner(loanerCsv);
 
-            CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader();
-
-            CSVParser csvParser = new CSVParser(fileReader, csvFormat);
-            Iterator<CSVRecord> itr = csvParser.iterator();
-
-            while (itr.hasNext()) {
-                CSVRecord record = itr.next();
-
-                Loaner l = this.csvRecordToLoaner(record, loanerCsv);
-
-                if (l == null) {
-                    continue;
-                }
-
-                else if (this.checkLoanerUniqueness(l) == false) {
-                    LOGGER.warn("importLoaners: Skipping importing {} loaner as its not unique", l.getSchoolId());
-                }
-
-                else {
-                    this.loanerRepository.save(l);
-                    countImported++;
-                }
-            }
-
-            csvParser.close();
-
-            String message = String.format("%d loaners imported successfully", countImported);
-            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ErrorBody(HttpStatus.OK, String.format("%d loaners imported successfully", importedLoaners)));
         }
 
-        catch (FileNotFoundException e) {
-            String message = "Error in retrieving uploaded file";
-            LOGGER.error(message, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
-        }
-
-        catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            String message = "React Coding issue: Incorrect mapping provided";
-            LOGGER.error(message, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
-        }
-
-        catch (IOException e) {
-            String message = "Error in parsing uploaded file";
-            LOGGER.error(message, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
-        }
-
-        catch (NullPointerException e) {
-            String message = "Coding issue: All nulls are not handled";
-            LOGGER.error(message, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
-        }
-
-        catch (Exception e) {
-            String message = "Something unexpected happened";
-            LOGGER.error(message, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorBody(HttpStatus.INTERNAL_SERVER_ERROR, message));
-        }
-    }
-
-    /**
-     * Endpoint for PUT - update loaner in db
-     *
-     * @param l        the updated loaner details in json
-     * @param loanerId the id of the loaner to be updated
-     * @return the message
-     */
-    @PutMapping(path = "{loanerId}")
-    public ResponseEntity<?> updateLoaner(@RequestBody Loaner l, @PathVariable("loanerId") Long loanerId) {
-
-        LOGGER.info("updateLoaner: loaner = {}, loanerId = {}", l, loanerId);
-
-        Optional<Loaner> loanerOptional = this.loanerRepository.findById(loanerId);
-
-        if (loanerOptional.isPresent()) {
-            l.setLoanerId(loanerId);
-
-            if (this.checkLoanerUniqueness(l)) {
-                this.loanerRepository.save(l);
-                String message = "Loaner updated successfully";
-                return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-            }
-
-            else {
-                String message = "Loaner already exists";
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-            }
-        }
-
-        else {
-            String message = "Loaner not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-    }
-
-    /**
-     * Endpoint for DELETE - delete loaner from db
-     *
-     * @param loanerId loaner id
-     */
-    @DeleteMapping(path = "{loanerId}")
-    public ResponseEntity<?> deleteLoaner(@PathVariable("loanerId") Long loanerId) {
-
-        LOGGER.info("deleteLoaner: loanerId = {}", loanerId);
-
-        if (!this.loanerRepository.existsById(loanerId)) {
-            String message = "Loaner not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-
-        else {
-            Loaner toBeDeleted = this.loanerRepository.getById(loanerId);
-
-            if (toBeDeleted.getTotalOutstanding() != 0) {
-                String message = "Cannot delete loaner with outstanding books";
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-            }
-
-            // reset all the transactions
-            else {
-                List<Transaction> trnsToBeChange = toBeDeleted.getTransactionHistory();
-
-                for (Transaction trn : trnsToBeChange) {
-                    trn.setLoaner(null);
-                    this.transactionRepository.save(trn);
-                }
-            }
-
-            this.loanerRepository.deleteById(loanerId);
-            String message = "Loaner deleted successfully";
-            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+        catch (Throwable e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 }
