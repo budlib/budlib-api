@@ -192,18 +192,18 @@ public class LibrarianService implements UserDetailsService {
         // reset the id to 0 to prevent overwrite
         librarian.setLibrarianId(0L);
 
-        String[] checkDetails = this.checkSuppliedDetails(librarian);
+        try {
+            this.checkSuppliedDetails(librarian);
 
-        if (checkDetails[0].equals("true")) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             librarian.setPassword(encoder.encode(librarian.getPassword()));
 
             return this.librarianRepository.save(librarian);
         }
 
-        else {
-            LOGGER.error(checkDetails[1]);
-            throw new UserInputException(checkDetails[1]);
+        catch (UserInputException e) {
+            LOGGER.error(e.getMessage());
+            throw e;
         }
     }
 
@@ -232,15 +232,14 @@ public class LibrarianService implements UserDetailsService {
             librarian.setLibrarianId(librarianId);
             librarian.setPassword(l.getPassword());
 
-            String[] checkDetails = this.checkSuppliedDetails(librarian);
-
-            if (checkDetails[0].equals("true")) {
+            try {
+                this.checkSuppliedDetails(librarian);
                 return this.librarianRepository.save(librarian);
             }
 
-            else {
-                LOGGER.error(checkDetails[1]);
-                throw new UserInputException(checkDetails[1]);
+            catch (UserInputException e) {
+                LOGGER.error(e.getMessage());
+                throw e;
             }
         }
     }
@@ -270,17 +269,18 @@ public class LibrarianService implements UserDetailsService {
             // temporarily set unencrypted password for checkDetails method
             l.setPassword(librarian.getPassword());
 
-            String[] checkDetails = this.checkSuppliedDetails(l);
+            try {
+                this.checkSuppliedDetails(l);
 
-            if (checkDetails[0].equals("true")) {
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 l.setPassword(encoder.encode(l.getPassword()));
+
                 return this.librarianRepository.save(l);
             }
 
-            else {
-                LOGGER.error(checkDetails[1]);
-                throw new UserInputException(checkDetails[1]);
+            catch (UserInputException e) {
+                LOGGER.error(e.getMessage());
+                throw e;
             }
         }
     }
@@ -477,21 +477,14 @@ public class LibrarianService implements UserDetailsService {
     }
 
     /**
-     * Check the details of the librarian supplied
+     * Check the details of the Librarian supplied for inconsistencies
      *
-     * @param l librarian details
-     * @return response string, [0] contains true if all good or false if details
-     *         are incorrect. [1] contains reason for incorrect details
+     * @param l Librarian details
+     * @throws UserInputException
      */
-    private String[] checkSuppliedDetails(final Librarian l) {
+    private void checkSuppliedDetails(final Librarian l) throws UserInputException {
 
         LOGGER.debug("checkSuppliedDetails: librarian = {}", l);
-
-        String[] response = new String[2];
-
-        // these values will change in case of error
-        response[0] = "true";
-        response[1] = "All good";
 
         List<Librarian> allLibrarians = this.getAllLibrarians();
 
@@ -503,23 +496,19 @@ public class LibrarianService implements UserDetailsService {
         String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
         if (suppliedUsername == null || suppliedUsername.equals("")) {
-            response[0] = "false";
-            response[1] = "Username cannot be empty";
+            throw new UserInputException("Username cannot be empty");
         }
 
         else if (suppliedPassword == null || suppliedPassword.equals("")) {
-            response[0] = "false";
-            response[1] = "Password cannot be empty";
+            throw new UserInputException("Password cannot be empty");
         }
 
         else if (suppliedEmail == null || suppliedEmail.equals("")) {
-            response[0] = "false";
-            response[1] = "Email cannot be empty";
+            throw new UserInputException("Email cannot be empty");
         }
 
         else if (!suppliedEmail.matches(emailRegex)) {
-            response[0] = "false";
-            response[1] = "Invalid email supplied";
+            throw new UserInputException("Invalid email supplied");
         }
 
         else {
@@ -530,19 +519,13 @@ public class LibrarianService implements UserDetailsService {
 
                 if (eachLibrarian.getUserName() != null
                         && eachLibrarian.getUserName().equalsIgnoreCase(suppliedUsername)) {
-                    response[0] = "false";
-                    response[1] = "Username already taken";
-                    break;
+                    throw new UserInputException("Username already taken");
                 }
 
                 if (eachLibrarian.getEmail() != null && eachLibrarian.getEmail().equalsIgnoreCase(suppliedEmail)) {
-                    response[0] = "false";
-                    response[1] = "Email already taken";
-                    break;
+                    throw new UserInputException("Email already taken");
                 }
             }
         }
-
-        return response;
     }
 }
