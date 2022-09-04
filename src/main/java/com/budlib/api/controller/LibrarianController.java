@@ -1,22 +1,21 @@
 package com.budlib.api.controller;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-import com.budlib.api.enums.LibrarianRole;
+import com.budlib.api.exception.NotFoundException;
+import com.budlib.api.exception.UserInputException;
 import com.budlib.api.model.Librarian;
 import com.budlib.api.model.Transaction;
-import com.budlib.api.repository.LibrarianRepository;
-import com.budlib.api.repository.TransactionRepository;
 import com.budlib.api.response.ErrorBody;
+import com.budlib.api.service.LibrarianService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,447 +28,218 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for librarian
+ * Controller for Librarian
  */
 @CrossOrigin
 @RestController
 @RequestMapping("api/librarian")
 public class LibrarianController {
 
+    /**
+     * Logger for logging
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(LibrarianController.class);
 
-    private final LibrarianRepository librarianRepository;
-    private final TransactionRepository transactionRepository;
+    /**
+     * {@link LibrarianService} for interacting with Librarians
+     */
+    private final LibrarianService librarianService;
 
+    /**
+     * Constructor
+     *
+     * @param ls {@code LibrarianService} for interaction with Librarians
+     */
     @Autowired
-    public LibrarianController(final LibrarianRepository lr, final TransactionRepository tr) {
+    public LibrarianController(final LibrarianService ls) {
 
-        LOGGER.debug("LibrarianController");
+        LOGGER.debug("LibrarianController: injected LibrarianService");
 
-        this.librarianRepository = lr;
-        this.transactionRepository = tr;
+        this.librarianService = ls;
     }
 
     /**
-     * Search the librarian by id
+     * Get {@link Librarian} by ID
      *
-     * @param id librarian id
-     * @return list of librarians with id; the list would have utmost one element
-     */
-    private List<Librarian> searchLibrarianById(Long id) {
-
-        LOGGER.info("searchLibrarianById: librarianId = {}", id);
-
-        Optional<Librarian> librarianOptional = this.librarianRepository.findById(id);
-
-        if (librarianOptional.isPresent()) {
-            List<Librarian> searchResults = new ArrayList<>();
-            searchResults.add(librarianOptional.get());
-            return searchResults;
-        }
-
-        else {
-            return null;
-        }
-    }
-
-    /**
-     * Search the librarians by their email
-     *
-     * @param alllibrarians list of all librarians
-     * @param sT            search term
-     * @return filtered list of librarian with email meeting the search term
-     */
-    private List<Librarian> searchLibrarianByEmail(List<Librarian> allLibrarians, String sT) {
-
-        LOGGER.info("searchLibrarianByEmail: searchTerm = {}", sT);
-
-        String searchTerm = sT.toLowerCase();
-        List<Librarian> searchResults = new ArrayList<>();
-
-        for (Librarian eachLibrarian : allLibrarians) {
-            if (eachLibrarian.getEmail() != null && eachLibrarian.getEmail().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachLibrarian);
-            }
-        }
-
-        return searchResults;
-    }
-
-    /**
-     * Search the librarians by their username
-     *
-     * @param alllibrarians list of all librarians
-     * @param sT            search term
-     * @return filtered list of librarian with username meeting the search term
-     */
-    private List<Librarian> searchLibrarianByUsername(List<Librarian> allLibrarians, String sT) {
-
-        LOGGER.info("searchLibrarianByUsername: searchTerm = {}", sT);
-
-        String searchTerm = sT.toLowerCase();
-        List<Librarian> searchResults = new ArrayList<>();
-
-        for (Librarian eachLibrarian : allLibrarians) {
-            if (eachLibrarian.getUserName() != null && eachLibrarian.getUserName().toLowerCase().contains(searchTerm)) {
-                searchResults.add(eachLibrarian);
-            }
-        }
-
-        return searchResults;
-    }
-
-    /**
-     * Endpoint for GET - fetch librarian by id
-     *
-     * @param id librarian id
-     * @return librarian
+     * @param librarianId ID of the Librarian
+     * @return Librarian
      */
     @GetMapping(path = "{librarianId}")
-    public ResponseEntity<?> getLibrarianById(@PathVariable("librarianId") Long id) {
+    public ResponseEntity<?> getLibrarianById(final @PathVariable("librarianId") Long librarianId) {
 
-        LOGGER.info("getLibrarianById: librarianId = {}", id);
+        LOGGER.info("getLibrarianById: librarianId = {}", librarianId);
 
-        List<Librarian> l = this.searchLibrarianById(id);
+        Librarian l = this.librarianService.getLibrarianById(librarianId);
 
         if (l == null) {
             String message = "Librarian not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
         }
 
         else {
-            return ResponseEntity.status(HttpStatus.OK).body(l.get(0));
+            return ResponseEntity.status(HttpStatus.OK).body(l);
         }
     }
 
     /**
-     * Endpoint for GET - fetch the transaction history made by a Librarian
+     * Get list of {@link Transaction} coordinated by the {@link Librarian}
      *
-     * @param id Librarian ID whose transaction history is required
-     * @return list of transactions
+     * @param librarianId Librarian ID whose coordinated history is required
+     * @return list of Transactions coordinated by the Librarian
      */
     @GetMapping(path = "{librarianId}/history")
-    public ResponseEntity<?> getCoordinationHistory(@PathVariable("librarianId") Long id) {
+    public ResponseEntity<?> getCoordinationHistory(final @PathVariable("librarianId") Long librarianId) {
 
-        LOGGER.info("getCoordinationHistory: librarianId = {}", id);
-
-        List<Librarian> l = this.searchLibrarianById(id);
-
-        if (l == null) {
-            String message = "Librarian not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-
-        else {
-            List<Transaction> trnHistory = l.get(0).getTransactionHistory();
-            return ResponseEntity.status(HttpStatus.OK).body(trnHistory);
-        }
-    }
-
-    /**
-     * Endpoint for GET - search and fetch all librarians meeting search criteria
-     *
-     * @param searchBy   where to search
-     * @param searchTerm what to search
-     * @return list of librarians meeting search criteria
-     */
-    @GetMapping()
-    public ResponseEntity<?> searchLibrarian(@RequestParam(name = "searchBy", required = false) String searchBy,
-            @RequestParam(name = "searchTerm", required = false) String searchTerm) {
-
-        LOGGER.info("searchLibrarian: searchBy = {}, searchTerm = {}", searchBy, searchTerm);
-
-        List<Librarian> allLibrarians = this.librarianRepository.findAll();
+        LOGGER.info("getCoordinationHistory: librarianId = {}", librarianId);
 
         try {
-            if (searchBy == null || searchTerm == null) {
-                return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
-            }
-
-            else if (searchBy.equals("") || searchTerm.equals("")) {
-                return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
-            }
-
-            else if (searchBy.equalsIgnoreCase("id")) {
-                return ResponseEntity.status(HttpStatus.OK).body(this.searchLibrarianById(Long.valueOf(searchTerm)));
-            }
-
-            else if (searchBy.equalsIgnoreCase("email")) {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(this.searchLibrarianByEmail(allLibrarians, searchTerm));
-            }
-
-            else if (searchBy.equalsIgnoreCase("username")) {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(this.searchLibrarianByUsername(allLibrarians, searchTerm));
-            }
-
-            else {
-                // String message = "Invalid librarian search operation";
-                // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                // .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-                return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
-            }
+            List<Transaction> trnList = this.librarianService.getCoordinationHistory(librarianId);
+            return ResponseEntity.status(HttpStatus.OK).body(trnList);
         }
 
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body(allLibrarians);
+        catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 
     /**
-     * Check the details of the librarian supplied
+     * Search {@link Librarian} in the database
      *
-     * @param l librarian details
-     * @return response string, [0] contains true if all good or false if details
-     *         are incorrect. [1] contains reason for incorrect details
+     * @param email    email of the Librarian to filter
+     * @param userName username of the Librarian to filter
+     * @param name     name of the Librarian to filter
+     * @return list of Librarians that match the filters
      */
-    private String[] checkSuppliedDetails(Librarian l) {
+    @GetMapping()
+    public ResponseEntity<?> searchLibrarian(final @RequestParam(name = "email", required = false) String email,
+            final @RequestParam(name = "username", required = false) String userName,
+            final @RequestParam(name = "name", required = false) String name) {
 
-        LOGGER.info("checkSuppliedDetails: librarian = {}", l);
+        StringBuilder sb = new StringBuilder();
+        sb.append("email = ").append(email).append(", ");
+        sb.append("username = ").append(userName).append(", ");
+        sb.append("name = ").append(name).append(", ");
 
-        String[] response = new String[2];
+        LOGGER.info("searchLibrarian: parameters = {}", sb.toString());
 
-        // these values will change in case of error
-        response[0] = "true";
-        response[1] = "All good";
+        Map<String, String> parameters = new HashMap<>();
 
-        List<Librarian> allLibrarians = this.librarianRepository.findAll();
-
-        String suppliedUsername = l.getUserName();
-        String suppliedEmail = l.getEmail();
-        String suppliedPassword = l.getPassword();
-
-        // RFC 5322 regex check
-        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
-
-        if (suppliedUsername == null || suppliedUsername.equals("")) {
-            response[0] = "false";
-            response[1] = "Username cannot be empty";
+        if (email != null) {
+            parameters.put("email", email);
         }
 
-        else if (suppliedPassword == null || suppliedPassword.equals("")) {
-            response[0] = "false";
-            response[1] = "Password cannot be empty";
+        if (userName != null) {
+            parameters.put("username", userName);
         }
 
-        else if (suppliedEmail == null || suppliedEmail.equals("")) {
-            response[0] = "false";
-            response[1] = "Email cannot be empty";
+        if (name != null) {
+            parameters.put("name", name);
         }
 
-        else if (!suppliedEmail.matches(emailRegex)) {
-            response[0] = "false";
-            response[1] = "Invalid email supplied";
-        }
-
-        else {
-            for (Librarian eachLibrarian : allLibrarians) {
-                if (eachLibrarian.getLibrarianId() == l.getLibrarianId()) {
-                    continue;
-                }
-
-                if (eachLibrarian.getUserName() != null
-                        && eachLibrarian.getUserName().equalsIgnoreCase(suppliedUsername)) {
-                    response[0] = "false";
-                    response[1] = "Username already taken";
-                    break;
-                }
-
-                if (eachLibrarian.getEmail() != null && eachLibrarian.getEmail().equalsIgnoreCase(suppliedEmail)) {
-                    response[0] = "false";
-                    response[1] = "Email already taken";
-                    break;
-                }
-            }
-        }
-
-        return response;
+        return ResponseEntity.status(HttpStatus.OK).body(this.librarianService.searchLibrarian(parameters));
     }
 
     /**
-     * Endpoint for POST - save the librarian in db
+     * Save the {@link Librarian} in the database
      *
-     * @param l librarian details in json
+     * @param librarian Librarian details
      * @return the message
      */
     @PostMapping
-    public ResponseEntity<?> addLibrarian(@RequestBody Librarian l) {
+    public ResponseEntity<?> addLibrarian(final @RequestBody Librarian librarian) {
 
-        LOGGER.info("addLibrarian: librarian = {}", l);
+        LOGGER.info("addLibrarian: librarian = {}", librarian);
 
-        // reset the id to 0 to prevent overwrite
-        l.setLibrarianId(0L);
+        try {
+            this.librarianService.addLibrarian(librarian);
 
-        String[] checkDetails = this.checkSuppliedDetails(l);
-
-        if (checkDetails[0].equals("true")) {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            l.setPassword(encoder.encode(l.getPassword()));
-
-            this.librarianRepository.save(l);
             String message = "Librarian added successfully";
             return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
         }
 
-        else {
-            String message = checkDetails[1];
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
+        catch (UserInputException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 
     /**
-     * Endpoint for PUT - update librarian in db, without changing the password
+     * Update the {@link Librarian} in the database
      *
-     * @param l           the updated librarian details in json
-     * @param librarianId the id of the librarian to be updated
+     * @param librarian   Librarian details
+     * @param librarianId ID of the Librarian to be updated
      * @return the message
      */
     @PutMapping(path = "{librarianId}")
-    public ResponseEntity<?> updateLibrarian(@RequestBody Librarian l, @PathVariable("librarianId") Long librarianId) {
+    public ResponseEntity<?> updateLibrarian(final @RequestBody Librarian l,
+            final @PathVariable("librarianId") Long librarianId) {
 
         LOGGER.info("updateLibrarian: librarian = {}, librarianId = {}", l, librarianId);
 
-        Optional<Librarian> librarianOptional = this.librarianRepository.findById(librarianId);
+        try {
+            this.librarianService.updateLibrarian(l, librarianId);
 
-        if (librarianOptional.isPresent()) {
-            l.setLibrarianId(librarianId);
-            l.setPassword(librarianOptional.get().getPassword());
-
-            String[] checkDetails = this.checkSuppliedDetails(l);
-
-            if (checkDetails[0].equals("true")) {
-
-                this.librarianRepository.save(l);
-                String message = "Librarian updated successfully";
-                return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-            }
-
-            else {
-                String message = checkDetails[1];
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-            }
+            String message = "Librarian updated successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
         }
 
-        else {
-            String message = "Librarian not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        catch (UserInputException | NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 
     /**
-     * Endpoint for PUT - change librarian password
+     * Update the password of the {@link Librarian} in the database
      *
-     * @param librarianId the id of the librarian whose password is to be changed
+     * @param librarian   Librarian details with new password
+     * @param librarianId ID of the Librarian to be updated
      * @return the message
      */
     @PutMapping(path = "{librarianId}/changepassword")
-    public ResponseEntity<?> changePassword(@RequestBody Librarian l, @PathVariable("librarianId") Long librarianId) {
+    public ResponseEntity<?> changePassword(final @RequestBody Librarian l,
+            final @PathVariable("librarianId") Long librarianId) {
 
         LOGGER.info("changePassword: librarian = {}, librarianId = {}", l, librarianId);
 
-        Optional<Librarian> librarianOptional = this.librarianRepository.findById(librarianId);
+        try {
+            this.librarianService.changePassword(l, librarianId);
 
-        if (librarianOptional.isPresent()) {
-            Librarian oldDetails = librarianOptional.get();
-
-            // temporarily set unencrypted password for checkDetails method
-            oldDetails.setPassword(l.getPassword());
-
-            String[] checkDetails = this.checkSuppliedDetails(oldDetails);
-
-            if (checkDetails[0].equals("true")) {
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                oldDetails.setPassword(encoder.encode(oldDetails.getPassword()));
-
-                this.librarianRepository.save(oldDetails);
-                String message = "Password updated successfully";
-                return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
-            }
-
-            else {
-                String message = checkDetails[1];
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorBody(HttpStatus.BAD_REQUEST, message));
-            }
+            String message = "Password updated successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
         }
 
-        else {
-            String message = "Librarian not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
+        catch (UserInputException | NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 
     /**
-     * Counts the number of admins in the system
+     * Delete {@link Librarian} from the database and reset its associated
+     * {@link Transaction}s
      *
-     * @return Number of library administrators
-     */
-    @SuppressWarnings("unused")
-    private int getAdminCount() {
-
-        LOGGER.info("getAdminCount");
-
-        int count = 0;
-
-        List<Librarian> allLibrarians = this.librarianRepository.findAll();
-
-        for (Librarian eachLibrarian : allLibrarians) {
-            if (eachLibrarian.getRole().equals(LibrarianRole.ADMIN)) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    /**
-     * Endpoint for DELETE - delete librarian from db
-     *
-     * @param librarianId librarian id
+     * @param librarianId ID of the Librarian to be deleted
+     * @param deleterId   ID of the Librarian carrying out the deletion
+     * @return the message
      */
     @DeleteMapping(path = "{librarianId}")
-    public ResponseEntity<?> deleteLibrarian(@PathVariable("librarianId") Long librarianId,
-            @RequestParam(name = "deleteBy", required = true) Long deleterId) {
+    public ResponseEntity<?> deleteLibrarian(final @PathVariable("librarianId") Long librarianId,
+            final @RequestParam(name = "deleteBy", required = true) Long deleterId) {
 
         LOGGER.info("deleteLibrarian: librarianId = {}", librarianId);
 
-        if (librarianId == deleterId) {
-            String message = "You cannot delete your own account";
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorBody(HttpStatus.FORBIDDEN, message));
-        }
+        try {
+            this.librarianService.deleteLibrarian(librarianId, deleterId);
 
-        if (this.librarianRepository.existsById(deleterId)) {
-            if (this.librarianRepository.findById(deleterId).get().getRole().equals(LibrarianRole.FACULTY)) {
-                String message = "You dont have necessary rights";
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorBody(HttpStatus.FORBIDDEN, message));
-            }
-        }
-
-        else {
-            String message = "Unknown delete requester";
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorBody(HttpStatus.FORBIDDEN, message));
-        }
-
-        if (!this.librarianRepository.existsById(librarianId)) {
-            String message = "Librarian not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorBody(HttpStatus.NOT_FOUND, message));
-        }
-
-        else {
-            Librarian toBeDeleted = this.librarianRepository.getById(librarianId);
-            List<Transaction> trnsToBeUpdated = toBeDeleted.getTransactionHistory();
-
-            // loop to detach librarian first
-            for (Transaction trn : trnsToBeUpdated) {
-                trn.setLibrarian(null);
-                this.transactionRepository.save(trn);
-            }
-
-            this.librarianRepository.deleteById(librarianId);
             String message = "Librarian deleted successfully";
             return ResponseEntity.status(HttpStatus.OK).body(new ErrorBody(HttpStatus.OK, message));
+        }
+
+        catch (UserInputException | NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorBody(HttpStatus.BAD_REQUEST, e.getMessage()));
         }
     }
 }
