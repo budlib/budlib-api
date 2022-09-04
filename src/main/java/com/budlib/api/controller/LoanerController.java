@@ -129,10 +129,10 @@ public class LoanerController {
     /**
      * Search {@link Loaner} in the database
      *
-     * @param schoolId   school ID of the Loaner
-     * @param name       name of the Loaner
-     * @param parentName parent's name of the Loaner
-     * @return list of Loaners that match the search parameters
+     * @param schoolId   school ID of the Loaner to filter
+     * @param name       name of the Loaner to filter
+     * @param parentName parent's name of the Loaner to filter
+     * @return list of Loaners that match the filters
      */
     @GetMapping()
     public ResponseEntity<?> searchLoaner(final @RequestParam(name = "schoolid", required = false) String schoolId,
@@ -161,7 +161,6 @@ public class LoanerController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(this.loanerService.searchLoaner(parameters));
-
     }
 
     /**

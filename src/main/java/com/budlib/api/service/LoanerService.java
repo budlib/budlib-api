@@ -439,7 +439,7 @@ public class LoanerService {
      */
     private boolean checkLoanerUniqueness(final Loaner loaner) {
 
-        LOGGER.info("checkLoanerUniqueness: loaner = {}", loaner);
+        LOGGER.debug("checkLoanerUniqueness: loaner = {}", loaner);
 
         if (loaner.getSchoolId() == null || loaner.getSchoolId().equals("")) {
             return true;
@@ -497,7 +497,7 @@ public class LoanerService {
     private Loaner csvRecordToLoaner(final CSVRecord record, Map<String, String> loanerCsv)
             throws NumberFormatException, NullPointerException {
 
-        LOGGER.info("csvRecordToLoaner: record = {}, loanerCsv map = {}", record, loanerCsv);
+        LOGGER.debug("csvRecordToLoaner: record = {}, loanerCsv map = {}", record, loanerCsv);
 
         if (this.checkEmptyRecord(record)) {
             return null;
