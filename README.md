@@ -25,6 +25,8 @@ REST API for BudLib - a library management tool
    ```bash
    $ mvn clean spring-boot:run
    ```
+## Default Credentials
+Please contact us for default username and password if you have trouble logging in.
 
 ## Contributors
 
